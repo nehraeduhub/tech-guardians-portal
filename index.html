@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The School of Tech Guardians — Cyber Range Portal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Rajdhani', sans-serif;
+      background: radial-gradient(circle at top, #020611, #000000 80%);
+      color: #e5f0ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: black;
+      overflow: hidden;
+    }
+    canvas#matrixCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(10,20,40,0.9);
+      border: 1px solid rgba(0,255,255,0.3);
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0,255,255,0.2);
+      width: 400px;
+      text-align: center;
+      padding: 28px;
+      backdrop-filter: blur(6px);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 40px rgba(0,255,255,0.4);
+    }
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      margin-bottom: 8px;
+      color: #00eaff;
+      text-shadow: 0 0 12px #00ffea, 0 0 25px #00b7ff;
+    }
+    .muted { font-size: 13px; color: #8fa3b8; margin-bottom: 12px; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 8px;
+      border: 1px solid rgba(0,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: #e5f0ff;
+      font-family: 'Rajdhani';
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg,#00eaff,#0078ff);
+      color: #001;
+      font-weight: 700;
+      font-family: 'Orbitron';
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(90deg,#00ffe0,#00b7ff);
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    }
+    .logout { background: linear-gradient(90deg,#ff005c,#ff7a00); color: white; }
+    a.link-btn {
+      display: inline-block;
+      margin: 6px 0;
+      padding: 8px 10px;
+      color: #00eaff;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid rgba(0,255,255,0.3);
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+    a.link-btn:hover { background: rgba(0,255,255,0.1); }
+    .hidden { display: none; }
+    .portal-title {
+      position: absolute;
+      top: 20px;
+      text-align: center;
+      width: 100%;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      color: #00eaff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px #00eaff, 0 0 30px #00b7ff, 0 0 45px #00ffaa;
+    }
+    .notice { color: #ffbb00; font-size: 13px; margin-bottom: 10px; }
+    .download-btn {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .download-btn a {
+      flex: 1;
+      text-decoration: none;
+      padding: 10px;
+      background: linear-gradient(90deg,#00ff90,#00d4ff);
+      color: #000;
+      font-weight: 700;
+      border-radius: 8px;
+      font-family: 'Orbitron';
+      transition: 0.3s;
+      text-align:center;
+    }
+    .download-btn a:hover {
+      background: linear-gradient(90deg,#00d4ff,#00ff90);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    .modal-content {
+      background-color: #0b1429;
+      border: 1px solid cyan;
+      border-radius: 12px;
+      margin: 15% auto;
+      padding: 20px;
+      width: 400px;
+      text-align: center;
+      color: #00ffee;
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    }
+    .modal-content code {
+      display: block;
+      background: rgba(0,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+      color: #0ff;
+      margin: 10px 0;
+      font-size: 14px;
+      font-family: monospace;
+    }
+    .close {
+      color: #ff5555;
+      font-size: 20px;
+      cursor: pointer;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="matrix"><canvas id="matrixCanvas"></canvas></div>
+  <div class="portal-title">⚡ The School of Tech Guardians ⚡<br><strong>Cyber Commando Range</strong></div>
+  <!-- Student Login -->
+  <div class="card" id="login-card">
+    <h1>Student Login</h1>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="login-btn">Access Portal</button>
+    <p class="muted" id="login-msg"></p>
+    <p class="muted notice">⚠ Ensure you are connected to Tailscale VPN using credentials provided by Admin before accessing the VM.</p>
+    <div class="download-btn">
+      <a href="https://tailscale.com/download/windows" target="_blank">Download Tailscale for Windows</a>
+      <a href="https://tailscale.com/download/mac" target="_blank">Download Tailscale for Mac</a>
+    </div>
+    <p class="muted">Admin? <a href="#" id="show-admin" class="link-btn">Admin Access</a></p>
+  </div>
+
+  <!-- Admin Login & Panel -->
+  <div class="card hidden" id="admin-card">
+    <h1>Admin Login</h1>
+    <input type="text" id="admin-username" placeholder="Admin Username" />
+    <input type="password" id="admin-password" placeholder="Admin Password" />
+    <button id="admin-login-btn">Enter Admin</button>
+    <button id="back-login-admin">Back to Login</button>
+    <p class="muted" id="admin-msg"></p>
+
+    <div id="admin-panel" class="hidden">
+      <h2>Manage Students</h2>
+      <input type="text" id="new-username" placeholder="New Student Username" />
+      <input type="text" id="new-name" placeholder="Full Name of Student" />
+      <input type="password" id="new-password" placeholder="New Student Password" />
+      <button id="add-student">Add Student</button>
+      <h3>Registered Students (Username - Name - Password)</h3>
+      <div class="student-list" id="student-list"></div>
+      <h3>Admin Controls</h3>
+      <input type="password" id="old-admin-pass" placeholder="Old Admin Password" />
+      <input type="password" id="new-admin-pass" placeholder="New Admin Password" />
+      <button id="change-admin-pass">Change Admin Password</button>
+    </div>
+  </div>
+
+  <!-- Lab Access / Classroom Access -->
+  <div class="card hidden" id="lab-card">
+    <h1>Student Portal</h1>
+    
+    <!-- Connect to VM -->
+    <input id="tailscale-ip" placeholder="Enter Tailscale IP (e.g. 100.x.x.x)" />
+    <select id="connection-type">
+      <option value="ssh">Linux SSH</option>
+      <option value="rdp">Windows RDP</option>
+    </select>
+    <button id="connect-btn">Get Connection Command</button>
+    
+    <!-- Join Classroom -->
+    <div style="margin-top:20px;">
+      <h2>Join Classroom</h2>
+      <button id="join-classroom-btn">Open Google Meet</button>
+    </div>
+    
+    <button class="logout" id="logout-btn">Logout</button>
+  </div>
+
+  <!-- Modal for SSH/RDP Command -->
+  <div id="cmdModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Copy & Run Command</h2>
+      <p id="cmdText"></p>
+      <code id="cmdCode"></code>
+    </div>
+  </div>
+
+  <script>
+    // ------------------------------
+    // Matrix Background Animation
+    // ------------------------------
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0ff";
+      ctx.font = fontSize + "px monospace";
+      for(let i = 0; i < drops.length; i++){
+        const text = letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i]=0;
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 50);
+
+    // ------------------------------
+    // Admin & Student Logic
+    // ------------------------------
+    let adminCreds = { username:'admin', password:'admin123' };
+    const loginCard = document.getElementById('login-card');
+    const adminCard = document.getElementById('admin-card');
+    const labCard = document.getElementById('lab-card');
+    const adminPanel = document.getElementById('admin-panel');
+    const studentListDiv = document.getElementById('student-list');
+
+    const getStudents = () => JSON.parse(localStorage.getItem('students')||'[]');
+    const saveStudents = (students) => localStorage.setItem('students', JSON.stringify(students));
+    const renderStudents = () => {
+      const students = getStudents();
+      studentListDiv.innerHTML = students.map(s=>`• ${s.username} - ${s.name} - ${s.password}`).join('<br>');
+    };
+
+    document.getElementById('show-admin').addEventListener('click', ()=>{
+      loginCard.classList.add('hidden');
+      adminCard.classList.remove('hidden');
+    });
+    document.getElementById('back-login-admin').addEventListener('click', ()=>{
+      adminCard.classList.add('hidden');
+      loginCard.classList.remove('hidden');
+    });
+
+    document.getElementById('admin-login-btn').addEventListener('click', ()=>{
+      const u = document.getElementById('admin-username').value.trim();
+      const p = document.getElementById('admin-password').value.trim();
+      if(u===adminCreds.username && p===adminCreds.password){
+        adminPanel.classList.remove('hidden');
+        renderStudents();
+      } else {
+        document.getElementById('admin-msg').textContent='❌ Invalid Admin Credentials';
+      }
+    });
+
+    document.getElementById('add-student').addEventListener('click', ()=>{
+      const u = document.getElementById('new-username').value.trim();
+      const n = document.getElementById('new-name').value.trim();
+      const p = document.getElementById('new-password').value.trim();
+      if(!u||!p||!n){alert('Enter username, full name and password');return;}
+      const students = getStudents();
+      if(students.find(s=>s.username===u)){alert('Username already exists');return;}
+      students.push({username:u,password:p,name:n});
+      saveStudents(students);
+      document.getElementById('new-username').value='';
+      document.getElementById('new-name').value='';
+      document.getElementById('new-password').value='';
+      renderStudents();
+    });
+
+    document.getElementById('change-admin-pass').addEventListener('click', ()=>{
+      const oldPass = document.getElementById('old-admin-pass').value.trim();
+      const newPass = document.getElementById('new-admin-pass').value.trim();
+      if(oldPass !== adminCreds.password){alert('❌ Old password incorrect'); return;}
+      if(!newPass){alert('Enter new password'); return;}
+      adminCreds.password = newPass;
+      document.getElementById('old-admin-pass').value='';
+      document.getElementById('new-admin-pass').value='';
+      alert('✅ Admin password changed');
+    });
+
+    document.getElementById('login-btn').addEventListener('click', ()=>{
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value.trim();
+      const students = getStudents();
+      if(students.find(s=>s.username===u && s.password===p)){
+        localStorage.setItem('tg_logged_in','true');
+        loginCard.classList.add('hidden');
+        labCard.classList.remove('hidden');
+      } else {
+        document.getElementById('login-msg').textContent = '❌ Invalid credentials';
+      }
+    });
+
+    // ------------------------------
+    // SSH / RDP Command Modal
+    // ------------------------------
+    const modal = document.getElementById('cmdModal');
+    const cmdCode = document.getElementById('cmdCode');
+    const cmdText = document.getElementById('cmdText');
+    const closeModal = document.getElementById('closeModal');
+
+    document.getElementById('connect-btn').addEventListener('click', ()=>{
+      const ip=document.getElementById('tailscale-ip').value.trim();
+      const type=document.getElementById('connection-type').value;
+      if(!ip){alert('Enter Tailscale IP'); return;}
+      if(type==='ssh'){
+        cmdText.textContent='Run this command in CMD as Administrator to SSH to Linux VM:';
+        cmdCode.textContent=`ssh root@${ip}`;
+      } else {
+        cmdText.textContent='Run this command in CMD as Administrator to RDP to Windows VM:';
+        cmdCode.textContent=`mstsc /v:${ip}`;
+      }
+      modal.style.display='block';
+    });
+
+    closeModal.onclick = ()=>{ modal.style.display='none'; }
+    window.onclick = (e)=>{ if(e.target==modal) modal.style.display='none'; }
+
+    // ------------------------------
+    // Join Classroom Button
+    // ------------------------------
+    document.getElementById('join-classroom-btn').addEventListener('click', ()=>{
+      window.open('https://meet.google.com/landing');
+    });
+
+    // ------------------------------
+    // Logout
+    // ------------------------------
+    document.getElementById('logout-btn').addEventListener('click', ()=>{
+      localStorage.removeItem('tg_logged_in');
+      labCard.classList.add('hidden');
+      loginCard.classList.remove('hidden');
+    });
+
+    if(localStorage.getItem('tg_logged_in')==='true'){
+      loginCard.classList.add('hidden');
+      labCard.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
