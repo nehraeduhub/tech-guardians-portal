@@ -13,9 +13,10 @@
       color: #e5f0ff;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
+      align-items: flex-start;
+      min-height: 100vh;
+      overflow-y: auto;
+      padding: 60px 0;
     }
     .matrix {
       position: fixed;
@@ -34,9 +35,16 @@
       width: 100%;
       height: 100%;
     }
-    .card {
+    .content-wrapper {
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+      width: 100%;
+    }
+    .card {
       background: rgba(10,20,40,0.9);
       border: 1px solid rgba(0,255,255,0.3);
       border-radius: 16px;
@@ -102,7 +110,7 @@
     a.link-btn:hover { background: rgba(0,255,255,0.1); }
     .hidden { display: none; }
     .portal-title {
-      position: absolute;
+      position: fixed;
       top: 20px;
       text-align: center;
       width: 100%;
@@ -111,6 +119,7 @@
       color: #00eaff;
       letter-spacing: 2px;
       text-shadow: 0 0 15px #00eaff, 0 0 30px #00b7ff, 0 0 45px #00ffaa;
+      z-index: 2;
     }
     .notice { color: #ffbb00; font-size: 13px; margin-bottom: 10px; }
     .download-btn {
@@ -173,88 +182,144 @@
       cursor: pointer;
       float: right;
     }
+/* === Elegant Tricolor Header with Rotating Chakra === */
+.cyber-header {
+  text-align: center;
+  padding: 30px 10px 10px;
+  background: transparent;
+  z-index: 9999;
+  position: relative;
+}
+
+.tricolor-text {
+  background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2em;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.chakra-icon {
+  width: 108px;
+  height: 108px;
+  vertical-align: middle;
+  margin: 0 10px;
+  animation: spinChakra 10s linear infinite; /* Gentle rotation */
+  filter: drop-shadow(0 0 6px rgba(0,255,255,0.4));
+}
+
+@keyframes spinChakra {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.cyber-header p {
+  font-size: 1.4em;
+  color: #b0c4de;
+  margin-top: 8px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+body {
+  margin-top: 0; /* No offset needed since header scrolls with content */
+}
+
   </style>
 </head>
 <body>
+<!-- Elegant Tricolor Header with Rotating Ashoka Chakra -->
+<header class="cyber-header">
+  <h1>
+    <span class="tricolor-text">The School of</span>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Ashoka_Chakra.svg" 
+         alt="Ashoka Chakra" class="chakra-icon">
+    <span class="tricolor-text">Tech Guardians</span>
+  </h1>
+  <p>Cyber Commando Range</p>
+</header>
+</header>
   <div class="matrix"><canvas id="matrixCanvas"></canvas></div>
-  <div class="portal-title">⚡ The School of Tech Guardians ⚡<br><strong>Cyber Commando Range</strong></div>
-<!-- Enrollment Advertisement -->
-<!-- Enrollment Advertisement -->
-<div class="card" id="enroll-card">
-  <h1>🚀 Enroll in Practical Classes!</h1>
-  <p class="muted">Secure your seat and start hands-on learning in our Cyber Range!</p>
-  <p class="muted">Scan the QR code below to pay and enroll:</p>
-  <img src="https://raw.githubusercontent.com/nehraeduhub/tech-guardians-portal/fe7580f92eda1d036459b3679331dfcd864e31c7/qr-code.png" 
-       alt="Payment QR Code" 
-       style="width:200px; height:200px; margin: 10px auto; display:block;">
-  <a href="https://wa.me/7006473877" 
-     target="_blank" 
-     class="link-btn">
-     Contact on WhatsApp
-  </a>
-  <p class="muted">Then log in below to access the portal.</p>
-</div>
-  <!-- Student Login -->
-  <div class="card" id="login-card">
-    <h1>Student Login</h1>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="login-btn">Access Portal</button>
-    <p class="muted" id="login-msg"></p>
-    <p class="muted notice">⚠ Ensure you are connected to Tailscale VPN using credentials provided by Admin before accessing the VM.</p>
-    <div class="download-btn">
-      <a href="https://tailscale.com/download/windows" target="_blank">Download Tailscale for Windows</a>
-      <a href="https://tailscale.com/download/mac" target="_blank">Download Tailscale for Mac</a>
+ 
+  <div class="content-wrapper">
+    <!-- Enrollment Advertisement -->
+    <div class="card" id="enroll-card">
+      <h1>🚀 Enroll in Practical Classes!</h1>
+      <p class="muted">Secure your seat and start hands-on learning in our Cyber Range!</p>
+      <p class="muted">Scan the QR code below to pay and enroll:</p>
+      <img src="https://raw.githubusercontent.com/nehraeduhub/tech-guardians-portal/fe7580f92eda1d036459b3679331dfcd864e31c7/qr-code.png" 
+           alt="Payment QR Code" 
+           style="width:200px; height:200px; margin: 10px auto; display:block;">
+      <a href="https://wa.me/7006473877" 
+         target="_blank" 
+         class="link-btn">
+         Contact on WhatsApp
+      </a>
+      <p class="muted">Then log in below to access the portal.</p>
     </div>
-    <p class="muted">Admin? <a href="#" id="show-admin" class="link-btn">Admin Access</a></p>
+
+    <!-- Student Login -->
+    <div class="card" id="login-card">
+      <h1>Student Login</h1>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="login-btn">Access Portal</button>
+      <p class="muted" id="login-msg"></p>
+      <p class="muted notice">⚠ Ensure you are connected to Tailscale VPN using credentials provided by Admin before accessing the VM.</p>
+      <div class="download-btn">
+        <a href="https://tailscale.com/download/windows" target="_blank">Download Tailscale for Windows</a>
+        <a href="https://tailscale.com/download/mac" target="_blank">Download Tailscale for Mac</a>
+      </div>
+      <p class="muted">Admin? <a href="#" id="show-admin" class="link-btn">Admin Access</a></p>
+    </div>
+
+    <!-- Admin Login -->
+    <div class="card hidden" id="admin-card">
+      <h1>Admin Login</h1>
+      <input type="text" id="admin-username" placeholder="Admin Username" />
+      <input type="password" id="admin-password" placeholder="Admin Password" />
+      <button id="admin-login-btn">Enter Admin</button>
+      <button id="back-login-admin">Back to Login</button>
+      <p class="muted" id="admin-msg"></p>
+
+      <div id="admin-panel" class="hidden">
+        <h2>Manage Students</h2>
+        <input type="text" id="new-username" placeholder="New Student Username" />
+        <input type="text" id="new-name" placeholder="Full Name of Student" />
+        <input type="password" id="new-password" placeholder="New Student Password" />
+        <button id="add-student">Add Student</button>
+        <h3>Registered Students (Username - Name - Password)</h3>
+        <div class="student-list" id="student-list"></div>
+        <h3>Admin Controls</h3>
+        <input type="password" id="old-admin-pass" placeholder="Old Admin Password" />
+        <input type="password" id="new-admin-pass" placeholder="New Admin Password" />
+        <button id="change-admin-pass">Change Admin Password</button>
+      </div>
+    </div>
+
+    <!-- Lab Access -->
+    <div class="card hidden" id="lab-card">
+      <h1>Student Portal</h1>
+      <input id="tailscale-ip" placeholder="Enter Tailscale IP (e.g. 100.x.x.x)" />
+      <select id="connection-type">
+        <option value="ssh">Linux SSH</option>
+        <option value="rdp">Windows RDP</option>
+      </select>
+      <button id="connect-btn">Get Connection Command</button>
+
+      <div style="margin-top:20px;">
+        <h2>Join Classroom</h2>
+        <button id="join-classroom-btn">Open Google Meet</button>
+      </div>
+
+      <button class="logout" id="logout-btn">Logout</button>
+    </div>
   </div>
 
-  <!-- Admin Login & Panel -->
-  <div class="card hidden" id="admin-card">
-    <h1>Admin Login</h1>
-    <input type="text" id="admin-username" placeholder="Admin Username" />
-    <input type="password" id="admin-password" placeholder="Admin Password" />
-    <button id="admin-login-btn">Enter Admin</button>
-    <button id="back-login-admin">Back to Login</button>
-    <p class="muted" id="admin-msg"></p>
-
-    <div id="admin-panel" class="hidden">
-      <h2>Manage Students</h2>
-      <input type="text" id="new-username" placeholder="New Student Username" />
-      <input type="text" id="new-name" placeholder="Full Name of Student" />
-      <input type="password" id="new-password" placeholder="New Student Password" />
-      <button id="add-student">Add Student</button>
-      <h3>Registered Students (Username - Name - Password)</h3>
-      <div class="student-list" id="student-list"></div>
-      <h3>Admin Controls</h3>
-      <input type="password" id="old-admin-pass" placeholder="Old Admin Password" />
-      <input type="password" id="new-admin-pass" placeholder="New Admin Password" />
-      <button id="change-admin-pass">Change Admin Password</button>
-    </div>
-  </div>
-
-  <!-- Lab Access / Classroom Access -->
-  <div class="card hidden" id="lab-card">
-    <h1>Student Portal</h1>
-    
-    <!-- Connect to VM -->
-    <input id="tailscale-ip" placeholder="Enter Tailscale IP (e.g. 100.x.x.x)" />
-    <select id="connection-type">
-      <option value="ssh">Linux SSH</option>
-      <option value="rdp">Windows RDP</option>
-    </select>
-    <button id="connect-btn">Get Connection Command</button>
-    
-    <!-- Join Classroom -->
-    <div style="margin-top:20px;">
-      <h2>Join Classroom</h2>
-      <button id="join-classroom-btn">Open Google Meet</button>
-    </div>
-    
-    <button class="logout" id="logout-btn">Logout</button>
-  </div>
-
-  <!-- Modal for SSH/RDP Command -->
+  <!-- Modal -->
   <div id="cmdModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeModal">&times;</span>
@@ -265,122 +330,109 @@
   </div>
 
   <script>
-    // ------------------------------
     // Matrix Background Animation
-    // ------------------------------
     const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const fontSize = 14;
     const columns = canvas.width / fontSize;
     const drops = Array(Math.floor(columns)).fill(1);
-
     function drawMatrix() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#0ff";
       ctx.font = fontSize + "px monospace";
-      for(let i = 0; i < drops.length; i++){
-        const text = letters[Math.floor(Math.random()*letters.length)];
-        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
-        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i]=0;
+      for(let i=0;i<drops.length;i++){
+        const text=letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+        if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;
         drops[i]++;
       }
     }
-    setInterval(drawMatrix, 50);
+    setInterval(drawMatrix,50);
 
-    // ------------------------------
     // Admin & Student Logic
-    // ------------------------------
-    let adminCreds = { username:'admin', password:'admin123' };
-    const loginCard = document.getElementById('login-card');
-    const adminCard = document.getElementById('admin-card');
-    const labCard = document.getElementById('lab-card');
-    const adminPanel = document.getElementById('admin-panel');
-    const studentListDiv = document.getElementById('student-list');
+    let adminCreds={username:'admin',password:'admin123'};
+    const loginCard=document.getElementById('login-card');
+    const adminCard=document.getElementById('admin-card');
+    const labCard=document.getElementById('lab-card');
+    const adminPanel=document.getElementById('admin-panel');
+    const studentListDiv=document.getElementById('student-list');
 
-    const getStudents = () => JSON.parse(localStorage.getItem('students')||'[]');
-    const saveStudents = (students) => localStorage.setItem('students', JSON.stringify(students));
-    const renderStudents = () => {
-      const students = getStudents();
-      studentListDiv.innerHTML = students.map(s=>`• ${s.username} - ${s.name} - ${s.password}`).join('<br>');
+    const getStudents=()=>JSON.parse(localStorage.getItem('students')||'[]');
+    const saveStudents=(s)=>localStorage.setItem('students',JSON.stringify(s));
+    const renderStudents=()=>{
+      const students=getStudents();
+      studentListDiv.innerHTML=students.map(s=>`• ${s.username} - ${s.name} - ${s.password}`).join('<br>');
     };
 
-    document.getElementById('show-admin').addEventListener('click', ()=>{
+    document.getElementById('show-admin').addEventListener('click',()=>{
       loginCard.classList.add('hidden');
       adminCard.classList.remove('hidden');
     });
-    document.getElementById('back-login-admin').addEventListener('click', ()=>{
+    document.getElementById('back-login-admin').addEventListener('click',()=>{
       adminCard.classList.add('hidden');
       loginCard.classList.remove('hidden');
     });
 
-    document.getElementById('admin-login-btn').addEventListener('click', ()=>{
-      const u = document.getElementById('admin-username').value.trim();
-      const p = document.getElementById('admin-password').value.trim();
-      if(u===adminCreds.username && p===adminCreds.password){
+    document.getElementById('admin-login-btn').addEventListener('click',()=>{
+      const u=document.getElementById('admin-username').value.trim();
+      const p=document.getElementById('admin-password').value.trim();
+      if(u===adminCreds.username&&p===adminCreds.password){
         adminPanel.classList.remove('hidden');
         renderStudents();
-      } else {
-        document.getElementById('admin-msg').textContent='❌ Invalid Admin Credentials';
-      }
+      } else document.getElementById('admin-msg').textContent='❌ Invalid Admin Credentials';
     });
 
-    document.getElementById('add-student').addEventListener('click', ()=>{
-      const u = document.getElementById('new-username').value.trim();
-      const n = document.getElementById('new-name').value.trim();
-      const p = document.getElementById('new-password').value.trim();
+    document.getElementById('add-student').addEventListener('click',()=>{
+      const u=document.getElementById('new-username').value.trim();
+      const n=document.getElementById('new-name').value.trim();
+      const p=document.getElementById('new-password').value.trim();
       if(!u||!p||!n){alert('Enter username, full name and password');return;}
-      const students = getStudents();
-      if(students.find(s=>s.username===u)){alert('Username already exists');return;}
-      students.push({username:u,password:p,name:n});
-      saveStudents(students);
+      const s=getStudents();
+      if(s.find(x=>x.username===u)){alert('Username already exists');return;}
+      s.push({username:u,password:p,name:n});
+      saveStudents(s);
       document.getElementById('new-username').value='';
       document.getElementById('new-name').value='';
       document.getElementById('new-password').value='';
       renderStudents();
     });
 
-    document.getElementById('change-admin-pass').addEventListener('click', ()=>{
-      const oldPass = document.getElementById('old-admin-pass').value.trim();
-      const newPass = document.getElementById('new-admin-pass').value.trim();
-      if(oldPass !== adminCreds.password){alert('❌ Old password incorrect'); return;}
-      if(!newPass){alert('Enter new password'); return;}
-      adminCreds.password = newPass;
+    document.getElementById('change-admin-pass').addEventListener('click',()=>{
+      const old=document.getElementById('old-admin-pass').value.trim();
+      const nw=document.getElementById('new-admin-pass').value.trim();
+      if(old!==adminCreds.password){alert('❌ Old password incorrect');return;}
+      if(!nw){alert('Enter new password');return;}
+      adminCreds.password=nw;
       document.getElementById('old-admin-pass').value='';
       document.getElementById('new-admin-pass').value='';
       alert('✅ Admin password changed');
     });
 
-    document.getElementById('login-btn').addEventListener('click', ()=>{
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value.trim();
-      const students = getStudents();
-      if(students.find(s=>s.username===u && s.password===p)){
+    document.getElementById('login-btn').addEventListener('click',()=>{
+      const u=document.getElementById('username').value.trim();
+      const p=document.getElementById('password').value.trim();
+      const s=getStudents();
+      if(s.find(x=>x.username===u&&x.password===p)){
         localStorage.setItem('tg_logged_in','true');
         loginCard.classList.add('hidden');
         labCard.classList.remove('hidden');
-      } else {
-        document.getElementById('login-msg').textContent = '❌ Invalid credentials';
-      }
+      } else document.getElementById('login-msg').textContent='❌ Invalid credentials';
     });
 
-    // ------------------------------
-    // SSH / RDP Command Modal
-    // ------------------------------
-    const modal = document.getElementById('cmdModal');
-    const cmdCode = document.getElementById('cmdCode');
-    const cmdText = document.getElementById('cmdText');
-    const closeModal = document.getElementById('closeModal');
-
-    document.getElementById('connect-btn').addEventListener('click', ()=>{
+    // Command Modal
+    const modal=document.getElementById('cmdModal');
+    const cmdCode=document.getElementById('cmdCode');
+    const cmdText=document.getElementById('cmdText');
+    const closeModal=document.getElementById('closeModal');
+    document.getElementById('connect-btn').addEventListener('click',()=>{
       const ip=document.getElementById('tailscale-ip').value.trim();
-      const type=document.getElementById('connection-type').value;
-      if(!ip){alert('Enter Tailscale IP'); return;}
-      if(type==='ssh'){
+      const t=document.getElementById('connection-type').value;
+      if(!ip){alert('Enter Tailscale IP');return;}
+      if(t==='ssh'){
         cmdText.textContent='Run this command in CMD as Administrator to SSH to Linux VM:';
         cmdCode.textContent=`ssh root@${ip}`;
       } else {
@@ -389,26 +441,18 @@
       }
       modal.style.display='block';
     });
+    closeModal.onclick=()=>modal.style.display='none';
+    window.onclick=e=>{if(e.target==modal)modal.style.display='none';};
 
-    closeModal.onclick = ()=>{ modal.style.display='none'; }
-    window.onclick = (e)=>{ if(e.target==modal) modal.style.display='none'; }
+    // Classroom Join
+    document.getElementById('join-classroom-btn').addEventListener('click',()=>window.open('https://meet.google.com/landing'));
 
-    // ------------------------------
-    // Join Classroom Button
-    // ------------------------------
-    document.getElementById('join-classroom-btn').addEventListener('click', ()=>{
-      window.open('https://meet.google.com/landing');
-    });
-
-    // ------------------------------
     // Logout
-    // ------------------------------
-    document.getElementById('logout-btn').addEventListener('click', ()=>{
+    document.getElementById('logout-btn').addEventListener('click',()=>{
       localStorage.removeItem('tg_logged_in');
       labCard.classList.add('hidden');
       loginCard.classList.remove('hidden');
     });
-
     if(localStorage.getItem('tg_logged_in')==='true'){
       loginCard.classList.add('hidden');
       labCard.classList.remove('hidden');
