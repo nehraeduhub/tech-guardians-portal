@@ -250,9 +250,9 @@ body {
       <h1>🚀 Enroll in Practical Classes!</h1>
       <p class="muted">Secure your seat and start hands-on learning in our Cyber Range!</p>
       <p class="muted">Scan the QR code below to pay and enroll:</p>
-      <img src="https://raw.githubusercontent.com/nehraeduhub/tech-guardians-portal/fe7580f92eda1d036459b3679331dfcd864e31c7/qr-code.png" 
+      <!-- <img src="https://raw.githubusercontent.com/nehraeduhub/tech-guardians-portal/fe7580f92eda1d036459b3679331dfcd864e31c7/qr-code.png" 
            alt="Payment QR Code" 
-           style="width:200px; height:200px; margin: 10px auto; display:block;">
+           style="width:200px; height:200px; margin: 10px auto; display:block;"> -->
       <a href="https://wa.me/918558890962" 
          target="_blank" 
          class="link-btn">
@@ -355,6 +355,14 @@ body {
 
     // Admin & Student Logic
     let adminCreds={username:'admin',password:'Tech@2001'};
+    // ---------> for all students custom logic 21oct25
+    let student1Creds={username:'student1',password:'Stu@2001'};
+    let student2Creds={username:'student2',password:'Stu@2002'};
+    let student3Creds={username:'student3',password:'Stu@2003'};
+    let student4Creds={username:'student4',password:'Stu@2004'};
+    let student5Creds={username:'student5',password:'Stu@2005'};
+    // ------------>for all students custom logic ends here 21oct25
+
     const loginCard=document.getElementById('login-card');
     const adminCard=document.getElementById('admin-card');
     const labCard=document.getElementById('lab-card');
@@ -365,7 +373,7 @@ body {
     const saveStudents=(s)=>localStorage.setItem('students',JSON.stringify(s));
     const renderStudents=()=>{
       const students=getStudents();
-      studentListDiv.innerHTML=students.map(s=>`• ${s.username} - ${s.name} - ${s.password}`).join('<br>');
+      // studentListDiv.innerHTML=students.map(s=>• ${s.username} - ${s.name} - ${s.password}).join('<br>');
     };
 
     document.getElementById('show-admin').addEventListener('click',()=>{
@@ -413,14 +421,31 @@ body {
     });
 
     document.getElementById('login-btn').addEventListener('click',()=>{
+      console.log("-clicked----------------->")
       const u=document.getElementById('username').value.trim();
       const p=document.getElementById('password').value.trim();
       const s=getStudents();
-      if(s.find(x=>x.username===u&&x.password===p)){
-        localStorage.setItem('tg_logged_in','true');
-        loginCard.classList.add('hidden');
+       // starts here adding custom login for students 21oct25
+        if(u===student1Creds.username&&p===student1Creds.password){loginCard.classList.add('hidden');
         labCard.classList.remove('hidden');
-      } else document.getElementById('login-msg').textContent='❌ Invalid credentials';
+        console.log("-showing username and password----------------->")
+        console.log(student1Creds.username)
+        console.log(student1Creds.password)}
+        else if(u===student2Creds.username&&p===student2Creds.password){loginCard.classList.add('hidden');
+        labCard.classList.remove('hidden');}
+        else if(u===student3Creds.username&&p===student3Creds.password){loginCard.classList.add('hidden');
+        labCard.classList.remove('hidden');}
+        else if(u===student4Creds.username&&p===student4Creds.password){loginCard.classList.add('hidden');
+        labCard.classList.remove('hidden');}
+        else if(u===student5Creds.username&&p===student5Creds.password){loginCard.classList.add('hidden');
+        labCard.classList.remove('hidden');}
+        // ends here adding custom login for students 21oct25
+        else if(s.find(x=>x.username===u&&x.password===p)){
+          localStorage.setItem('tg_logged_in','true');
+          loginCard.classList.add('hidden');
+          labCard.classList.remove('hidden');
+        } 
+        else document.getElementById('login-msg').textContent='❌ Invalid credentials';
     });
 
     // Command Modal
@@ -434,10 +459,10 @@ body {
       if(!ip){alert('Enter Tailscale IP');return;}
       if(t==='ssh'){
         cmdText.textContent='Run this command in CMD as Administrator to SSH to Linux VM:';
-        cmdCode.textContent=`ssh root@${ip}`;
+        // cmdCode.textContent=ssh root@${ip};
       } else {
         cmdText.textContent='Run this command in CMD as Administrator to RDP to Windows VM:';
-        cmdCode.textContent=`mstsc /v:${ip}`;
+        // cmdCode.textContent=mstsc /v:${ip};
       }
       modal.style.display='block';
     });
@@ -460,6 +485,3 @@ body {
   </script>
 </body>
 </html>
-
-
-
