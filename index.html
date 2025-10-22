@@ -457,10 +457,10 @@ body {
       if(!ip){alert('Enter Tailscale IP');return;}
       if(t==='ssh'){
         cmdText.textContent='Run this command in CMD as Administrator to SSH to Linux VM:';
-         cmdCode.textContent=ssh root@${ip};
+         cmdCode.textContent=`ssh root@${ip}`;
       } else {
         cmdText.textContent='Run this command in CMD as Administrator to RDP to Windows VM:';
-         cmdCode.textContent=mstsc /v:${ip};
+         cmdCode.textContent=`mstsc /v:${ip}`;
       }
       modal.style.display='block';
     });
@@ -483,5 +483,6 @@ body {
   </script>
 </body>
 </html>
+
 
 
