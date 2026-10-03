@@ -50,7 +50,7 @@ export const SITE_PAGES: { path: string; label: string }[] = [
   { path: '/cyber-news', label: 'Cyber News Portal' },
   { path: '/security-assessment', label: 'Security Assessment' },
   { path: '/cyber-range', label: 'Cyber Range' },
-  { path: '/admin', label: 'Admin (legacy page)' },
+  { path: '/cyber-portal', label: 'Cyber Safety Portal' },
 ];
 
 export interface SiteLayout {

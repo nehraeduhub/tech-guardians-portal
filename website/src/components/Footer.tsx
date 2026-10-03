@@ -3,12 +3,11 @@ import { toSectionId } from '@/lib/site-nav';
 import tgLogo from '@/assets/tg-logo.png';
 import { waLink } from '@/lib/site-settings';
 import { useEffect, useState } from 'react';
-import { loadOrganizationOfferings, type OrganizationOffering } from '@/lib/organization-offerings-store';
+import { loadOrganizationOfferings, offeringMenuLabel, type OrganizationOffering } from '@/lib/organization-offerings-store';
 import { loadAboutVisibility } from '@/lib/about-settings';
 import { useHomeContent } from '@/lib/home-content';
 import { useLayout } from '@/lib/layout';
 
-const HIDDEN_ORGANIZATION_PORTALS = new Set(['security-assessment', 'cyber-range']);
 
 const Footer = () => {
   const location = useLocation();
@@ -22,7 +21,7 @@ const Footer = () => {
 
   useEffect(() => {
     const refresh = () => {
-      setOrganizationPortals(loadOrganizationOfferings().filter((item) => item.menuVisible && !HIDDEN_ORGANIZATION_PORTALS.has(item.id)));
+      setOrganizationPortals(loadOrganizationOfferings().filter((item) => item.menuVisible));
       setShowAbout(loadAboutVisibility().footerVisible);
     };
     refresh();
@@ -31,10 +30,11 @@ const Footer = () => {
   }, []);
 
   const portals: { label: string; path: string; external?: boolean }[] = [
-    ...organizationPortals.map((item) => ({ label: item.title, path: item.page })),
+    ...organizationPortals.map((item) => ({ label: offeringMenuLabel(item), path: item.page })),
     { label: 'Cyber News Portal', path: '/cyber-news' },
     { label: 'Threat Intel Hub', path: '/threat-intel' },
     { label: 'Cyber & Forensic Intelligence Hub', path: '/forensic-engine.html', external: true },
+    { label: 'Cyber Safety Portal', path: '/cyber-portal' },
   ].filter((p) => pageOn(p.path));
 
   const handleSection = (label: string) => {

@@ -362,6 +362,7 @@ const Manage = () => {
                 <div key={item.id} className="grid gap-3 rounded-lg border border-border bg-card/70 p-5 md:grid-cols-12">
                   <input value={item.title} onChange={(e) => updateOffering(item.id, { title: e.target.value })} placeholder="Offering title" className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground md:col-span-7" />
                   <input value={item.page} onChange={(e) => updateOffering(item.id, { page: e.target.value })} placeholder="/page-link" className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground md:col-span-5" />
+                  <input value={item.menuLabel || ''} onChange={(e) => updateOffering(item.id, { menuLabel: e.target.value })} placeholder="Menu label (short name in TG Portals)" className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground md:col-span-12" />
                   <textarea value={item.description} onChange={(e) => updateOffering(item.id, { description: e.target.value })} placeholder="Short description" rows={3} className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground md:col-span-8" />
                   <input value={item.buttonText} onChange={(e) => updateOffering(item.id, { buttonText: e.target.value })} placeholder="Button text" className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground md:col-span-4" />
                   <div className="flex flex-wrap gap-2 md:col-span-12 md:justify-end">

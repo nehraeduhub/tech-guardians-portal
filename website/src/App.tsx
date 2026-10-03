@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import About from "./pages/About.tsx";
-import Admin from "./pages/Admin.tsx";
+import CyberPortal from "./pages/CyberPortal.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import CourseDetail from "./pages/CourseDetail.tsx";
@@ -46,7 +46,8 @@ const App = () => (
           <Route path="/blog" element={<Gate path="/blog"><Blog /></Gate>} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/cyber-crime-support" element={<Gate path="/cyber-crime-support"><CyberCrimeSupport /></Gate>} />
-          <Route path="/admin" element={<Gate path="/admin"><Admin /></Gate>} />
+          <Route path="/admin" element={<Navigate to="/login" replace />} />
+          <Route path="/cyber-portal" element={<Gate path="/cyber-portal"><CyberPortal /></Gate>} />
           <Route path="/threat-intel" element={<Gate path="/threat-intel"><ThreatIntel /></Gate>} />
           <Route path="/cyber-news" element={<Gate path="/cyber-news"><CyberNewsPortal /></Gate>} />
           <Route path="/login" element={<Login />} />

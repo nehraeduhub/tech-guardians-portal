@@ -6,19 +6,19 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { sectionLinks, toSectionId } from '@/lib/site-nav';
 import { isCoursesNavVisible } from '@/lib/courses-store';
 import { waLink } from '@/lib/site-settings';
-import { loadOrganizationOfferings, type OrganizationOffering } from '@/lib/organization-offerings-store';
+import { loadOrganizationOfferings, offeringMenuLabel, type OrganizationOffering } from '@/lib/organization-offerings-store';
 import { loadAboutVisibility } from '@/lib/about-settings';
 import { useHomeContent } from '@/lib/home-content';
 import { useLayout } from '@/lib/layout';
 
 const BLOGS_PATH = '/tg-blogs';
 const LOGIN_PATH = '/login';
-const HIDDEN_ORGANIZATION_PORTALS = new Set(['security-assessment', 'cyber-range']);
 
 const fixedPortals: { label: string; path: string; external?: boolean }[] = [
   { label: 'Cyber News Portal', path: '/cyber-news' },
   { label: 'Threat Intel Hub', path: '/threat-intel' },
   { label: 'Cyber & Forensic Hub', path: '/forensic-engine.html' },
+  { label: 'Cyber Safety Portal', path: '/cyber-portal' },
 ];
 
 const allCourses: { label: string; path: string }[] = [
@@ -48,7 +48,7 @@ const Navbar = () => {
   useEffect(() => {
     const refreshSettings = () => {
       setShowCourses(isCoursesNavVisible());
-      setOrganizationPortals(loadOrganizationOfferings().filter((item) => item.menuVisible && !HIDDEN_ORGANIZATION_PORTALS.has(item.id)));
+      setOrganizationPortals(loadOrganizationOfferings().filter((item) => item.menuVisible));
       setShowAbout(loadAboutVisibility().headerVisible);
     };
     refreshSettings();
@@ -62,7 +62,7 @@ const Navbar = () => {
   }, []);
 
   const tgPortals: { label: string; path: string; external?: boolean }[] = [
-    ...organizationPortals.map((item) => ({ label: item.title, path: item.page })),
+    ...organizationPortals.map((item) => ({ label: offeringMenuLabel(item), path: item.page })),
     ...fixedPortals,
   ].filter((p) => pageOn(p.path));
 
