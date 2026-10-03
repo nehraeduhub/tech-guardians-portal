@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tech Guardians — Book Awareness Session</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#06080F;--card:#111425;--border:rgba(255,255,255,0.08);--cyan:#00C8FF;--green:#00D68F;--orange:#FF6B35;--text:#F0F4FF;--muted:#8896B3;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:32px 16px;background-image:linear-gradient(rgba(0,200,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.03) 1px,transparent 1px);background-size:60px 60px;}
+.wrap{max-width:920px;margin:0 auto;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.brand{font-weight:800;color:var(--cyan);letter-spacing:.5px;font-size:15px;}
+.back{color:var(--muted);text-decoration:none;font-size:13px;}
+.back:hover{color:var(--cyan);}
+h1{font-size:28px;font-weight:800;margin-bottom:10px;}
+h1 span{background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.lede{color:var(--muted);font-size:14px;max-width:640px;line-height:1.6;margin-bottom:28px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:720px){.grid{grid-template-columns:1fr;}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:26px;position:relative;overflow:hidden;transition:transform .25s ease,border-color .25s ease;}
+.card:hover{transform:translateY(-4px);border-color:rgba(0,200,255,0.35);}
+.card.offline:hover{border-color:rgba(255,107,53,0.4);}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:5px 10px;border-radius:999px;margin-bottom:14px;}
+.pill.on{background:rgba(0,200,255,0.12);color:var(--cyan);border:1px solid rgba(0,200,255,0.3);}
+.pill.off{background:rgba(255,107,53,0.12);color:var(--orange);border:1px solid rgba(255,107,53,0.3);}
+.card h2{font-size:20px;font-weight:700;margin-bottom:8px;}
+.card p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:18px;}
+.amount{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.amount .cur{font-size:18px;color:var(--muted);vertical-align:top;margin-right:2px;}
+.amount-sub{font-size:11px;color:var(--muted);margin-bottom:18px;letter-spacing:.05em;}
+ul{list-style:none;margin-bottom:22px;}
+li{font-size:12.5px;color:#cbd5e1;padding:6px 0 6px 22px;position:relative;line-height:1.5;}
+li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700;}
+.card.offline li::before{color:var(--orange);}
+.btn{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:14px;border-radius:12px;transition:transform .15s ease,box-shadow .25s ease;}
+.btn.on{background:linear-gradient(90deg,var(--cyan),var(--green));color:#06080F;box-shadow:0 10px 30px -10px rgba(0,200,255,0.5);}
+.btn.off{background:linear-gradient(90deg,var(--orange),#FFB347);color:#06080F;box-shadow:0 10px 30px -10px rgba(255,107,53,0.5);}
+.btn:active{transform:scale(.97);}
+.note{margin-top:28px;background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.2);border-radius:14px;padding:18px;font-size:12.5px;color:#cbd5e1;line-height:1.6;}
+.note strong{color:var(--orange);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand" style="display:flex;align-items:center;gap:10px;"><img src="/tg-logo.png" alt="Tech Guardians logo" style="width:32px;height:32px;object-fit:contain;border-radius:8px;"/><span>TECH GUARDIANS<span style="display:block;font-size:9px;letter-spacing:.16em;color:#8896B3;font-weight:600;">KEEP LEARNING AND KEEP SHARING</span></span></div>
+    <a href="/" class="back">← Back to site</a>
+  </div>
+  <h1>Book an <span>Awareness Session</span></h1>
+  <p class="lede">Cybersecurity awareness training by Tech Guardians — real case studies, live demos and practical safety habits for schools, colleges, offices and institutions. Choose your preferred mode below and book instantly.</p>
+
+  <div class="grid">
+    <div class="card online">
+      <span class="pill on">Online Awareness Session</span>
+      <h2>Live Virtual Awareness</h2>
+      <p>Expert-led interactive cybersecurity awareness session delivered over video conference for your students, staff or audience.</p>
+      <div class="amount"><span class="cur">₹</span>999</div>
+      <div class="amount-sub">One-time payment · Instant booking</div>
+      <ul>
+        <li>Live expert speaker over Zoom / Google Meet</li>
+        <li>Real cyber-crime case studies and live demos</li>
+        <li>Interactive Q&A with the audience</li>
+        <li>Certificate of Participation</li>
+        <li>Session recording on request</li>
+      </ul>
+      <a class="btn on" href="/courses/payment.html?course=Awareness%20Session%20(Online)&amount=999">Book Now — Pay ₹999</a>
+    </div>
+
+    <div class="card offline">
+      <span class="pill off">Offline / On-site Session</span>
+      <h2>On-site Awareness Visit</h2>
+      <p>Our team travels to your campus or office for a hands-on, in-person cybersecurity awareness program.</p>
+      <div class="amount" style="font-size:26px;">Contact Us</div>
+      <div class="amount-sub">Custom quote shared by our team</div>
+      <ul>
+        <li>In-person session at your venue</li>
+        <li>Live hacking demonstrations and workshops</li>
+        <li>Certificates for participants</li>
+        <li>Pricing based on location, transportation, travel, accommodation and other applicable requirements</li>
+      </ul>
+      <a class="btn off" href="https://wa.me/919929193136?text=Hi%20Tech%20Guardians%2C%20I%20want%20to%20book%20an%20Offline%20Awareness%20Session." target="_blank" rel="noopener">Book Now — Contact Us</a>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Note about offline sessions:</strong> Offline awareness session pricing is applicable based on location, transportation, travel, accommodation and other applicable requirements. Share your venue and audience details with our team and we will confirm the final charges before booking. — <em>Keep Learning, Keep Sharing</em>
+  </div>
+</div>
+<script defer src="/js/tg-3d.js"></script>
+<script src="/js/tg-contact.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[
+  { "id": "web-server-hosting", "title": "Learn Web Server & Web Hosting", "description": "Master web server setup, domain management, and secure hosting from scratch.", "icon_name": "Globe", "page": "/courses/web-server-hosting.html" },
+  { "id": "sophos-firewall", "title": "Learn Sophos Firewall", "description": "Configure, harden, and manage enterprise Sophos XG firewalls end-to-end.", "icon_name": "Shield", "page": "/courses/sophos-firewall.html" },
+  { "id": "active-directory", "title": "Learn Active Directory", "description": "Deploy, secure and administer Windows Active Directory environments.", "icon_name": "Server", "page": "/courses/active-directory.html" },
+  { "id": "ai-agent", "title": "Build Your First AI Agent", "description": "Create intelligent AI agents to automate tasks and power smart workflows.", "icon_name": "Bot", "page": "/courses/ai-agent.html" },
+  { "id": "password-cracking", "title": "Ethical Hacking: Password Cracking", "description": "Hands-on password auditing with Hashcat, John the Ripper and real wordlists.", "icon_name": "Key", "page": "/courses/password-cracking.html" },
+  { "id": "social-android-hacking", "title": "Learn Social Media & Android Hacking", "description": "Explore social engineering, Android security testing, and mobile threat analysis.", "icon_name": "Smartphone", "page": "/courses/social-android-hacking.html" },
+  { "id": "awareness-booking", "title": "Cyber Awareness Session Booking", "description": "Book an online or offline cyber-awareness session for your school, college or org.", "icon_name": "BookOpen", "page": "/courses/awareness-booking.html" }
+]

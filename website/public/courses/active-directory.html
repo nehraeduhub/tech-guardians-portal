@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Learn Active Directory — Tech Guardians</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & VARIABLES ──────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0A0F1E;
+  --ink2:#111827;
+  --surface:#0F172A;
+  --surface2:#1E293B;
+  --surface3:#243044;
+  --cyan:#00D4FF;
+  --cyan2:#00B4D8;
+  --orange:#FF6B2B;
+  --orange2:#FF8C5A;
+  --green:#10B981;
+  --amber:#F59E0B;
+  --text:#E2E8F0;
+  --muted:#94A3B8;
+  --border:rgba(0,212,255,0.12);
+  --glow:rgba(0,212,255,0.15);
+  --head:'Clash Display',sans-serif;
+  --body:'Outfit',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--body);
+  background:var(--ink);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:0.4;
+}
+
+/* ── ANIMATED GRID BG ── */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  animation:gridShift 20s linear infinite;
+}
+@keyframes gridShift{from{background-position:0 0;}to{background-position:48px 48px;}}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,15,30,0.85);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:0 5%;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-shield{
+  width:34px;height:34px;
+  background:linear-gradient(135deg,rgba(0,212,255,0.2),transparent);
+  border:1.5px solid var(--cyan);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.nav-name{font-family:var(--head);font-weight:700;font-size:17px;color:var(--cyan);}
+.nav-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.nav-cta{
+  background:var(--orange);color:#fff;
+  font-family:var(--body);font-weight:700;font-size:13px;
+  padding:9px 22px;border-radius:8px;border:none;cursor:pointer;
+  text-decoration:none;
+  transition:all .2s;letter-spacing:.3px;
+}
+.nav-cta:hover{background:var(--orange2);transform:translateY(-1px);}
+
+/* ── HERO SECTION ── */
+.hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:100px 5% 60px;
+  overflow:hidden;
+}
+.orb{
+  position:absolute;border-radius:50%;filter:blur(80px);
+  pointer-events:none;
+}
+.orb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,255,0.12),transparent);top:-100px;right:-100px;}
+.orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(255,107,43,0.1),transparent);bottom:-50px;left:-80px;}
+
+.hero-inner{
+  max-width:1100px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+}
+
+.course-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.35);
+  border-radius:20px;padding:5px 14px;
+  font-size:11px;font-weight:700;color:var(--green);
+  letter-spacing:2px;margin-bottom:20px;
+  font-family:var(--mono);
+  animation:fadeUp .6s ease both;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.hero-title{
+  font-family:var(--head);font-weight:700;
+  font-size:clamp(36px,5vw,56px);
+  line-height:1.08;margin-bottom:18px;
+  animation:fadeUp .6s .1s ease both;
+}
+.hero-title .t1{color:var(--text);display:block;}
+.hero-title .t2{
+  color:transparent;
+  background:linear-gradient(90deg,var(--cyan),var(--orange));
+  -webkit-background-clip:text;background-clip:text;
+  display:block;
+}
+.hero-title .t3{color:var(--text);display:block;}
+
+.hero-desc{
+  font-size:16px;color:var(--muted);
+  line-height:1.7;max-width:480px;margin-bottom:28px;
+  animation:fadeUp .6s .2s ease both;
+}
+
+.hero-pills{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;
+  animation:fadeUp .6s .3s ease both;
+}
+.pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;padding:6px 14px;
+  font-size:12px;color:var(--muted);font-weight:500;
+}
+.pill .pi{font-size:13px;}
+
+.hero-actions{
+  display:flex;gap:14px;align-items:center;
+  animation:fadeUp .6s .4s ease both;
+}
+.btn-enroll{
+  background:linear-gradient(135deg,var(--orange),var(--orange2));
+  color:#fff;font-family:var(--body);font-weight:700;
+  font-size:15px;padding:14px 32px;border-radius:10px;
+  border:none;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all .25s;letter-spacing:.3px;
+  box-shadow:0 8px 32px rgba(255,107,43,0.35);
+}
+.btn-enroll:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(255,107,43,0.45);}
+.btn-enroll .arrow{transition:transform .2s;}
+.btn-enroll:hover .arrow{transform:translateX(4px);}
+.btn-preview{
+  color:var(--cyan);font-size:14px;font-weight:600;
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  transition:gap .2s;
+}
+.btn-preview:hover{gap:10px;}
+
+/* ── HERO RIGHT — VISUAL CARD ── */
+.hero-right{
+  position:relative;
+  animation:fadeUp .6s .2s ease both;
+}
+.server-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(0,212,255,0.05);
+}
+.server-img{
+  width:100%;height:220px;
+  background:linear-gradient(135deg,#0c1a2e 0%,#162d4a 50%,#0f2a45 100%);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.server-img::before{
+  content:'';position:absolute;inset:0;
+  background:url("https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=600&q=80") center/cover;
+  opacity:0.4;
+}
+.server-img-overlay{
+  position:relative;z-index:1;text-align:center;
+}
+.server-icon{font-size:64px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(0,212,255,0.5));}
+.server-img-label{
+  font-family:var(--mono);font-size:11px;
+  color:var(--cyan);letter-spacing:2px;
+  background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:20px;
+}
+
+.card-body{padding:20px 22px;}
+.card-title{font-family:var(--head);font-size:17px;font-weight:700;color:var(--text);margin-bottom:12px;}
+.card-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.ctag{
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  padding:3px 10px;border-radius:20px;font-family:var(--mono);
+}
+.ctag-c{background:rgba(0,212,255,0.1);color:var(--cyan);}
+.ctag-o{background:rgba(255,107,43,0.1);color:var(--orange);}
+.ctag-g{background:rgba(16,185,129,0.1);color:var(--green);}
+.ctag-a{background:rgba(245,158,11,0.1);color:var(--amber);}
+
+.card-stats{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:12px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.stat{text-align:center;}
+.stat-val{font-family:var(--head);font-size:20px;font-weight:700;color:var(--cyan);}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--mono);}
+
+.float-badge{
+  position:absolute;top:-18px;right:20px;
+  background:linear-gradient(135deg,var(--orange),#FF4500);
+  color:#fff;font-family:var(--head);font-weight:700;
+  font-size:13px;padding:10px 18px;border-radius:10px;
+  box-shadow:0 8px 24px rgba(255,107,43,0.4);
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
+/* ── SECTION SHARED ── */
+section{position:relative;z-index:1;}
+.section-wrap{max-width:1100px;margin:0 auto;padding:80px 5%;}
+.section-eyebrow{
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  color:var(--cyan);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:12px;
+}
+.section-title{
+  font-family:var(--head);font-weight:700;
+  font-size:clamp(26px,4vw,38px);
+  color:var(--text);line-height:1.15;margin-bottom:14px;
+}
+.section-sub{font-size:16px;color:var(--muted);max-width:560px;line-height:1.7;}
+
+/* ── WHAT YOU'LL LEARN ── */
+.learn-section{background:var(--surface);}
+.learn-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;margin-top:48px;
+}
+.learn-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:16px;padding:24px;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.learn-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,212,255,0.04),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.learn-card:hover{border-color:var(--cyan);transform:translateY(-4px);}
+.learn-card:hover::before{opacity:1;}
+.learn-card:hover .lc-icon{transform:scale(1.1);}
+.lc-icon{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:14px;
+  transition:transform .2s;
+}
+.lc-icon.c1{background:rgba(0,212,255,0.12);}
+.lc-icon.c2{background:rgba(255,107,43,0.12);}
+.lc-icon.c3{background:rgba(16,185,129,0.12);}
+.lc-icon.c4{background:rgba(245,158,11,0.12);}
+.lc-icon.c5{background:rgba(124,58,237,0.12);}
+.lc-icon.c6{background:rgba(236,72,153,0.12);}
+.lc-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.lc-desc{font-size:13px;color:var(--muted);line-height:1.65;}
+.lc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.lc-chip{
+  font-size:10px;font-family:var(--mono);font-weight:600;
+  padding:2px 8px;border-radius:4px;
+  background:rgba(0,212,255,0.08);color:var(--cyan);
+  border:1px solid rgba(0,212,255,0.15);
+}
+
+/* ── CURRICULUM ── */
+.curriculum-section{background:var(--ink);}
+.curriculum-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:14px;margin-top:48px;
+}
+.module{
+  background:var(--surface2);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;padding:18px 20px;
+  display:flex;gap:16px;align-items:flex-start;
+  transition:all .2s;
+}
+.module:hover{border-color:var(--border);background:var(--surface3);}
+.mod-num{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  color:var(--orange);background:rgba(255,107,43,0.1);
+  border-radius:6px;padding:4px 8px;flex-shrink:0;margin-top:2px;
+  border:1px solid rgba(255,107,43,0.2);
+}
+.mod-title{font-family:var(--head);font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.mod-topics{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* ── TOOLS SECTION ── */
+.tools-section{background:var(--surface);}
+.tools-grid{
+  display:flex;gap:16px;flex-wrap:wrap;
+  justify-content:center;margin-top:48px;
+}
+.tool-pill{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:12px;padding:12px 20px;
+  transition:all .2s;
+}
+.tool-pill:hover{border-color:var(--cyan);background:rgba(0,212,255,0.05);}
+.tool-icon{font-size:24px;}
+.tool-name{font-family:var(--head);font-size:13px;font-weight:600;color:var(--text);}
+.tool-type{font-size:11px;color:var(--muted);}
+
+/* ── INSTRUCTOR ── */
+.instructor-section{background:var(--ink);}
+.instructor-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:20px;padding:40px;
+  display:grid;grid-template-columns:auto 1fr;gap:40px;
+  align-items:center;margin-top:40px;
+  max-width:800px;margin-left:auto;margin-right:auto;
+}
+.instructor-avatar{
+  width:100px;height:100px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),var(--orange));
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;flex-shrink:0;
+  border:3px solid var(--border);
+}
+.instructor-role{font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+.instructor-name{font-family:var(--head);font-size:26px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.instructor-bio{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.instructor-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.itag{font-size:11px;font-weight:600;padding:3px 12px;border-radius:20px;font-family:var(--mono);}
+.itag-1{background:rgba(0,212,255,0.1);color:var(--cyan);}
+.itag-2{background:rgba(255,107,43,0.1);color:var(--orange);}
+.itag-3{background:rgba(16,185,129,0.1);color:var(--green);}
+
+/* ── CTA SECTION ── */
+.cta-section{
+  background:linear-gradient(135deg,var(--surface) 0%,var(--ink2) 100%);
+  border-top:1px solid var(--border);
+}
+.cta-inner{
+  max-width:800px;margin:0 auto;
+  padding:80px 5%;text-align:center;
+}
+.cta-title{
+  font-family:var(--head);font-weight:700;
+  font-size:clamp(30px,5vw,48px);
+  line-height:1.15;margin-bottom:16px;
+}
+.cta-title span{
+  color:transparent;
+  background:linear-gradient(90deg,var(--cyan),var(--orange));
+  -webkit-background-clip:text;background-clip:text;
+}
+.cta-sub{font-size:16px;color:var(--muted);margin-bottom:36px;line-height:1.7;}
+.cta-price{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-bottom:28px;
+}
+.price-tag{
+  font-family:var(--head);font-size:48px;font-weight:700;
+  color:var(--cyan);line-height:1;
+}
+.price-old{font-size:20px;color:var(--muted);text-decoration:line-through;}
+.price-badge{
+  background:rgba(16,185,129,0.15);
+  border:1px solid rgba(16,185,129,0.3);
+  color:var(--green);font-weight:700;font-size:12px;
+  padding:4px 12px;border-radius:20px;font-family:var(--mono);
+}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--orange),#FF4500);
+  color:#fff;font-family:var(--head);font-weight:700;
+  font-size:18px;padding:18px 48px;border-radius:12px;
+  border:none;cursor:pointer;text-decoration:none;
+  box-shadow:0 12px 40px rgba(255,107,43,0.4);
+  transition:all .25s;letter-spacing:.5px;
+  margin-bottom:20px;
+}
+.cta-btn:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(255,107,43,0.5);}
+.cta-note{font-size:13px;color:var(--muted);}
+.cta-note span{color:var(--green);}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+  padding:40px 5%;text-align:center;
+}
+.footer-brand{font-family:var(--head);font-size:20px;font-weight:700;color:var(--cyan);margin-bottom:4px;}
+.footer-tag{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.footer-team{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:20px;}
+.fp{text-align:center;}
+.fp-role{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.fp-name{font-family:var(--head);font-size:16px;font-weight:700;color:var(--text);}
+.fp-sub{font-size:11px;color:var(--muted);}
+.footer-copy{font-size:12px;color:rgba(148,163,184,0.5);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+
+/* ── SCROLL PROGRESS ── */
+#progress{
+  position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--orange));
+  z-index:200;transition:width .1s;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .curriculum-grid{grid-template-columns:1fr;}
+  .instructor-card{grid-template-columns:1fr;text-align:center;}
+  .instructor-tags{justify-content:center;}
+  .footer-team{gap:24px;}
+  nav .nav-cta{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll progress bar -->
+<div id="progress"></div>
+
+<!-- Animated grid background -->
+<div class="grid-bg"></div>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav>
+  <div class="nav-brand">
+    <img src="/tg-logo.png" alt="Tech Guardians logo" style="width:38px;height:38px;object-fit:contain;border-radius:9px;"/>
+    <div>
+      <div class="nav-name">TECH GUARDIANS</div>
+      <div class="nav-sub">Active Directory Mastery</div>
+    </div>
+  </div>
+  <a href="/#courses" class="nav-cta" style="background:transparent;border:1.5px solid rgba(0,212,255,0.3);color:var(--cyan,#00D4FF);margin-right:8px;">← Back to Courses</a><a href="/courses/payment.html?course=Learn%20Active%20Directory&amount=799" class="nav-cta">Enroll Now →</a>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="course-badge">
+        <span class="badge-dot"></span>
+        🖥️ ACTIVE DIRECTORY COURSE
+      </div>
+
+      <h1 class="hero-title">
+        <span class="t1">Learn Active</span>
+        <span class="t2">Directory &amp; Identity</span>
+        <span class="t1">Management</span>
+      </h1>
+
+      <p class="hero-desc">
+        From domain setup to enterprise-level Group Policy — learn to deploy, configure, and manage Microsoft Active Directory like a real IT administrator. Hands-on labs, real environments, zero shortcuts.
+      </p>
+
+      <div class="hero-pills">
+        <span class="pill"><span class="pi">⏱</span> 6 Weeks</span>
+        <span class="pill"><span class="pi">🎯</span> Beginner to Pro</span>
+        <span class="pill"><span class="pi">🔴</span> Live Sessions</span>
+        <span class="pill"><span class="pi">📜</span> Certificate</span>
+        <span class="pill"><span class="pi">📜</span> Lifetime Access</span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="/courses/payment.html?course=Learn%20Active%20Directory&amount=799" class="btn-enroll">
+          Enroll Now
+          <span class="arrow">→</span>
+        </a>
+        <a href="#curriculum" class="btn-preview">View Curriculum ↓</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="server-card">
+        <div class="server-img">
+          <div class="server-img-overlay">
+            <span class="server-icon">🏢</span>
+            <div class="server-img-label">ACTIVE DIRECTORY MASTERY</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Active Directory — Complete Course</div>
+          <div class="card-tags">
+            <span class="ctag ctag-c">AD DS</span>
+            <span class="ctag ctag-o">Group Policy</span>
+            <span class="ctag ctag-g">DNS / DHCP</span>
+            <span class="ctag ctag-a">LDAP</span>
+            <span class="ctag ctag-c">Azure AD</span>
+            <span class="ctag ctag-o">Kerberos</span>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <div class="stat-val">35+</div>
+              <div class="stat-lbl">LESSONS</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val">6</div>
+              <div class="stat-lbl">WEEKS</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val">1:1</div>
+              <div class="stat-lbl">SUPPORT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ WHAT YOU'LL LEARN ═══════════════════ -->
+<section class="learn-section">
+  <div class="section-wrap">
+    <p class="section-eyebrow fade-up">// WHAT YOU WILL LEARN</p>
+    <h2 class="section-title fade-up">Everything to Deploy &amp; Manage<br/>Active Directory Professionally</h2>
+    <p class="section-sub fade-up">Hands-on skills that real IT administrators and system engineers use every single day — from building a domain to securing enterprise identities.</p>
+
+    <div class="learn-grid">
+
+      <div class="learn-card fade-up">
+        <div class="lc-icon c1">🏢</div>
+        <div class="lc-title">Active Directory Fundamentals</div>
+        <div class="lc-desc">Understand what Active Directory is, how domains, forests, and trees work, the role of Domain Controllers, and how AD fits into enterprise IT infrastructure.</div>
+        <div class="lc-chips"><span class="lc-chip">AD DS</span><span class="lc-chip">Domain</span><span class="lc-chip">Forest</span><span class="lc-chip">DC</span></div>
+      </div>
+
+      <div class="learn-card fade-up">
+        <div class="lc-icon c2">👤</div>
+        <div class="lc-title">Users, Groups &amp; OUs</div>
+        <div class="lc-desc">Create and manage user accounts, security and distribution groups, Organisational Units, and apply delegation of control for scalable administration.</div>
+        <div class="lc-chips"><span class="lc-chip">Users</span><span class="lc-chip">Groups</span><span class="lc-chip">OU</span><span class="lc-chip">Delegation</span></div>
+      </div>
+
+      <div class="learn-card fade-up">
+        <div class="lc-icon c3">📋</div>
+        <div class="lc-title">Group Policy (GPO)</div>
+        <div class="lc-desc">Create, link, and enforce Group Policy Objects to control desktop settings, software deployment, security baselines, and login scripts across the domain.</div>
+        <div class="lc-chips"><span class="lc-chip">GPO</span><span class="lc-chip">GPMC</span><span class="lc-chip">Security Policy</span><span class="lc-chip">Loopback</span></div>
+      </div>
+
+      <div class="learn-card fade-up">
+        <div class="lc-icon c4">🌐</div>
+        <div class="lc-title">DNS, DHCP &amp; AD Integration</div>
+        <div class="lc-desc">Configure DNS zones and records for Active Directory, set up DHCP scopes, understand SRV records, and troubleshoot name resolution in domain environments.</div>
+        <div class="lc-chips"><span class="lc-chip">DNS</span><span class="lc-chip">DHCP</span><span class="lc-chip">SRV Records</span><span class="lc-chip">Forwarders</span></div>
+      </div>
+
+      <div class="learn-card fade-up">
+        <div class="lc-icon c5">🔒</div>
+        <div class="lc-title">AD Security &amp; Authentication</div>
+        <div class="lc-desc">Master Kerberos and NTLM authentication, fine-grained password policies, account lockout, audit policies, and protect against common AD attacks.</div>
+        <div class="lc-chips"><span class="lc-chip">Kerberos</span><span class="lc-chip">NTLM</span><span class="lc-chip">LAPS</span><span class="lc-chip">Audit</span></div>
+      </div>
+
+      <div class="learn-card fade-up">
+        <div class="lc-icon c6">☁️</div>
+        <div class="lc-title">Azure AD &amp; Hybrid Identity</div>
+        <div class="lc-desc">Extend on-premises AD to Microsoft Azure, configure Azure AD Connect, set up Single Sign-On, Multi-Factor Authentication, and manage hybrid identities.</div>
+        <div class="lc-chips"><span class="lc-chip">Azure AD</span><span class="lc-chip">AD Connect</span><span class="lc-chip">SSO</span><span class="lc-chip">MFA</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CURRICULUM ═══════════════════ -->
+<section class="curriculum-section" id="curriculum">
+  <div class="section-wrap">
+    <p class="section-eyebrow fade-up">// 6-WEEK CURRICULUM</p>
+    <h2 class="section-title fade-up">Step-by-Step Modules<br/>Zero to AD Expert</h2>
+    <p class="section-sub fade-up">Every module builds on the last. Complete the course and you will be able to deploy, configure, and secure any Active Directory environment — independently.</p>
+
+    <div class="curriculum-grid" style="margin-top:48px;">
+
+      <div class="module fade-up">
+        <div class="mod-num">W1</div>
+        <div>
+          <div class="mod-title">Windows Server &amp; AD Basics</div>
+          <div class="mod-topics">Windows Server 2019/2022 overview · Install &amp; configure Server roles · What is Active Directory · Domain vs Workgroup · AD components explained · Install AD DS role</div>
+        </div>
+      </div>
+
+      <div class="module fade-up">
+        <div class="mod-num">W2</div>
+        <div>
+          <div class="mod-title">Domain Setup &amp; DNS Configuration</div>
+          <div class="mod-topics">Promote server to Domain Controller · Create a new forest &amp; domain · Configure AD-integrated DNS · SRV records &amp; zone types · Join client machines to domain · FSMO roles explained</div>
+        </div>
+      </div>
+
+      <div class="module fade-up">
+        <div class="mod-num">W3</div>
+        <div>
+          <div class="mod-title">Users, Groups, OUs &amp; DHCP</div>
+          <div class="mod-topics">Create &amp; manage user accounts · Bulk user import with PowerShell · Security vs distribution groups · OU design best practices · DHCP scope setup · Delegation of Control wizard</div>
+        </div>
+      </div>
+
+      <div class="module fade-up">
+        <div class="mod-num">W4</div>
+        <div>
+          <div class="mod-title">Group Policy — Design &amp; Enforcement</div>
+          <div class="mod-topics">Create &amp; link GPOs · Default Domain Policy · Password &amp; lockout policies · Software restriction policies · Drive mapping &amp; folder redirection · GPO inheritance &amp; precedence · Troubleshoot with RSOP</div>
+        </div>
+      </div>
+
+      <div class="module fade-up">
+        <div class="mod-num">W5</div>
+        <div>
+          <div class="mod-title">AD Security &amp; Authentication</div>
+          <div class="mod-topics">Kerberos authentication flow · NTLM vs Kerberos · Fine-grained password policies · LAPS — Local Admin Password Solution · AD auditing &amp; event logs · Common AD attacks (Pass-the-Hash, Kerberoasting) &amp; defences</div>
+        </div>
+      </div>
+
+      <div class="module fade-up">
+        <div class="mod-num">W6</div>
+        <div>
+          <div class="mod-title">Azure AD &amp; Hybrid Identity</div>
+          <div class="mod-topics">Introduction to Azure Active Directory · Azure AD Connect installation &amp; sync · Password hash sync vs Pass-through Auth · Configure SSO &amp; Conditional Access · Enable MFA · AD backup &amp; disaster recovery</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TOOLS ═══════════════════ -->
+<section class="tools-section">
+  <div class="section-wrap" style="text-align:center;">
+    <p class="section-eyebrow fade-up" style="text-align:center;">// TOOLS YOU WILL MASTER</p>
+    <h2 class="section-title fade-up" style="text-align:center;max-width:none;">Industry Tools Used in This Course</h2>
+
+    <div class="tools-grid">
+      <div class="tool-pill fade-up"><span class="tool-icon">🪟</span><div><div class="tool-name">Windows Server</div><div class="tool-type">2019 / 2022</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">🏢</span><div><div class="tool-name">Active Directory</div><div class="tool-type">AD DS / AD CS</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">📋</span><div><div class="tool-name">Group Policy (GPMC)</div><div class="tool-type">Policy Management</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">🌐</span><div><div class="tool-name">DNS &amp; DHCP</div><div class="tool-type">Name Resolution</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">💻</span><div><div class="tool-name">PowerShell</div><div class="tool-type">AD Automation</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">☁️</span><div><div class="tool-name">Azure AD</div><div class="tool-type">Cloud Identity</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">🔗</span><div><div class="tool-name">AD Connect</div><div class="tool-type">Hybrid Sync</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">🔑</span><div><div class="tool-name">LAPS</div><div class="tool-type">Local Admin Password</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">🛡️</span><div><div class="tool-name">Kerberos / NTLM</div><div class="tool-type">Authentication</div></div></div>
+      <div class="tool-pill fade-up"><span class="tool-icon">📊</span><div><div class="tool-name">Event Viewer</div><div class="tool-type">Audit &amp; Monitoring</div></div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════ CTA / ENROLL ═══════════════════ -->
+<section class="cta-section" id="enroll">
+  <div class="cta-inner">
+    <p class="section-eyebrow" style="text-align:center;">// READY TO START?</p>
+    <h2 class="cta-title">
+      Master Active Directory<br/>
+      <span>Like an IT Professional</span>
+    </h2>
+    <p class="cta-sub">Join hundreds of learners who are already managing enterprise identities through Tech Guardians. Live support and a certificate on completion.</p>
+
+
+    <a href="/courses/payment.html?course=Learn%20Active%20Directory&amount=799" class="cta-btn">
+      🚀 Enroll Now
+    </a>
+    <br/>
+
+    <p class="cta-note">
+      <span>✓</span> Lifetime access &nbsp;·&nbsp;
+      <span>✓</span> Certificate included &nbsp;·&nbsp;
+      <span>✓</span> 1-on-1 support available
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="footer-brand"><img src="/tg-logo.png" alt="Tech Guardians logo" style="width:26px;height:26px;object-fit:contain;border-radius:6px;vertical-align:middle;margin-right:8px;"/>TECH GUARDIANS</div>
+  <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin-top:6px;">Keep Learning and Keep Sharing</div>
+  <div class="footer-tag">Tech Guardians — Making India Digitally Safe</div>
+  <div class="footer-copy">© 2025 Tech Guardians. All Rights Reserved. · techguardians.in</div>
+</footer>
+
+<script>
+// Scroll progress bar
+window.addEventListener('scroll',()=>{
+  const s = document.documentElement;
+  const p = (s.scrollTop/(s.scrollHeight-s.clientHeight))*100;
+  document.getElementById('progress').style.width = p+'%';
+});
+
+// Intersection Observer for fade-up animations
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
+  });
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+
+document.querySelectorAll('.fade-up').forEach((el,i)=>{
+  el.style.transitionDelay = (i%4)*0.08+'s';
+  obs.observe(el);
+});
+</script>
+
+<!-- TG_PRICE_SYNC -->
+<script>
+(function(){
+  const COURSE_NAME = 'Learn Active Directory';
+  const COURSE_PRICE = 799;
+  const ORIGINAL_PRICE = 5499;
+  const fmt = n => Number(n).toLocaleString('en-IN');
+  const url = `/courses/payment.html?course=${encodeURIComponent(COURSE_NAME)}&amount=${COURSE_PRICE}`;
+  const priceHTML = `<span class="tg-price-tag" style="display:inline-flex;align-items:center;gap:8px;margin-left:12px;font-family:'JetBrains Mono',monospace;font-weight:700;vertical-align:middle;flex-wrap:wrap;justify-content:center;">`+
+    `<span style="text-decoration:line-through;color:rgba(255,255,255,0.45);font-size:13px;">₹${fmt(ORIGINAL_PRICE)}</span>`+
+    `<span style="color:#00FF9C;font-size:18px;">₹${fmt(COURSE_PRICE)}</span>`+
+    `<span style="background:#FF3B3B;color:#fff;font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:0.5px;">50% OFF</span>`+
+    `</span>`;
+  document.querySelectorAll('a[href*="/courses/payment.html"]').forEach(a => {
+    a.href = url;
+    if (a.classList.contains('btn-enroll') || a.classList.contains('cta-btn')) {
+      if (!a.querySelector('.tg-price-tag')) a.insertAdjacentHTML('beforeend', priceHTML);
+      a.style.flexWrap = 'wrap';
+      a.style.gap = '8px';
+    }
+  });
+})();
+</script>
+<!-- /TG_PRICE_SYNC -->
+<script defer src="/js/tg-3d.js"></script>
+<script src="/js/tg-contact.js"></script>
+</body>
+</html>

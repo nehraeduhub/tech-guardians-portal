@@ -1,0 +1,29 @@
+[
+  {
+    "id": "demo-welcome",
+    "slug": "demo-welcome",
+    "title": "Welcome to Tech Guardians — Demo Post",
+    "excerpt": "This is a sample blog post. Replace it with your real content from public/blogs/.",
+    "cover_image": "/images/blog-demo.svg",
+    "published_at": "2026-05-01T10:00:00.000Z",
+    "content": "This is demo content. Edit public/content/blogs.json or add markdown files in public/blogs/ and reference them here."
+  },
+  {
+    "id": "students-cyber-safety-habits",
+    "slug": "students-cyber-safety-habits",
+    "title": "How students can build cyber safety habits in 15 minutes a week",
+    "excerpt": "A simple weekly routine for students to strengthen passwords, spot phishing, and secure devices.",
+    "cover_image": "/images/cyber-lock.svg",
+    "published_at": "2026-03-08T10:00:00.000Z",
+    "content": "Cyber safety starts with repeatable habits. Spend 15 minutes weekly reviewing passwords, app permissions, and recent scam case studies."
+  },
+  {
+    "id": "ai-and-cybersecurity",
+    "slug": "ai-and-cybersecurity",
+    "title": "Why AI and cybersecurity belong in the same classroom",
+    "excerpt": "AI is changing detection and response — learners now need both security fundamentals and AI literacy.",
+    "cover_image": "/images/cyber-network.svg",
+    "published_at": "2026-03-02T10:00:00.000Z",
+    "content": "Combining cyber fundamentals with AI tooling lets students build faster investigation workflows and richer alert context."
+  }
+]

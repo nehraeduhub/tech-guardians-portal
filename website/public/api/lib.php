@@ -1,0 +1,118 @@
+<?php
+// Shared helpers for the Tech Guardians PHP API.
+require_once __DIR__ . '/config.php';
+
+function tg_json($data, int $status = 200): void
+{
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    header('X-Content-Type-Options: nosniff');
+    echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+function tg_error(string $message, int $status = 400): void
+{
+    tg_json(['error' => $message], $status);
+}
+
+function tg_data_path(string $name): string
+{
+    if (!is_dir(TG_DATA_DIR) && !mkdir(TG_DATA_DIR, 0750, true) && !is_dir(TG_DATA_DIR)) {
+        tg_error('Server storage is not writable.', 500);
+    }
+    return TG_DATA_DIR . '/' . $name;
+}
+
+function tg_read_json(string $name, $fallback = [])
+{
+    $path = tg_data_path($name);
+    if (!is_file($path)) return $fallback;
+    $fh = fopen($path, 'rb');
+    if (!$fh) return $fallback;
+    flock($fh, LOCK_SH);
+    $raw = stream_get_contents($fh);
+    flock($fh, LOCK_UN);
+    fclose($fh);
+    $data = json_decode($raw === false ? '' : $raw, true);
+    return $data === null ? $fallback : $data;
+}
+
+// Read-modify-write a JSON file under an exclusive lock.
+function tg_update_json(string $name, callable $fn, $fallback = [])
+{
+    $path = tg_data_path($name);
+    $fh = fopen($path, 'c+b');
+    if (!$fh) tg_error('Server storage is not writable.', 500);
+    flock($fh, LOCK_EX);
+    $raw = stream_get_contents($fh);
+    $data = $raw ? json_decode($raw, true) : null;
+    if ($data === null) $data = $fallback;
+    $data = $fn($data);
+    ftruncate($fh, 0);
+    rewind($fh);
+    fwrite($fh, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    fflush($fh);
+    flock($fh, LOCK_UN);
+    fclose($fh);
+    return $data;
+}
+
+function tg_start_session(): void
+{
+    if (session_status() === PHP_SESSION_ACTIVE) return;
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    session_name('tg_admin');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => $https,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+    session_start();
+}
+
+function tg_is_admin(): bool
+{
+    tg_start_session();
+    return !empty($_SESSION['tg_admin']);
+}
+
+function tg_require_admin(): void
+{
+    if (!tg_is_admin()) tg_error('Please sign in again.', 401);
+}
+
+// Requests that change data must be JSON and come from this site.
+// Browsers can't send a cross-site JSON POST without a CORS preflight,
+// which this API never approves, so this blocks CSRF.
+function tg_require_json_post(): array
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') tg_error('Method not allowed.', 405);
+    $type = $_SERVER['CONTENT_TYPE'] ?? '';
+    if (stripos($type, 'application/json') !== 0) tg_error('Expected JSON.', 415);
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if ($origin !== '') {
+        $host = parse_url($origin, PHP_URL_HOST);
+        $port = parse_url($origin, PHP_URL_PORT);
+        $originHost = $host . ($port ? ':' . $port : '');
+        if (strcasecmp($originHost, $_SERVER['HTTP_HOST'] ?? '') !== 0) tg_error('Cross-site request blocked.', 403);
+    }
+    $body = json_decode(file_get_contents('php://input') ?: '', true);
+    if (!is_array($body)) tg_error('Invalid JSON body.');
+    return $body;
+}
+
+function tg_admin_password_hash(): string
+{
+    $stored = tg_read_json('admin.json', []);
+    return is_string($stored['password_hash'] ?? null) ? $stored['password_hash'] : TG_ADMIN_PASSWORD_HASH;
+}
+
+function tg_client_ip(): string
+{
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
