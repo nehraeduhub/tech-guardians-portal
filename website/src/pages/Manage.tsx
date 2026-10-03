@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
-import { BookOpen, Home, KeyRound, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, isAdmin, uploadImage } from '@/lib/api';
 import AdminPasswordPanel from '@/components/AdminPasswordPanel';
 import HomeContentPanel from '@/components/HomeContentPanel';
+import LayoutPanel from '@/components/admin/LayoutPanel';
+import ListEditor from '@/components/admin/ListEditor';
+import { CUSTOM_SECTIONS, MEDIA_LIST, PDF_LIST, VIDEO_LIST } from '@/lib/content-lists';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
 import {
   PaymentRecord,
@@ -68,9 +71,32 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
+type ManageTab = 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos'
+  | 'payments' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
+
+const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
+  layout: { label: 'Sections & Pages', icon: LayoutList },
+  home: { label: 'Homepage Text', icon: Home },
+  custom: { label: 'Custom Sections', icon: Plus },
+  events: { label: 'Events', icon: CalendarClock },
+  offerings: { label: 'Organization Services', icon: Building2 },
+  courses: { label: 'Courses', icon: GraduationCap },
+  blogs: { label: 'Blogs', icon: BookOpen },
+  pdfs: { label: 'PDF Library', icon: FileText },
+  media: { label: 'Media Gallery', icon: ImageIcon },
+  videos: { label: 'YouTube Videos', icon: Youtube },
+  payments: { label: 'Payment History', icon: Wallet },
+  trainers: { label: 'Trainings At', icon: Users },
+  contact: { label: 'WhatsApp Number', icon: MessageCircle },
+  video: { label: 'Featured Training', icon: Video },
+  about: { label: 'About Us Link', icon: Eye },
+  password: { label: 'Admin Password', icon: KeyRound },
+};
+const TAB_ORDER = Object.keys(TAB_INFO) as ManageTab[];
+
 const Manage = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<'events' | 'courses' | 'blogs' | 'payments' | 'contact' | 'trainers' | 'video' | 'offerings' | 'about' | 'password' | 'home'>('home');
+  const [tab, setTab] = useState<ManageTab>('layout');
   const [about, setAbout] = useState(loadAboutVisibility);
   const [publishError, setPublishError] = useState('');
   const [blogs, setBlogs] = useState<TGBlog[]>([]);
@@ -275,14 +301,22 @@ const Manage = () => {
               <span className="text-[11px] tracking-[0.25em] uppercase text-cyber-green">Admin Console</span>
               <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mt-1">Tech Guardians Manager</h1>
             </div>
+            <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => { try { sessionStorage.setItem('tg_editing', '1'); } catch { /* ignore */ } window.location.href = '/'; }}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              <PencilLine className="w-4 h-4" /> Edit website visually
+            </button>
             <button onClick={logout} className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
               <LogOut className="w-4 h-4" /> Logout
             </button>
+            </div>
           </div>
 
           {publishError && <p role="alert" className="mb-5 text-sm text-destructive">{publishError}</p>}
           <div className="flex flex-wrap gap-2 mb-6">
-            {(['home', 'events', 'offerings', 'courses', 'blogs', 'payments', 'trainers', 'contact', 'video', 'about', 'password'] as const).map((t) => (
+            {TAB_ORDER.map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -290,13 +324,23 @@ const Manage = () => {
                   tab === t ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {t === 'home' ? <Home className="w-4 h-4" /> : t === 'password' ? <KeyRound className="w-4 h-4" /> : t === 'events' ? <CalendarClock className="w-4 h-4" /> : t === 'offerings' ? <Building2 className="w-4 h-4" /> : t === 'courses' ? <GraduationCap className="w-4 h-4" /> : t === 'blogs' ? <BookOpen className="w-4 h-4" /> : t === 'payments' ? <Wallet className="w-4 h-4" /> : t === 'trainers' ? <Users className="w-4 h-4" /> : t === 'about' ? <Eye className="w-4 h-4" /> : t === 'video' ? <Video className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
-                {t === 'home' ? 'Homepage' : t === 'password' ? 'Admin Password' : t === 'events' ? 'Manage Events' : t === 'offerings' ? 'Organization Services' : t === 'courses' ? 'Manage Courses' : t === 'blogs' ? 'Manage Blogs' : t === 'payments' ? 'Payment History' : t === 'trainers' ? 'Trainings At' : t === 'video' ? 'Featured Training' : t === 'about' ? 'About Us' : 'WhatsApp Number'}
+                {(() => { const Icon = TAB_INFO[t].icon; return <Icon className="w-4 h-4" />; })()}
+                {TAB_INFO[t].label}
               </button>
             ))}
           </div>
 
-          {tab === 'home' ? (
+          {tab === 'layout' ? (
+            <LayoutPanel onPublish={publish} />
+          ) : tab === 'custom' ? (
+            <ListEditor def={CUSTOM_SECTIONS} onPublish={publish} />
+          ) : tab === 'pdfs' ? (
+            <ListEditor def={PDF_LIST} onPublish={publish} />
+          ) : tab === 'media' ? (
+            <ListEditor def={MEDIA_LIST} onPublish={publish} />
+          ) : tab === 'videos' ? (
+            <ListEditor def={VIDEO_LIST} onPublish={publish} />
+          ) : tab === 'home' ? (
             <HomeContentPanel onPublish={publish} />
           ) : tab === 'password' ? (
             <AdminPasswordPanel />

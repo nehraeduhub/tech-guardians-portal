@@ -9,6 +9,7 @@ import { waLink } from '@/lib/site-settings';
 import { loadOrganizationOfferings, type OrganizationOffering } from '@/lib/organization-offerings-store';
 import { loadAboutVisibility } from '@/lib/about-settings';
 import { useHomeContent } from '@/lib/home-content';
+import { useLayout } from '@/lib/layout';
 
 const BLOGS_PATH = '/tg-blogs';
 const LOGIN_PATH = '/login';
@@ -39,6 +40,8 @@ const Navbar = () => {
   const [showAbout, setShowAbout] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
   const home = useHomeContent();
+  const layout = useLayout();
+  const pageOn = (path: string) => !layout.hiddenPages.includes(path.split(/[?#]/)[0]);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -61,7 +64,7 @@ const Navbar = () => {
   const tgPortals: { label: string; path: string; external?: boolean }[] = [
     ...organizationPortals.map((item) => ({ label: item.title, path: item.page })),
     ...fixedPortals,
-  ];
+  ].filter((p) => pageOn(p.path));
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -186,7 +189,7 @@ const Navbar = () => {
               </button>
             ))}
 
-            {showAbout && (
+            {showAbout && pageOn('/about') && (
               <button onClick={() => openLink('/about')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 About Us
               </button>
@@ -196,9 +199,9 @@ const Navbar = () => {
 
           <div className="hidden lg:flex items-center gap-2">
             <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">Login</button>
-            <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full border-2 border-primary text-primary px-5 py-2 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
+            {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full border-2 border-primary text-primary px-5 py-2 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
               TG Blogs
-            </button>
+            </button>}
           </div>
 
           <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-foreground p-2" aria-label="Toggle menu">
@@ -221,7 +224,7 @@ const Navbar = () => {
                   </button>
                 ))}
 
-                {showAbout && (
+                {showAbout && pageOn('/about') && (
                   <button onClick={() => openLink('/about')} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
                     About Us
                   </button>
@@ -249,9 +252,9 @@ const Navbar = () => {
                 <button onClick={() => { navigate(LOGIN_PATH); setMobileOpen(false); }} className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">
                   Login
                 </button>
-                <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full bg-primary text-primary-foreground text-center px-5 py-3 text-sm font-semibold">
+                {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full bg-primary text-primary-foreground text-center px-5 py-3 text-sm font-semibold">
                   TG Blogs
-                </button>
+                </button>}
               </div>
             </motion.div>
           )}

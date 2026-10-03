@@ -8,7 +8,10 @@ const YouTubeSection = () => {
   const [active, setActive] = useState<string | null>(null);
 
   useEffect(() => {
-    void loadVideos().then(setVideos);
+    const refresh = () => void loadVideos().then(setVideos);
+    refresh();
+    window.addEventListener('tg-settings-changed', refresh);
+    return () => window.removeEventListener('tg-settings-changed', refresh);
   }, []);
 
   if (videos.length === 0) return null;

@@ -10,26 +10,30 @@ require_once __DIR__ . '/lib.php';
 const TG_MAX_SETTING_BYTES = 2000000;
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $all = tg_read_json('settings.json', []);
+    $all = tg_read_json('settings.json', new stdClass(), false);
+    if (!is_object($all)) $all = new stdClass();
     $wanted = isset($_GET['keys']) ? array_filter(array_map('trim', explode(',', (string)$_GET['keys']))) : null;
     $rows = [];
-    foreach ($all as $key => $row) {
+    foreach (get_object_vars($all) as $key => $row) {
         if ($wanted !== null && !in_array($key, $wanted, true)) continue;
-        $rows[] = ['key' => $key, 'value' => $row['value'] ?? null];
+        $rows[] = ['key' => $key, 'value' => is_object($row) && property_exists($row, 'value') ? $row->value : null];
     }
     tg_json($rows);
 }
 
 $body = tg_require_json_post();
 tg_require_admin();
+// Re-read the value keeping JSON objects as objects ({} must stay {}).
+$raw = json_decode(file_get_contents('php://input') ?: '', false);
 
 $key = (string)($body['key'] ?? '');
 if (!preg_match('/^[a-z0-9_.-]{1,80}$/i', $key)) tg_error('Invalid setting name.');
 if (!array_key_exists('value', $body)) tg_error('Missing value.');
 if (strlen(json_encode($body['value'])) > TG_MAX_SETTING_BYTES) tg_error('Setting is too large.', 413);
 
-tg_update_json('settings.json', function ($all) use ($key, $body) {
-    $all[$key] = ['value' => $body['value'], 'updated_at' => gmdate('c')];
+tg_update_json('settings.json', function ($all) use ($key, $raw) {
+    if (!is_object($all)) $all = new stdClass();
+    $all->{$key} = (object)['value' => $raw->value, 'updated_at' => gmdate('c')];
     return $all;
-});
+}, new stdClass(), false);
 tg_json(['ok' => true]);

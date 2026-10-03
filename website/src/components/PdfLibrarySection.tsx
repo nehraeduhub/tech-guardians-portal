@@ -16,7 +16,10 @@ const PdfLibrarySection = () => {
   const [resources, setResources] = useState<PdfResource[]>([]);
 
   useEffect(() => {
-    void loadPdfs().then(setResources);
+    const refresh = () => void loadPdfs().then(setResources);
+    refresh();
+    window.addEventListener('tg-settings-changed', refresh);
+    return () => window.removeEventListener('tg-settings-changed', refresh);
   }, []);
 
   const grouped = resources.reduce<Record<string, PdfResource[]>>((acc, r) => {

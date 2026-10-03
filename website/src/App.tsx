@@ -20,6 +20,14 @@ import SecurityAssessment from "./pages/SecurityAssessment.tsx";
 import TGBlogs from "./pages/TGBlogs.tsx";
 import CyberRange from "./pages/CyberRange.tsx";
 import RJNehra from "./pages/RJNehra.tsx";
+import { useLayout } from "@/lib/layout";
+import type { ReactNode } from "react";
+
+// Pages the admin switched off in Manage → Sections & Pages show "not found".
+const Gate = ({ path, children }: { path: string; children: ReactNode }) => {
+  const layout = useLayout();
+  return layout.hiddenPages.includes(path) ? <NotFound /> : <>{children}</>;
+};
 
 const queryClient = new QueryClient();
 
@@ -31,21 +39,21 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/rj-nehra" element={<RJNehra />} />
+          <Route path="/about" element={<Gate path="/about"><About /></Gate>} />
+          <Route path="/rj-nehra" element={<Gate path="/rj-nehra"><RJNehra /></Gate>} />
           
           <Route path="/course/:id" element={<CourseDetail />} />
-          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog" element={<Gate path="/blog"><Blog /></Gate>} />
           <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/cyber-crime-support" element={<CyberCrimeSupport />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/threat-intel" element={<ThreatIntel />} />
-          <Route path="/cyber-news" element={<CyberNewsPortal />} />
+          <Route path="/cyber-crime-support" element={<Gate path="/cyber-crime-support"><CyberCrimeSupport /></Gate>} />
+          <Route path="/admin" element={<Gate path="/admin"><Admin /></Gate>} />
+          <Route path="/threat-intel" element={<Gate path="/threat-intel"><ThreatIntel /></Gate>} />
+          <Route path="/cyber-news" element={<Gate path="/cyber-news"><CyberNewsPortal /></Gate>} />
           <Route path="/login" element={<Login />} />
           <Route path="/manage" element={<Manage />} />
-          <Route path="/security-assessment" element={<SecurityAssessment />} />
-          <Route path="/cyber-range" element={<CyberRange />} />
-          <Route path="/tg-blogs" element={<TGBlogs />} />
+          <Route path="/security-assessment" element={<Gate path="/security-assessment"><SecurityAssessment /></Gate>} />
+          <Route path="/cyber-range" element={<Gate path="/cyber-range"><CyberRange /></Gate>} />
+          <Route path="/tg-blogs" element={<Gate path="/tg-blogs"><TGBlogs /></Gate>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

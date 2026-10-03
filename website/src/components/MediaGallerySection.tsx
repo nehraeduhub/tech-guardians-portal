@@ -11,7 +11,10 @@ const MediaGallerySection = () => {
   const [filter, setFilter] = useState<'all' | 'image' | 'video'>('all');
 
   useEffect(() => {
-    void loadMedia().then(setItems);
+    const refresh = () => void loadMedia().then(setItems);
+    refresh();
+    window.addEventListener('tg-settings-changed', refresh);
+    return () => window.removeEventListener('tg-settings-changed', refresh);
   }, []);
 
   const filtered = filter === 'all' ? items : items.filter(i => i.type === filter);
@@ -52,7 +55,7 @@ const MediaGallerySection = () => {
           <ScrollReveal>
             <div className="text-center py-16 text-muted-foreground">
               <ImageIcon className="mx-auto h-12 w-12 mb-4 opacity-40" />
-              <p>No media uploaded yet. Drop files into <code className="text-primary">public/media/</code> and list them in <code className="text-primary">public/content/media.json</code>.</p>
+              <p>No media yet. Add photos in Manage → Media gallery.</p>
             </div>
           </ScrollReveal>
         ) : (

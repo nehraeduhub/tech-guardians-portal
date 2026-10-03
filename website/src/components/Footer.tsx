@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { loadOrganizationOfferings, type OrganizationOffering } from '@/lib/organization-offerings-store';
 import { loadAboutVisibility } from '@/lib/about-settings';
 import { useHomeContent } from '@/lib/home-content';
+import { useLayout } from '@/lib/layout';
 
 const HIDDEN_ORGANIZATION_PORTALS = new Set(['security-assessment', 'cyber-range']);
 
@@ -16,6 +17,8 @@ const Footer = () => {
   const [organizationPortals, setOrganizationPortals] = useState<OrganizationOffering[]>([]);
   const [showAbout, setShowAbout] = useState(true);
   const home = useHomeContent();
+  const layout = useLayout();
+  const pageOn = (path: string) => !layout.hiddenPages.includes(path.split(/[?#]/)[0]);
 
   useEffect(() => {
     const refresh = () => {
@@ -32,7 +35,7 @@ const Footer = () => {
     { label: 'Cyber News Portal', path: '/cyber-news' },
     { label: 'Threat Intel Hub', path: '/threat-intel' },
     { label: 'Cyber & Forensic Intelligence Hub', path: '/forensic-engine.html', external: true },
-  ];
+  ].filter((p) => pageOn(p.path));
 
   const handleSection = (label: string) => {
     const id = toSectionId(label);
@@ -60,7 +63,7 @@ const Footer = () => {
           <div>
             <h4 className="text-xs font-semibold tracking-wider uppercase text-foreground mb-4">Our Portals</h4>
             <div className="flex flex-col gap-2.5">
-              {showAbout && <button onClick={() => navigate('/about')} className="text-sm text-muted-foreground hover:text-primary transition-colors text-left">About Us</button>}
+              {showAbout && pageOn('/about') && <button onClick={() => navigate('/about')} className="text-sm text-muted-foreground hover:text-primary transition-colors text-left">About Us</button>}
               {portals.map((p) => (
                 <button
                   key={p.path}

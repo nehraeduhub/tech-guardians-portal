@@ -206,6 +206,18 @@ RewriteRule ^ index.html [L]
 
 When you upload a new build later, **do not delete or overwrite `api/data/` or `uploads/`**. They hold your saved settings, enrollments, admin password and uploaded images.
 
+### Admin controls
+
+After signing in at `/login`:
+
+- **Manage → Sections & Pages** — show, hide and reorder all 29 homepage sections (plus your custom ones), and switch whole pages off. A hidden page leaves the menus and shows "not found".
+- **Manage → Custom Sections** — add, edit, delete, reorder and show/hide your own homepage sections (title, text, image, button).
+- **Manage → PDF Library / Media Gallery / YouTube Videos**, plus Events, Courses, Blogs, Trainings At, Organization Services — add, edit, delete and show/hide items.
+- **Manage → Homepage Text** — hero headline, text and photo, top bar and footer text.
+- **Edit website visually** (button in Manage, or the **Edit this page** button on any page while signed in) — click any text, button, link, image or section on any page, including the static course pages, to change it, hide it, unhide it or reset it. Menu, header and footer edits apply on every page.
+
+Visual edits are stored in the `tg_overrides` setting; everything else in its own setting key in `api/data/settings.json`.
+
 ### How live updates work
 
 Everything the admin changes on the Manage page (WhatsApp number, events, courses, blogs and blog photos, trainers, services, featured video, menu visibility) is saved on the server right away. Every open page checks for changes every 15 seconds and updates itself without a reload, including the static course pages. New enrollments from the payment page appear in **Manage → Payment History** within 15 seconds.

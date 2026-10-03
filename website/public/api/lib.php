@@ -25,7 +25,8 @@ function tg_data_path(string $name): string
     return TG_DATA_DIR . '/' . $name;
 }
 
-function tg_read_json(string $name, $fallback = [])
+// $assoc = false keeps JSON objects as objects, so {} never turns into [].
+function tg_read_json(string $name, $fallback = [], bool $assoc = true)
 {
     $path = tg_data_path($name);
     if (!is_file($path)) return $fallback;
@@ -35,19 +36,19 @@ function tg_read_json(string $name, $fallback = [])
     $raw = stream_get_contents($fh);
     flock($fh, LOCK_UN);
     fclose($fh);
-    $data = json_decode($raw === false ? '' : $raw, true);
+    $data = json_decode($raw === false ? '' : $raw, $assoc);
     return $data === null ? $fallback : $data;
 }
 
 // Read-modify-write a JSON file under an exclusive lock.
-function tg_update_json(string $name, callable $fn, $fallback = [])
+function tg_update_json(string $name, callable $fn, $fallback = [], bool $assoc = true)
 {
     $path = tg_data_path($name);
     $fh = fopen($path, 'c+b');
     if (!$fh) tg_error('Server storage is not writable.', 500);
     flock($fh, LOCK_EX);
     $raw = stream_get_contents($fh);
-    $data = $raw ? json_decode($raw, true) : null;
+    $data = $raw ? json_decode($raw, $assoc) : null;
     if ($data === null) $data = $fallback;
     $data = $fn($data);
     ftruncate($fh, 0);

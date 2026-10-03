@@ -3,14 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Ban, DatabaseZap, ScanLine, Lock, Fish, Globe, Baby, Filter } from 'lucide-react';
 import ScrollReveal from './ScrollReveal';
 import GlobeScene from './GlobeScene';
-import identityImg from '@/assets/Identity_you_can_trust.png.asset.json';
-import breachImg from '@/assets/Know_the_moment.png.asset.json';
-import antivirusImg from '@/assets/AI_powered_protection.png.asset.json';
-import vpnImg from '@/assets/Private_by_default.png.asset.json';
-import phishingImg from '@/assets/Phising_link.png.asset.json';
-import browserImg from '@/assets/A_safer_browser.png.asset.json';
-import parentalImg from '@/assets/peace_of_mind.png.asset.json';
-import filteringImg from '@/assets/cleaner_safe_web.png.asset.json';
+// The original illustrations were hosted on Lovable and are not in this export.
+// These local images stand in; replace any of them with the visual editor.
+const identityImg = { url: '/images/cyber-shield.svg' };
+const breachImg = { url: '/images/cyber-network.svg' };
+const antivirusImg = { url: '/images/cyber-lock.svg' };
+const vpnImg = { url: '/images/cyber-network.svg' };
+const phishingImg = { url: '/images/cyber-shield.svg' };
+const browserImg = { url: '/images/cyber-lock.svg' };
+const parentalImg = { url: '/images/cyber-shield.svg' };
+const filteringImg = { url: '/images/cyber-network.svg' };
 
 const pillars = [
   {
