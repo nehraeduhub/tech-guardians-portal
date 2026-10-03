@@ -1,3 +1,3 @@
 - Shared site settings live in the PHP API (`public/api/settings.php`), readable by visitors and writable only by a signed-in admin. Data is stored as JSON in `public/api/data/`; there is no database.
-- Keep payment records outside public site settings; financial details must never be served anonymously.
+- Keep payment records outside public site settings; they are stored by `public/api/payments.php` and readable only by a signed-in admin.
 - Initialize shared settings before mounting React and poll every 15 seconds; static hosting has no push channel.

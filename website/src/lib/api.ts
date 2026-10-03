@@ -30,4 +30,6 @@ export const isAdmin = async () => (await apiGet<{ admin: boolean }>('auth.php?a
 export const changeAdminPassword = (current: string, next: string) =>
   apiPost('auth.php?action=change_password', { current, next });
 
+export const uploadImage = (image: string) => apiPost<{ url: string }>('upload.php', { image });
+
 export const newsUrl = (feed: 'global' | 'india') => apiUrl(`news.php?feed=${feed}`);

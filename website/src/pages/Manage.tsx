@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { BookOpen, KeyRound, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
-import { adminSignOut, isAdmin } from '@/lib/api';
+import { adminSignOut, isAdmin, uploadImage } from '@/lib/api';
 import AdminPasswordPanel from '@/components/AdminPasswordPanel';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
 import {
@@ -15,6 +15,7 @@ import {
   normalizeSheetRows,
   saveEvents,
   syncPayments,
+  loadServerPayments,
 } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
@@ -103,6 +104,7 @@ const Manage = () => {
       if (!active) return;
       setEvents(loadEvents());
       setPayments(syncPayments());
+      void loadServerPayments().then((rows) => { if (active) setPayments(syncPayments(rows)); }).catch(() => undefined);
       setWaNumber(getWhatsAppNumber());
       setVideoData(getFeaturedVideo());
       setTrainers(loadTrainers());
@@ -115,6 +117,14 @@ const Manage = () => {
     })();
     return () => { active = false; };
   }, [navigate]);
+
+  useEffect(() => {
+    if (tab !== 'payments') return;
+    const timer = window.setInterval(() => {
+      void loadServerPayments().then((rows) => setPayments(syncPayments(rows))).catch(() => undefined);
+    }, 15000);
+    return () => window.clearInterval(timer);
+  }, [tab]);
 
   const publish = async (job: Promise<unknown>, onSuccess?: () => void) => {
     setPublishError('');
@@ -214,7 +224,8 @@ const Manage = () => {
       if (!compressed.startsWith('data:image/webp')) compressed = canvas.toDataURL('image/jpeg', 0.76);
       if (compressed.length > 900_000) compressed = canvas.toDataURL('image/jpeg', 0.58);
       if (compressed.length > 1_200_000) throw new Error('The compressed photo is still too large. Please choose a simpler image.');
-      updateBlog(id, { image: compressed });
+      const { url } = await uploadImage(compressed);
+      updateBlog(id, { image: url });
     } catch (error) {
       setBlogImageError(error instanceof Error ? error.message : 'The photo could not be uploaded.');
     } finally {
@@ -784,8 +795,8 @@ const Manage = () => {
                 <button onClick={syncFromSheet} className="inline-flex items-center gap-2 rounded-full bg-cyber-green/15 border border-cyber-green/50 text-cyber-green px-5 py-2.5 text-sm font-semibold hover:bg-cyber-green/25 transition-colors">
                   <CloudDownload className="w-4 h-4" /> Sync from Google Sheet
                 </button>
-                <button onClick={() => setPayments(syncPayments())} className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
-                  <RefreshCw className="w-4 h-4" /> Sync payment page entries
+                <button onClick={() => void loadServerPayments().then((rows) => setPayments(syncPayments(rows))).catch(() => setPayments(syncPayments()))} className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
+                  <RefreshCw className="w-4 h-4" /> Refresh enrollments
                 </button>
                 <button onClick={exportSheet} disabled={!payments.length} className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors disabled:opacity-40">
                   <Download className="w-4 h-4" /> Export Excel
@@ -814,7 +825,7 @@ const Manage = () => {
                     {payments.length === 0 && (
                       <tr>
                         <td colSpan={8} className="p-8 text-center text-muted-foreground text-xs">
-                          No payment records yet — load the payment Excel/CSV exported from the payment gateway.
+                          No enrollments yet. They appear here automatically when students submit the payment page.
                         </td>
                       </tr>
                     )}

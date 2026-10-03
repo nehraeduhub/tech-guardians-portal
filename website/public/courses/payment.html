@@ -759,10 +759,10 @@ body > .progress-bar{position:fixed !important;z-index:200 !important;}
   <div class="modal">
     <div class="modal-icon-wrap">🔐</div>
     <div class="modal-title">Admin Login</div>
-    <div class="modal-sub">Sign in to view the payment history recorded on this device.</div>
+    <div class="modal-sub">Sign in with the website admin account to view all enrollments.</div>
     <div style="text-align:left;margin:14px 0 6px;">
-      <label style="font-size:11px;color:var(--muted);font-weight:700;">Email ID</label>
-      <input type="email" id="adminEmail" placeholder="you@example.com" style="width:100%;margin-top:6px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:11px 12px;color:var(--text);font-size:13px;font-family:var(--head);"/>
+      <label style="font-size:11px;color:var(--muted);font-weight:700;">Username</label>
+      <input type="text" id="adminEmail" autocomplete="username" placeholder="admin" style="width:100%;margin-top:6px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:11px 12px;color:var(--text);font-size:13px;font-family:var(--head);"/>
     </div>
     <div style="text-align:left;margin:10px 0 4px;">
       <label style="font-size:11px;color:var(--muted);font-weight:700;">Password</label>
@@ -782,7 +782,7 @@ body > .progress-bar{position:fixed !important;z-index:200 !important;}
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;">
       <div>
         <div class="modal-title" style="text-align:left;margin:0;">Payment History</div>
-        <div style="font-size:11.5px;color:var(--muted);">All enrollments submitted from this device</div>
+        <div style="font-size:11.5px;color:var(--muted);">All enrollments received by the website</div>
       </div>
       <button onclick="closeHist()" style="background:transparent;border:1px solid var(--border2);color:var(--cyan);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">Close</button>
     </div>
@@ -993,16 +993,23 @@ async function submitAll() {
 Payment Partner: Ms Seth Enterprises
 Please verify and activate course access.`;
 
-  savePaymentRecord({
-    name: data.firstName + ' ' + data.lastName,
-    date: data.timestamp,
-    course: data.course,
-    amount: data.amount,
-    utr: data.transactionId,
-    email: data.email,
-    phone: data.phone,
-    shot: uploadedShot
-  });
+  // Save the enrollment on the website server so the admin sees it live.
+  try {
+    await fetch('/api/payments.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: data.firstName + ' ' + data.lastName,
+        date: data.timestamp,
+        course: data.course,
+        amount: data.amount,
+        utr: data.transactionId,
+        email: data.email,
+        phone: data.phone,
+        shot: uploadedShot
+      })
+    });
+  } catch (e) { /* WhatsApp and the sheet below still record it */ }
 
   try {
     // Silently record enrollment to sheet
@@ -1054,136 +1061,92 @@ Please verify and activate course access.`;
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.addEventListener('load', () => window.scrollTo(0, 0));
 
-/* ── ADMIN PAYMENT HISTORY (stored on this device) ── */
-/* Credentials are stored only as a SHA-256 digest — never in plain text. */
-const ADMIN_HASH = 'f6b5441e9c45db3043b50389c0608d20b700e8cc77e57376bb3fbba2907a4f04';
-async function tgHash(v) {
-  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
-  return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+/* ── ADMIN PAYMENT HISTORY (stored on the website server) ── */
+let histRows = [];
+async function apiJson(url, opts) {
+  const res = await fetch(url, Object.assign({ credentials: 'same-origin', cache: 'no-store' }, opts || {}));
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('Request failed (' + res.status + ')'));
+  return data;
 }
-const HKEY = 'tg_payment_history';
-
-function getHistory() {
-  try { return JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch { return []; }
+function postJson(url, body) {
+  return apiJson(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
 }
-function savePaymentRecord(rec) {
+async function openLogin() {
   try {
-    const list = getHistory();
-    list.unshift(rec);
-    localStorage.setItem(HKEY, JSON.stringify(list.slice(0, 500)));
-  } catch {}
-}
-function openLogin() {
-  if (sessionStorage.getItem('tg_admin_ok') === '1') { openHist(); return; }
+    const me = await apiJson('/api/auth.php?action=me');
+    if (me.admin) { openHist(); return; }
+  } catch (e) {}
   document.getElementById('loginErr').style.display = 'none';
   document.getElementById('loginModal').classList.add('show');
 }
 function closeLogin() { document.getElementById('loginModal').classList.remove('show'); }
 async function doLogin() {
-  const em = (document.getElementById('adminEmail').value || '').trim().toLowerCase();
+  const user = (document.getElementById('adminEmail').value || '').trim();
   const pw = document.getElementById('adminPass').value || '';
-  if (await tgHash(em + '::' + pw + '::tg') === ADMIN_HASH) {
-    sessionStorage.setItem('tg_admin_ok', '1');
+  const err = document.getElementById('loginErr');
+  try {
+    await postJson('/api/auth.php?action=login', { username: user, password: pw });
     document.getElementById('adminPass').value = '';
     closeLogin();
     openHist();
-  } else {
-    document.getElementById('loginErr').style.display = 'block';
+  } catch (e) {
+    err.textContent = e.message || 'Invalid credentials.';
+    err.style.display = 'block';
   }
 }
-function logoutAdmin() { sessionStorage.removeItem('tg_admin_ok'); closeHist(); }
+function logoutAdmin() { postJson('/api/auth.php?action=logout').catch(() => {}); closeHist(); }
 function closeHist() { document.getElementById('histModal').classList.remove('show'); }
-function openHist() {
-  renderHist();
-  syncSheet();
+async function openHist() {
   document.getElementById('histModal').classList.add('show');
+  await loadHist();
+}
+async function loadHist() {
+  const msg = document.getElementById('syncMsg');
+  msg.textContent = 'Loading enrollments…';
+  try {
+    histRows = await apiJson('/api/payments.php');
+    msg.textContent = histRows.length + ' enrollment(s) on the server.';
+  } catch (e) {
+    histRows = [];
+    msg.textContent = e.message || 'Could not load enrollments.';
+  }
+  renderHist();
 }
 function renderHist() {
   const body = document.getElementById('histBody');
-  const list = getHistory();
-  if (!list.length) {
+  if (!histRows.length) {
     body.innerHTML = '<tr><td colspan="6" style="padding:22px;text-align:center;color:var(--muted);">No payment entries recorded yet.</td></tr>';
     return;
   }
-  body.innerHTML = list.map((r, i) => `
+  body.innerHTML = histRows.map((r, i) => `
     <tr style="border-top:1px solid var(--border);">
       <td style="padding:10px;color:var(--muted);">${i + 1}</td>
       <td style="padding:10px;color:var(--text);">${esc(r.name)}<div style="color:var(--muted2);font-size:10.5px;">${esc(r.course || '')}</div></td>
       <td style="padding:10px;color:var(--muted);">${esc(r.date)}</td>
       <td style="padding:10px;color:var(--green);">${esc(r.amount)}</td>
       <td style="padding:10px;color:var(--amber);">${esc(r.utr)}</td>
-      <td style="padding:10px;">${r.shot ? `<a href="${r.shot}" target="_blank" rel="noopener"><img src="${r.shot}" alt="Payment screenshot" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border2);"/></a>` : '<span style="color:var(--muted2);">—</span>'}</td>
+      <td style="padding:10px;">${r.shot ? `<a href="${esc(r.shot)}" target="_blank" rel="noopener"><img src="${esc(r.shot)}" alt="Payment screenshot" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"></a>` : '<span style="color:var(--muted2);">—</span>'}</td>
     </tr>`).join('');
 }
 function esc(v) {
   return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function mergeHistory(rows) {
-  const list = getHistory();
-  const key = r => (r.utr && String(r.utr).trim()) ||
-    [(r.name||'').trim().toLowerCase(), (r.date||'').trim(), (r.amount||'').trim()].join('|');
-  const map = new Map();
-  list.concat(rows).forEach(r => {
-    const k = key(r);
-    if (!k.replace(/\|/g, '').trim()) return;
-    map.set(k, Object.assign({}, map.get(k) || {}, r));
-  });
-  const merged = Array.from(map.values());
-  try { localStorage.setItem(HKEY, JSON.stringify(merged.slice(0, 500))); } catch {}
-  return merged;
-}
-function normalizeSheetRow(r) {
-  const grab = keys => {
-    for (const k in r) {
-      const n = k.toLowerCase().replace(/[^a-z]/g, '');
-      if (keys.some(c => n.includes(c))) {
-        const v = r[k];
-        if (v !== undefined && v !== null && String(v).trim() !== '') return String(v);
-      }
-    }
-    return '';
-  };
-  return {
-    name: grab(['name','student','fullname']),
-    date: grab(['date','timestamp','time']),
-    course: grab(['course','program','session']),
-    amount: grab(['amount','paid','fee','price']),
-    utr: grab(['utr','transaction','txn','reference']),
-    email: grab(['email','mail']),
-    phone: grab(['phone','mobile','contact','whatsapp'])
-  };
-}
-async function syncSheet() {
-  const msg = document.getElementById('syncMsg');
-  msg.textContent = 'Syncing with the payment Excel sheet…';
-  try {
-    const url = CONFIG.googleSheetURL + (CONFIG.googleSheetURL.includes('?') ? '&' : '?') + 'action=list';
-    const res = await fetch(url, { redirect: 'follow' });
-    const data = JSON.parse(await res.text());
-    const raw = Array.isArray(data) ? data : (data.rows || data.data || []);
-    const rows = raw.map(normalizeSheetRow).filter(r => r.name || r.utr || r.amount);
-    mergeHistory(rows);
-    renderHist();
-    msg.textContent = 'Synced ' + rows.length + ' record(s) from the Excel sheet.';
-  } catch (e) {
-    msg.textContent = 'Sheet sync unavailable right now — showing records saved on this device.';
-  }
-}
+function syncSheet() { return loadHist(); }
 function exportHist() {
-  const list = getHistory();
-  if (!list.length) return;
+  if (!histRows.length) return;
   const rows = [['Name','Date','Course','Amount','UTR / Transaction ID','Email','Phone']]
-    .concat(list.map(r => [r.name, r.date, r.course, r.amount, r.utr, r.email, r.phone]));
+    .concat(histRows.map(r => [r.name, r.date, r.course, r.amount, r.utr, r.email, r.phone]));
   const csv = rows.map(r => r.map(c => '"' + String(c || '').replace(/"/g, '""') + '"').join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
   a.download = 'tech-guardians-payments.csv';
   a.click();
 }
-function clearHist() {
-  if (!confirm('Clear all payment entries stored on this device?')) return;
-  localStorage.removeItem(HKEY);
-  renderHist();
+async function clearHist() {
+  if (!confirm('Delete ALL enrollment records and screenshots from the server? This cannot be undone.')) return;
+  try { await postJson('/api/payments.php?action=clear'); } catch (e) { alert(e.message); }
+  loadHist();
 }
 document.getElementById('loginModal').addEventListener('click', function (e) { if (e.target === this) closeLogin(); });
 document.getElementById('histModal').addEventListener('click', function (e) { if (e.target === this) closeHist(); });

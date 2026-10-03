@@ -201,10 +201,14 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]
 ```
 
-4. Make sure `api/data/` is writable by PHP (755 or 775 on Hostinger is normal). Settings, the admin password and the news cache are saved there.
+4. Make sure `api/data/` and `uploads/` are writable by PHP (755 or 775 on Hostinger is normal). Settings, enrollments, the admin password and the news cache are saved in `api/data/`; images the admin uploads go to `uploads/`.
 5. Visit your domain. All routes should now work. Sign in at `/login` with the admin username and password, then change the password under **Manage → Admin Password**.
 
-When you upload a new build later, **do not delete or overwrite `api/data/`**. It holds your saved settings and admin password.
+When you upload a new build later, **do not delete or overwrite `api/data/` or `uploads/`**. They hold your saved settings, enrollments, admin password and uploaded images.
+
+### How live updates work
+
+Everything the admin changes on the Manage page (WhatsApp number, events, courses, blogs and blog photos, trainers, services, featured video, menu visibility) is saved on the server right away. Every open page checks for changes every 15 seconds and updates itself without a reload, including the static course pages. New enrollments from the payment page appear in **Manage → Payment History** within 15 seconds.
 
 ---
 
@@ -214,9 +218,11 @@ When you upload a new build later, **do not delete or overwrite `api/data/`**. I
   - `auth.php` — admin sign-in with a PHP session, sign-out, and password change. Five failed logins from one IP lock it out for 15 minutes.
   - `settings.php` — public site settings (WhatsApp number, events, courses, blogs, ...). Anyone can read them; only a signed-in admin can save.
   - `news.php?feed=global|india` — cyber news and threat intel from public RSS feeds and NVD, cached for 5 minutes.
+  - `payments.php` — the payment page saves each enrollment and screenshot here. Only a signed-in admin can read them (Manage → Payment History, or the history button on the payment page). Limited to 10 submissions per hour per IP.
+  - `upload.php` — admin-only image upload; files are saved in `/uploads/`, which never runs scripts.
 - The admin username and the default password hash are in `public/api/config.php`. A password changed from the Manage page is saved in `api/data/admin.json` and replaces the default. If you forget it, delete `api/data/admin.json` to go back to the password in `config.php`, or put a new hash there (`php -r 'echo password_hash("NewPassword", PASSWORD_DEFAULT);'`).
 - Requires PHP 8 with the `curl` extension (standard on Hostinger).
-- Admin edits are polled every 15 seconds by open pages; static course pages read the same settings. Payment records are never stored in public settings. The legacy payment page still keeps browser-local payment history and a client-side history login: do not treat that as secure financial administration.
+- Admin edits are polled every 15 seconds by open pages; static course pages read the same settings. Payment records are never stored in public settings; they live in `api/data/payments.json`, readable only by the admin.
 - The existing payment-sheet URL is in `src/lib/site-settings.ts`; access to that external sheet depends on its separate Google Apps Script permissions and availability.
 
 ---

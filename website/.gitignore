@@ -26,3 +26,6 @@ dist-ssr
 # Runtime data written by the PHP API
 public/api/data/*.json
 .env
+public/api/data/payment-shots/
+public/uploads/*
+!public/uploads/.htaccess

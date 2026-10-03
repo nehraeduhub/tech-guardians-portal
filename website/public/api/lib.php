@@ -116,3 +116,37 @@ function tg_client_ip(): string
 {
     return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 }
+
+// Allow at most $max requests per IP for $bucket within $window seconds.
+function tg_rate_limit(string $bucket, int $max, int $window): void
+{
+    $ip = tg_client_ip();
+    $now = time();
+    $blocked = false;
+    tg_update_json("rate-$bucket.json", function ($all) use ($ip, $now, $max, $window, &$blocked) {
+        foreach ($all as $k => $times) {
+            $all[$k] = array_values(array_filter($times, fn($t) => $t > $now - $window));
+            if (!$all[$k]) unset($all[$k]);
+        }
+        if (count($all[$ip] ?? []) >= $max) { $blocked = true; return $all; }
+        $all[$ip][] = $now;
+        return $all;
+    });
+    if ($blocked) tg_error('Too many requests. Please try again later.', 429);
+}
+
+// Decode a base64 image data URL and check it really is an image.
+// Returns [binary, extension].
+function tg_decode_image(string $dataUrl, int $maxBytes): array
+{
+    if (!preg_match('#^data:image/(jpeg|png|webp|gif);base64,([A-Za-z0-9+/=\s]+)$#', $dataUrl, $m)) {
+        tg_error('Unsupported image. Use JPG, PNG, WebP or GIF.');
+    }
+    $bin = base64_decode($m[2], true);
+    if ($bin === false || strlen($bin) === 0) tg_error('Image could not be read.');
+    if (strlen($bin) > $maxBytes) tg_error('Image is too large.', 413);
+    $info = @getimagesizefromstring($bin);
+    $types = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp', IMAGETYPE_GIF => 'gif'];
+    if (!$info || !isset($types[$info[2]])) tg_error('File is not a valid image.');
+    return [$bin, $types[$info[2]]];
+}

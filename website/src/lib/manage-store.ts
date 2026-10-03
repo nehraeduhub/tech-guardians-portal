@@ -1,4 +1,5 @@
 import { readSetting, publishSetting } from '@/lib/shared-settings';
+import { apiGet } from '@/lib/api';
 export interface TGEvent {
   id: string;
   title: string;
@@ -21,22 +22,6 @@ export interface PaymentRecord {
 
 export const EVENTS_KEY = 'tg_events';
 export const PAYMENTS_KEY = 'tg_payment_history';
-export const ADMIN_SESSION_KEY = 'tg_admin_ok';
-
-// Credentials are never stored in plain text — only a SHA-256 digest of
-// "email::password::tg" is kept, and it is compared at sign-in time.
-export const ADMIN_CREDENTIAL_HASH =
-  'f6b5441e9c45db3043b50389c0608d20b700e8cc77e57376bb3fbba2907a4f04';
-
-const sha256 = async (input: string) => {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-};
-
-export const verifyAdmin = async (email: string, password: string) =>
-  (await sha256(`${email.trim().toLowerCase()}::${password}::tg`)) === ADMIN_CREDENTIAL_HASH;
 
 export const DEFAULT_EVENTS: TGEvent[] = [
   { id: 'e1', title: 'Live Google Meet Class — Ethical Hacking Essentials', when: 'Every Sat • 7:00 PM IST', tag: 'Live', color: 'cyber-green' },
@@ -114,13 +99,9 @@ export const syncPayments = (extra: PaymentRecord[] = []): PaymentRecord[] => {
   return merged;
 };
 
-export const isAdminLoggedIn = () => {
-  try {
-    return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
-  } catch {
-    return false;
-  }
-};
+/** Enrollments submitted on the payment page, stored on the server (admin only). */
+export const loadServerPayments = () => apiGet<PaymentRecord[]>('payments.php');
+
 
 /** Pulls every payment row stored in the Google Sheet (Apps Script web app)
  *  and merges it with the records saved locally by the payment page. */
