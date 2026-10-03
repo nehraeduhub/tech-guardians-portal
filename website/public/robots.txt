@@ -6,3 +6,4 @@ Disallow: /admin
 Disallow: /api/
 Disallow: /order.html
 Disallow: /courses/payment.html
+Disallow: /account.html

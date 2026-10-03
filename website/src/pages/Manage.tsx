@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type LucideIcon, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
@@ -9,9 +9,10 @@ import HomeContentPanel from '@/components/HomeContentPanel';
 import LayoutPanel from '@/components/admin/LayoutPanel';
 import ThemePanel from '@/components/admin/ThemePanel';
 import PaymentsPanel from '@/components/admin/PaymentsPanel';
+import StudentsPanel from '@/components/admin/StudentsPanel';
 import StoreAdminPanel from '@/components/admin/StoreAdminPanel';
 import ListEditor from '@/components/admin/ListEditor';
-import { CUSTOM_SECTIONS, MEDIA_LIST, PDF_LIST, VIDEO_LIST } from '@/lib/content-lists';
+import { CUSTOM_SECTIONS, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
 import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
@@ -63,8 +64,8 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
-type ManageTab = 'themes' | 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos'
-  | 'payments' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
+type ManageTab = 'themes' | 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'range'
+  | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
@@ -78,7 +79,10 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   pdfs: { label: 'PDF Library', icon: FileText },
   media: { label: 'Media Gallery', icon: ImageIcon },
   videos: { label: 'YouTube Videos', icon: Youtube },
+  newsdesk: { label: 'News Desk Alerts', icon: Newspaper },
+  range: { label: 'Cyber Range Labs', icon: Crosshair },
   payments: { label: 'Payment History', icon: Wallet },
+  students: { label: 'Students', icon: Users },
   store: { label: 'PDF Store & Payments', icon: ShoppingBag },
   trainers: { label: 'Trainings At', icon: Users },
   contact: { label: 'WhatsApp Number', icon: MessageCircle },
@@ -293,6 +297,10 @@ const Manage = () => {
             <ListEditor def={MEDIA_LIST} onPublish={publish} />
           ) : tab === 'videos' ? (
             <ListEditor def={VIDEO_LIST} onPublish={publish} />
+          ) : tab === 'newsdesk' ? (
+            <ListEditor def={NEWS_ALERTS} onPublish={publish} />
+          ) : tab === 'range' ? (
+            <ListEditor def={RANGE_SCENARIOS} onPublish={publish} />
           ) : tab === 'home' ? (
             <HomeContentPanel onPublish={publish} />
           ) : tab === 'password' ? (
@@ -778,6 +786,8 @@ const Manage = () => {
             </div>
           ) : tab === 'payments' ? (
             <PaymentsPanel />
+          ) : tab === 'students' ? (
+            <StudentsPanel />
           ) : (
             <StoreAdminPanel onPublish={publish} />
           )}

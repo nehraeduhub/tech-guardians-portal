@@ -200,3 +200,13 @@
   pointer-events: none;
 }
 .light-sweep:hover::after { transform: rotate(30deg) translateX(200%); }
+
+/* Cyber News Portal headline ticker */
+@keyframes tg-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.tg-ticker-track { animation: tg-ticker 80s linear infinite; }
+.tg-ticker:hover .tg-ticker-track, .tg-ticker:focus-within .tg-ticker-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .tg-ticker-track { animation: none; } .tg-ticker { overflow-x: auto; } }
+
+/* Cyber Range console */
+@keyframes tg-blink { 50% { opacity: 0; } }
+.tg-caret { animation: tg-blink 1s step-end infinite; }

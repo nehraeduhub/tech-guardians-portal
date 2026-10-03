@@ -77,5 +77,5 @@ export const seedRows = async (def: ListDef): Promise<ListRow[]> => {
   if (def.key === PDF_LIST.key) return (await fetchJson<PdfResource[]>('/content/pdfs.json', [])).map((p) => ({ ...p, description: p.description || '', visible: true }));
   if (def.key === MEDIA_LIST.key) return (await fetchJson<MediaItem[]>('/content/media.json', [])).map((m) => ({ ...m, visible: true }));
   if (def.key === VIDEO_LIST.key) return (await fetchJson<VideoItem[]>('/content/videos.json', [])).map((v) => ({ id: newRowId(), id_youtube: v.id, title: v.title, description: v.description || '', visible: true }));
-  return [];
+  return def.seed ? def.seed.map((r) => ({ ...r })) : [];
 };

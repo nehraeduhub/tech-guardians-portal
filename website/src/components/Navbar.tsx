@@ -13,6 +13,7 @@ import { useLayout } from '@/lib/layout';
 
 const BLOGS_PATH = '/tg-blogs';
 const LOGIN_PATH = '/login';
+const ACCOUNT_PATH = '/account';
 
 const fixedPortals: { label: string; path: string; external?: boolean }[] = [
   { label: 'Cyber News Portal', path: '/cyber-news' },
@@ -203,7 +204,9 @@ const Navbar = () => {
           </div>
 
           <div className="hidden lg:flex items-center gap-2">
-            <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">Login</button>
+            {pageOn(ACCOUNT_PATH)
+              ? <a href="/account.html" className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">My Account</a>
+              : <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">Login</button>}
             {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full border-2 border-primary text-primary px-5 py-2 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
               TG Blogs
             </button>}
@@ -259,9 +262,11 @@ const Navbar = () => {
                 ))}
 
 
-                <button onClick={() => { navigate(LOGIN_PATH); setMobileOpen(false); }} className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">
+                {pageOn(ACCOUNT_PATH)
+                  ? <a href="/account.html" className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">My Account</a>
+                  : <button onClick={() => { navigate(LOGIN_PATH); setMobileOpen(false); }} className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">
                   Login
-                </button>
+                </button>}
                 {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full bg-primary text-primary-foreground text-center px-5 py-3 text-sm font-semibold">
                   TG Blogs
                 </button>}

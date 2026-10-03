@@ -103,6 +103,7 @@
           <div id="done-status"></div>
           <div class="btn-row" id="done-actions"></div>
           <div class="linkbox"><input id="order-link" readonly aria-label="Your order link"/><button class="btn btn-ghost" type="button" id="copy-link">Copy</button></div>
+          <p style="font-size:13px;color:var(--muted);margin-top:14px">See all your courses and books in one place: <a id="acct-link" href="/account.html#register">create a student account</a> with the same email (or <a href="/account.html">sign in</a>).</p>
           <p style="color:var(--muted);font-size:13px">Save this link. It is your receipt and download page. It is also saved in this browser under “My purchases”.</p>
         </div>
       </section>
@@ -300,6 +301,7 @@
     $('done-actions').innerHTML =
       (approved && state.type === 'pdf' ? '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + d.id + '&token=' + d.token + '">⬇ Download PDF</a>' : '<a class="btn btn-pri" href="' + d.orderUrl + '">Open my order page</a>') +
       '<a class="btn btn-ghost" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">💬 WhatsApp us</a>';
+    $('acct-link').href = '/account.html?' + new URLSearchParams({ name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.trim() }).toString() + '#register';
     show('done'); renderMyOrders();
   }
   $('copy-link').addEventListener('click', function () {

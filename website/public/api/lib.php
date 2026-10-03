@@ -81,6 +81,8 @@ function tg_start_session(): void
     if (session_status() === PHP_SESSION_ACTIVE) return;
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    // Keep idle sessions on the server for as long as the sign-in rules allow.
+    ini_set('session.gc_maxlifetime', '43200');
     session_name('tg_admin');
     session_set_cookie_params([
         'lifetime' => 0,

@@ -53,6 +53,7 @@ export const SITE_PAGES: { path: string; label: string }[] = [
   { path: '/cyber-range', label: 'Cyber Range' },
   { path: '/cyber-portal', label: 'Cyber Safety Portal' },
   { path: '/pdf-store', label: 'PDF Store' },
+  { path: '/account', label: 'Student accounts (My Account)' },
 ];
 
 export interface SiteLayout {

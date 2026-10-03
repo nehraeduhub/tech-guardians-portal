@@ -30,6 +30,12 @@ const Gate = ({ path, children }: { path: string; children: ReactNode }) => {
   return layout.hiddenPages.includes(path) ? <NotFound /> : <>{children}</>;
 };
 
+// Static pages served next to the app (account.html), reached from an app route.
+const StaticPage = ({ href }: { href: string }) => {
+  window.location.replace(href);
+  return null;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -54,6 +60,8 @@ const App = () => (
           <Route path="/threat-intel" element={<Gate path="/threat-intel"><ThreatIntel /></Gate>} />
           <Route path="/cyber-news" element={<Gate path="/cyber-news"><CyberNewsPortal /></Gate>} />
           <Route path="/login" element={<Login />} />
+          <Route path="/account" element={<StaticPage href="/account.html" />} />
+          <Route path="/my-account" element={<StaticPage href="/account.html" />} />
           <Route path="/manage" element={<Manage />} />
           <Route path="/security-assessment" element={<Gate path="/security-assessment"><SecurityAssessment /></Gate>} />
           <Route path="/cyber-range" element={<Gate path="/cyber-range"><CyberRange /></Gate>} />
