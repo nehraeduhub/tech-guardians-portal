@@ -355,12 +355,35 @@
   function load() {
     if (previewId) return Promise.resolve();
     return fetch('/api/settings.php?keys=tg_theme', { credentials: 'same-origin', cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (r) {
+        if (r.status === 451) { r.json().then(showUnlicensed).catch(function () { showUnlicensed({}); }); return []; }
+        return r.ok ? r.json() : [];
+      })
       .then(function (rows) {
         var row = (rows || []).filter(function (x) { return x.key === 'tg_theme'; })[0];
         apply(row && typeof row.value === 'string' ? row.value : DEFAULT_ID);
       })
       .catch(function () {});
+  }
+
+  // Licence: the server refuses to run on domains the owner has not authorised.
+  function showUnlicensed(info) {
+    if (document.getElementById('tg-unlicensed')) return;
+    var show = function () {
+      var d = document.createElement('div');
+      d.id = 'tg-unlicensed';
+      d.setAttribute('role', 'alert');
+      d.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:#020617;color:#e6f1ff;font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;text-align:center';
+      var box = document.createElement('div');
+      box.style.cssText = 'max-width:520px';
+      var h = document.createElement('h1'); h.textContent = 'Unlicensed copy'; h.style.cssText = 'font-size:28px;margin:0 0 12px;color:#ff5a5f';
+      var p = document.createElement('p'); p.textContent = (info && info.error) || 'This copy of the Tech Guardians website is not licensed for this domain.';
+      var p2 = document.createElement('p'); p2.style.cssText = 'color:#8ea3bf;font-size:14px'; p2.textContent = 'The Tech Guardians website and its content are protected. Running it without permission is not allowed.';
+      box.appendChild(h); box.appendChild(p); box.appendChild(p2); d.appendChild(box);
+      document.body.appendChild(d);
+      document.documentElement.style.overflow = 'hidden';
+    };
+    if (document.body) show(); else document.addEventListener('DOMContentLoaded', show, { once: true });
   }
 
   var cached = null;

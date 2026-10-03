@@ -10,7 +10,9 @@ const CustomSection = ({ row }: { row: ListRow }) => {
   const body = str(row.body);
   const image = str(row.image);
   const buttonText = str(row.buttonText);
-  const buttonLink = str(row.buttonLink);
+  const rawLink = str(row.buttonLink).trim();
+  // Only web, site-relative or in-page links; never javascript: or data: URLs.
+  const buttonLink = /^(https?:\/\/|\/|#)/i.test(rawLink) ? rawLink : '';
   const external = /^https?:\/\//i.test(buttonLink);
 
   return (

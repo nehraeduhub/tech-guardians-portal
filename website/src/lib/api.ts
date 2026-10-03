@@ -27,6 +27,8 @@ export const adminSignIn = (username: string, password: string) =>
   apiPost<{ admin: boolean }>('auth.php?action=login', { username, password });
 export const adminSignOut = () => apiPost('auth.php?action=logout');
 export const isAdmin = async () => (await apiGet<{ admin: boolean }>('auth.php?action=me')).admin;
+/** Signed in, and whether the original password still has to be changed. */
+export const adminStatus = () => apiGet<{ admin: boolean; mustChange?: boolean }>('auth.php?action=me');
 export const changeAdminPassword = (current: string, next: string) =>
   apiPost('auth.php?action=change_password', { current, next });
 

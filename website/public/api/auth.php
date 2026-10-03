@@ -1,6 +1,6 @@
 <?php
 // Admin sign-in for the Manage page.
-//   GET  auth.php?action=me              -> { admin: bool }
+//   GET  auth.php?action=me              -> { admin: bool, mustChange: bool }
 //   POST auth.php?action=login           { username, password }
 //   POST auth.php?action=logout
 //   POST auth.php?action=change_password { current, next }
@@ -9,7 +9,8 @@ require_once __DIR__ . '/lib.php';
 $action = $_GET['action'] ?? 'me';
 
 if ($action === 'me') {
-    tg_json(['admin' => tg_is_admin()]);
+    $admin = tg_is_admin();
+    tg_json(['admin' => $admin, 'mustChange' => $admin && tg_must_change_password()]);
 }
 
 $body = tg_require_json_post();
@@ -45,7 +46,9 @@ if ($action === 'login') {
     tg_start_session();
     session_regenerate_id(true);
     $_SESSION['tg_admin'] = true;
-    tg_json(['admin' => true]);
+    $_SESSION['tg_login'] = $_SESSION['tg_seen'] = time();
+    $_SESSION['tg_fp'] = tg_session_fingerprint();
+    tg_json(['admin' => true, 'mustChange' => tg_must_change_password()]);
 }
 
 if ($action === 'logout') {
@@ -56,11 +59,13 @@ if ($action === 'logout') {
 }
 
 if ($action === 'change_password') {
-    tg_require_admin();
+    tg_require_admin(true);
     $current = (string)($body['current'] ?? '');
     $next = (string)($body['next'] ?? '');
     if (!password_verify($current, tg_admin_password_hash())) tg_error('Current password is incorrect.', 403);
     if (strlen($next) < 12) tg_error('New password must be at least 12 characters.');
+    if (!preg_match('/[A-Za-z]/', $next) || !preg_match('/\d/', $next)) tg_error('Use letters and numbers in the new password.');
+    if ($next === $current || password_verify($next, TG_ADMIN_PASSWORD_HASH)) tg_error('Choose a password different from the current and the original one.');
     tg_update_json('admin.json', function ($data) use ($next) {
         $data['password_hash'] = password_hash($next, PASSWORD_DEFAULT);
         $data['updated_at'] = gmdate('c');

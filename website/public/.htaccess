@@ -1,5 +1,41 @@
+# Tech Guardians — web server rules (Apache / LiteSpeed on Hostinger)
+
+Options -Indexes
+ServerSignature Off
+
 RewriteEngine On
 RewriteBase /
+
+# Always use HTTPS (Hostinger's free SSL). Works behind Hostinger's proxy too.
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Never serve hidden files, backups, logs, source maps or developer files.
+RewriteRule (^|/)\.(?!well-known/) - [F,L]
+RewriteRule \.(bak|backup|old|orig|sql|sqlite|log|sh|ini|env|map|md|lock|ts|tsx)$ - [F,L,NC]
+RewriteRule ^api/data(/|$) - [F,L]
+
+# Single-page app: unknown paths load the React app.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  # Which outside sites pages may load from. If you add a new outside service, add its address here.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' https:; connect-src 'self' https://ipapi.co https://ipwho.is https://api.allorigins.win https://api.postalpincode.in; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+  Header always unset X-Powered-By
+  <FilesMatch "\.(js|css|png|jpe?g|webp|gif|svg|woff2?)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "^(index\.html|order\.html)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

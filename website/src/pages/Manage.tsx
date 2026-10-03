@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { type LucideIcon, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
-import { adminSignOut, isAdmin, uploadImage } from '@/lib/api';
+import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
 import AdminPasswordPanel from '@/components/AdminPasswordPanel';
 import HomeContentPanel from '@/components/HomeContentPanel';
 import LayoutPanel from '@/components/admin/LayoutPanel';
@@ -93,6 +93,7 @@ const Manage = () => {
   const [tab, setTab] = useState<ManageTab>('layout');
   const [about, setAbout] = useState(loadAboutVisibility);
   const [publishError, setPublishError] = useState('');
+  const [mustChange, setMustChange] = useState(false);
   const [blogs, setBlogs] = useState<TGBlog[]>([]);
   const [blogsSaved, setBlogsSaved] = useState(false);
   const [blogImageError, setBlogImageError] = useState('');
@@ -115,8 +116,9 @@ const Manage = () => {
   useEffect(() => {
     let active = true;
     void (async () => {
-      const admin = await isAdmin().catch(() => false);
-      if (!admin) { navigate('/login', { replace: true }); return; }
+      const status = await adminStatus().catch(() => ({ admin: false, mustChange: false }));
+      if (!status.admin) { navigate('/login', { replace: true }); return; }
+      if (status.mustChange && active) { setMustChange(true); setTab('password'); }
       try { await refreshSettings(); } catch (error) { if (active) setPublishError('Could not load shared settings. Please check your connection.'); }
       if (!active) return;
       setEvents(loadEvents());
@@ -258,9 +260,14 @@ const Manage = () => {
             </div>
           </div>
 
+          {mustChange && (
+            <div role="alert" className="mb-6 rounded-xl border border-amber-500/50 bg-amber-500/10 p-4 text-sm">
+              <strong>Change the default password to continue.</strong> This site still uses the password it shipped with. Choose your own password below; every other admin tab unlocks as soon as it is saved.
+            </div>
+          )}
           {publishError && <p role="alert" className="mb-5 text-sm text-destructive">{publishError}</p>}
           <div className="flex flex-wrap gap-2 mb-6">
-            {TAB_ORDER.map((t) => (
+            {TAB_ORDER.filter((t) => !mustChange || t === 'password').map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -289,7 +296,7 @@ const Manage = () => {
           ) : tab === 'home' ? (
             <HomeContentPanel onPublish={publish} />
           ) : tab === 'password' ? (
-            <AdminPasswordPanel />
+            <AdminPasswordPanel onChanged={() => setMustChange(false)} />
           ) : tab === 'about' ? (
             <div className="space-y-5 max-w-xl">
               <h2 className="font-display text-lg font-semibold">About Us visibility</h2>

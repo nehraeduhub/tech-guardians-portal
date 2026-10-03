@@ -4,7 +4,7 @@ import { changeAdminPassword } from '@/lib/api';
 
 const inputClass = 'w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground';
 
-const AdminPasswordPanel = () => {
+const AdminPasswordPanel = ({ onChanged }: { onChanged?: () => void } = {}) => {
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -23,6 +23,7 @@ const AdminPasswordPanel = () => {
       await changeAdminPassword(current, next);
       setCurrent(''); setNext(''); setConfirm('');
       setMessage('Password changed. Use the new password next time you sign in.');
+      onChanged?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not change the password.');
     } finally {

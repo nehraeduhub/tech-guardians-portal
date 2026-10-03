@@ -2,6 +2,18 @@
 // Shared helpers for the Tech Guardians PHP API.
 require_once __DIR__ . '/config.php';
 
+// Never show PHP errors (file paths, internals) to visitors.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+// Licence: this copy only runs on domains listed in api/license.json, signed
+// with the owner's private key (Ed25519). The public key below can only check
+// signatures; it cannot create them.
+const TG_LICENSE_PUBLIC_KEY = 'azsOewp8XuyAE7nX0sHBeKeQXjSh73PUjIWMqNAN9jY=';
+// Admin sessions end after 2 hours without activity, and after 12 hours in any case.
+const TG_SESSION_IDLE_SECONDS = 7200;
+const TG_SESSION_MAX_SECONDS = 43200;
+
 if (!function_exists('array_is_list')) { // PHP < 8.1
     function array_is_list(array $a): bool { return $a === [] || array_keys($a) === range(0, count($a) - 1); }
 }
@@ -80,15 +92,81 @@ function tg_start_session(): void
     session_start();
 }
 
+function tg_session_fingerprint(): string
+{
+    return hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . '|tg');
+}
+
 function tg_is_admin(): bool
 {
     tg_start_session();
-    return !empty($_SESSION['tg_admin']);
+    if (empty($_SESSION['tg_admin'])) return false;
+    $now = time();
+    $expired = $now - (int)($_SESSION['tg_seen'] ?? 0) > TG_SESSION_IDLE_SECONDS
+        || $now - (int)($_SESSION['tg_login'] ?? 0) > TG_SESSION_MAX_SECONDS
+        || !hash_equals((string)($_SESSION['tg_fp'] ?? ''), tg_session_fingerprint());
+    if ($expired) {
+        $_SESSION = [];
+        session_destroy();
+        return false;
+    }
+    $_SESSION['tg_seen'] = $now;
+    return true;
 }
 
-function tg_require_admin(): void
+/** True until the admin replaces the password that shipped with the site. */
+function tg_must_change_password(): bool
+{
+    $stored = tg_read_json('admin.json', []);
+    return !is_string($stored['password_hash'] ?? null);
+}
+
+function tg_require_admin(bool $allowDefaultPassword = false): void
 {
     if (!tg_is_admin()) tg_error('Please sign in again.', 401);
+    if (!$allowDefaultPassword && tg_must_change_password()) {
+        tg_error('For security, change the default admin password first (Manage → Admin Password).', 403);
+    }
+}
+
+/* ---------- licence ---------- */
+function tg_license_host(): string
+{
+    $host = strtolower((string)($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? ''));
+    return preg_replace('/:\d+$/', '', $host);
+}
+
+function tg_license_valid_for(string $host): bool
+{
+    $file = __DIR__ . '/license.json';
+    if (!is_file($file) || !function_exists('sodium_crypto_sign_verify_detached')) return false;
+    $lic = json_decode((string)file_get_contents($file), true);
+    $entries = isset($lic['licenses']) && is_array($lic['licenses']) ? $lic['licenses'] : [$lic];
+    $pub = base64_decode(TG_LICENSE_PUBLIC_KEY, true);
+    foreach ($entries as $e) {
+        if (!is_array($e) || !is_array($e['domains'] ?? null) || !is_string($e['sig'] ?? null)) continue;
+        $domains = array_map('strtolower', array_map('strval', $e['domains']));
+        $message = 'TG-LICENSE-1|' . ($e['licensee'] ?? '') . '|' . implode(',', $domains) . '|' . ($e['issued'] ?? '') . '|' . ($e['expires'] ?? '');
+        $sig = base64_decode($e['sig'], true);
+        if ($sig === false || strlen($sig) !== SODIUM_CRYPTO_SIGN_BYTES) continue;
+        if (!sodium_crypto_sign_verify_detached($sig, $message, $pub)) continue;
+        if (!empty($e['expires']) && strtotime((string)$e['expires']) < time()) continue;
+        foreach ($domains as $d) {
+            if ($d === $host) return true;
+            if (strpos($d, '*.') === 0 && substr($host, -strlen($d) + 1) === substr($d, 1) && strlen($host) > strlen($d) - 1) return true;
+        }
+    }
+    return false;
+}
+
+function tg_enforce_license(): void
+{
+    $host = tg_license_host();
+    if (tg_license_valid_for($host)) return;
+    tg_json([
+        'error' => 'This copy of the Tech Guardians website is not licensed for ' . $host . '. Contact Tech Guardians for permission.',
+        'code' => 'unlicensed',
+    ], 451);
 }
 
 // Requests that change data must be JSON and come from this site.
@@ -155,3 +233,5 @@ function tg_decode_image(string $dataUrl, int $maxBytes): array
     if (!$info || !isset($types[$info[2]])) tg_error('File is not a valid image.');
     return [$bin, $types[$info[2]]];
 }
+
+tg_enforce_license();
