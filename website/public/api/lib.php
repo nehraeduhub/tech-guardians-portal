@@ -2,6 +2,10 @@
 // Shared helpers for the Tech Guardians PHP API.
 require_once __DIR__ . '/config.php';
 
+if (!function_exists('array_is_list')) { // PHP < 8.1
+    function array_is_list(array $a): bool { return $a === [] || array_keys($a) === range(0, count($a) - 1); }
+}
+
 function tg_json($data, int $status = 200): void
 {
     http_response_code($status);

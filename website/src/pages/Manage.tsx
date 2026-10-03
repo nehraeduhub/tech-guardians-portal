@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as XLSX from 'xlsx';
-import { type LucideIcon, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, isAdmin, uploadImage } from '@/lib/api';
@@ -9,22 +8,14 @@ import AdminPasswordPanel from '@/components/AdminPasswordPanel';
 import HomeContentPanel from '@/components/HomeContentPanel';
 import LayoutPanel from '@/components/admin/LayoutPanel';
 import ThemePanel from '@/components/admin/ThemePanel';
+import PaymentsPanel from '@/components/admin/PaymentsPanel';
+import StoreAdminPanel from '@/components/admin/StoreAdminPanel';
 import ListEditor from '@/components/admin/ListEditor';
 import { CUSTOM_SECTIONS, MEDIA_LIST, PDF_LIST, VIDEO_LIST } from '@/lib/content-lists';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
-import {
-  PaymentRecord,
-  TGEvent,
-  loadEvents,
-  fetchSheetPayments,
-  normalizeSheetRows,
-  saveEvents,
-  syncPayments,
-  loadServerPayments,
-} from '@/lib/manage-store';
+import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
-  PAYMENT_SHEET_URL,
   getWhatsAppNumber,
   setWhatsAppNumber,
   getFeaturedVideo,
@@ -73,7 +64,7 @@ const emptyEvent = (): TGEvent => ({
 });
 
 type ManageTab = 'themes' | 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos'
-  | 'payments' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
+  | 'payments' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
@@ -88,6 +79,7 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   media: { label: 'Media Gallery', icon: ImageIcon },
   videos: { label: 'YouTube Videos', icon: Youtube },
   payments: { label: 'Payment History', icon: Wallet },
+  store: { label: 'PDF Store & Payments', icon: ShoppingBag },
   trainers: { label: 'Trainings At', icon: Users },
   contact: { label: 'WhatsApp Number', icon: MessageCircle },
   video: { label: 'Featured Training', icon: Video },
@@ -109,20 +101,16 @@ const Manage = () => {
   const [coursesSaved, setCoursesSaved] = useState(false);
   const [coursesNav, setCoursesNav] = useState(true);
   const [coursesHome, setCoursesHome] = useState(true);
-  const [shot, setShot] = useState<string | null>(null);
   const [trainers, setTrainers] = useState<TrainerOrg[]>([]);
   const [trainersSaved, setTrainersSaved] = useState(false);
-  const [sheetStatus, setSheetStatus] = useState('');
   const [waNumber, setWaNumber] = useState(DEFAULT_WA_NUMBER);
   const [waSaved, setWaSaved] = useState(false);
   const [videoData, setVideoData] = useState({ id: DEFAULT_VIDEO_ID, title: DEFAULT_VIDEO_TITLE, tagline: DEFAULT_VIDEO_TAGLINE });
   const [videoSaved, setVideoSaved] = useState(false);
   const [events, setEvents] = useState<TGEvent[]>([]);
-  const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [saved, setSaved] = useState(false);
   const [offerings, setOfferings] = useState<OrganizationOffering[]>([]);
   const [offeringsSaved, setOfferingsSaved] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -132,8 +120,6 @@ const Manage = () => {
       try { await refreshSettings(); } catch (error) { if (active) setPublishError('Could not load shared settings. Please check your connection.'); }
       if (!active) return;
       setEvents(loadEvents());
-      setPayments(syncPayments());
-      void loadServerPayments().then((rows) => { if (active) setPayments(syncPayments(rows)); }).catch(() => undefined);
       setWaNumber(getWhatsAppNumber());
       setVideoData(getFeaturedVideo());
       setTrainers(loadTrainers());
@@ -147,28 +133,11 @@ const Manage = () => {
     return () => { active = false; };
   }, [navigate]);
 
-  useEffect(() => {
-    if (tab !== 'payments') return;
-    const timer = window.setInterval(() => {
-      void loadServerPayments().then((rows) => setPayments(syncPayments(rows))).catch(() => undefined);
-    }, 15000);
-    return () => window.clearInterval(timer);
-  }, [tab]);
-
   const publish = async (job: Promise<unknown>, onSuccess?: () => void) => {
     setPublishError('');
     try { await job; onSuccess?.(); }
     catch (error) { setPublishError(error instanceof Error ? error.message : 'Publishing failed. Try again.'); }
   };
-
-  const totalAmount = useMemo(
-    () =>
-      payments.reduce((sum, p) => {
-        const n = Number(String(p.amount || '').replace(/[^\d.]/g, ''));
-        return sum + (Number.isFinite(n) ? n : 0);
-      }, 0),
-    [payments],
-  );
 
   const update = (id: string, patch: Partial<TGEvent>) =>
     setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, ...patch } : e)));
@@ -178,26 +147,6 @@ const Manage = () => {
     window.setTimeout(() => setSaved(false), 2200);
   };
 
-  const importSheet = async (file: File) => {
-    const buf = await file.arrayBuffer();
-    const wb = XLSX.read(buf);
-    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-    const normalized = normalizeSheetRows(rows);
-    setPayments(syncPayments(normalized));
-  };
-
-  const syncFromSheet = async () => {
-    setSheetStatus('Syncing with the Google Sheet…');
-    try {
-      const rows = await fetchSheetPayments(PAYMENT_SHEET_URL);
-      setPayments(syncPayments(rows));
-      setSheetStatus(`Synced ${rows.length} record(s) from the sheet.`);
-    } catch (err) {
-      setSheetStatus(
-        `Sheet sync unavailable (${(err as Error).message}). Use "Load Payment Excel / CSV" to import the sheet export.`,
-      );
-    }
-  };
 
   const updateTrainer = (id: string, patch: Partial<TrainerOrg>) =>
     setTrainers((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
@@ -283,13 +232,6 @@ const Manage = () => {
     const rows = offerings.filter((item) => item.title.trim() && item.page.trim());
     void publish(saveOrganizationOfferings(rows), () => { setOfferings(rows); setOfferingsSaved(true); });
     window.setTimeout(() => setOfferingsSaved(false), 2200);
-  };
-
-  const exportSheet = () => {
-    const ws = XLSX.utils.json_to_sheet(payments);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Payments');
-    XLSX.writeFile(wb, 'tech-guardians-payments.xlsx');
   };
 
   const logout = () => { void adminSignOut().catch(() => undefined).then(() => navigate('/login')); };
@@ -827,96 +769,14 @@ const Manage = () => {
                 {saved && <span className="self-center text-xs text-cyber-green">Saved — homepage events updated.</span>}
               </div>
             </div>
+          ) : tab === 'payments' ? (
+            <PaymentsPanel />
           ) : (
-            <div>
-              <div className="flex flex-wrap items-center gap-3 mb-5">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) importSheet(f);
-                    e.target.value = '';
-                  }}
-                />
-                <button onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-2 rounded-full border border-primary/50 text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary/10 transition-colors">
-                  <Upload className="w-4 h-4" /> Load Payment Excel / CSV
-                </button>
-                <button onClick={syncFromSheet} className="inline-flex items-center gap-2 rounded-full bg-cyber-green/15 border border-cyber-green/50 text-cyber-green px-5 py-2.5 text-sm font-semibold hover:bg-cyber-green/25 transition-colors">
-                  <CloudDownload className="w-4 h-4" /> Sync from Google Sheet
-                </button>
-                <button onClick={() => void loadServerPayments().then((rows) => setPayments(syncPayments(rows))).catch(() => setPayments(syncPayments()))} className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
-                  <RefreshCw className="w-4 h-4" /> Refresh enrollments
-                </button>
-                <button onClick={exportSheet} disabled={!payments.length} className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors disabled:opacity-40">
-                  <Download className="w-4 h-4" /> Export Excel
-                </button>
-                <span className="text-xs text-muted-foreground">
-                  {payments.length} entries · Total ₹{totalAmount.toLocaleString('en-IN')}
-                </span>
-                {sheetStatus && <span className="w-full text-xs text-muted-foreground">{sheetStatus}</span>}
-              </div>
-
-              <div className="overflow-x-auto rounded-2xl border border-border bg-card/70">
-                <table className="w-full text-sm min-w-[760px]">
-                  <thead>
-                    <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                      <th className="p-3">#</th>
-                      <th className="p-3">Name</th>
-                      <th className="p-3">Date</th>
-                      <th className="p-3">Course</th>
-                      <th className="p-3">Amount</th>
-                      <th className="p-3">UTR / Txn ID</th>
-                      <th className="p-3">Contact</th>
-                      <th className="p-3">Screenshot</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {payments.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="p-8 text-center text-muted-foreground text-xs">
-                          No enrollments yet. They appear here automatically when students submit the payment page.
-                        </td>
-                      </tr>
-                    )}
-                    {payments.map((p, i) => (
-                      <tr key={`${p.utr}-${i}`} className="border-t border-border/60">
-                        <td className="p-3 text-muted-foreground">{i + 1}</td>
-                        <td className="p-3 text-foreground">{p.name}</td>
-                        <td className="p-3 text-muted-foreground">{p.date}</td>
-                        <td className="p-3 text-muted-foreground">{p.course}</td>
-                        <td className="p-3 text-cyber-green">{p.amount}</td>
-                        <td className="p-3 text-cyber-orange">{p.utr}</td>
-                        <td className="p-3 text-muted-foreground text-xs">
-                          {p.email}
-                          {p.phone ? ` · ${p.phone}` : ''}
-                        </td>
-                        <td className="p-3">
-                          {p.shot ? (
-                            <button onClick={() => p.shot && setShot(p.shot)} className="block">
-                              <img src={p.shot} alt="Payment screenshot" className="w-14 h-14 object-cover rounded-lg border border-border hover:border-primary transition-colors" />
-                            </button>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <StoreAdminPanel onPublish={publish} />
           )}
         </div>
       </section>
 
-      {shot && (
-        <div className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShot(null)}>
-          <img src={shot} alt="Payment screenshot" className="max-h-[85vh] max-w-full rounded-xl border border-border" onClick={(e) => e.stopPropagation()} />
-        </div>
-      )}
     </SiteFrame>
   );
 };

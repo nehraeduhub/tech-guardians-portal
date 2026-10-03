@@ -189,6 +189,11 @@ const Navbar = () => {
               </button>
             ))}
 
+            {pageOn('/pdf-store') && (
+              <button onClick={() => openLink('/pdf-store')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                PDF Store
+              </button>
+            )}
             {showAbout && pageOn('/about') && (
               <button onClick={() => openLink('/about')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 About Us
@@ -224,6 +229,11 @@ const Navbar = () => {
                   </button>
                 ))}
 
+                {pageOn('/pdf-store') && (
+                  <button onClick={() => { openLink('/pdf-store'); setMobileOpen(false); }} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                    PDF Store
+                  </button>
+                )}
                 {showAbout && pageOn('/about') && (
                   <button onClick={() => openLink('/about')} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
                     About Us

@@ -30,6 +30,7 @@ import TrustSection from '@/components/TrustSection';
 import EnrollSection from '@/components/EnrollSection';
 import ContactSection from '@/components/ContactSection';
 import CustomSection from '@/components/CustomSection';
+import PdfStoreSection from '@/components/PdfStoreSection';
 import SiteFrame from '@/components/SiteFrame';
 import { orderedSectionIds, useLayout } from '@/lib/layout';
 import { CUSTOM_SECTIONS, useList } from '@/lib/content-lists';
@@ -39,6 +40,7 @@ const SECTIONS: Record<string, ComponentType> = {
   'cyber-crime-banner': CyberCrimeBanner,
   'featured-training': SocialHackingVideoSection,
   courses: CoursesSection,
+  'pdf-store': PdfStoreSection,
   'news-events': NewsEventsSection,
   'organization-offerings': OrganizationOfferingsSection,
   awareness: AwarenessSection,

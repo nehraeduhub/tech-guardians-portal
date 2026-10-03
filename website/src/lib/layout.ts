@@ -12,6 +12,7 @@ export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'cyber-crime-banner', label: 'Cyber crime help banner' },
   { id: 'featured-training', label: 'Featured training video' },
   { id: 'courses', label: 'Courses' },
+  { id: 'pdf-store', label: 'PDF Store (books for sale)' },
   { id: 'news-events', label: 'News & events' },
   { id: 'organization-offerings', label: 'Organization services' },
   { id: 'awareness', label: 'Awareness & trainings at' },
@@ -51,6 +52,7 @@ export const SITE_PAGES: { path: string; label: string }[] = [
   { path: '/security-assessment', label: 'Security Assessment' },
   { path: '/cyber-range', label: 'Cyber Range' },
   { path: '/cyber-portal', label: 'Cyber Safety Portal' },
+  { path: '/pdf-store', label: 'PDF Store' },
 ];
 
 export interface SiteLayout {

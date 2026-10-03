@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/js/tg-theme.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Order — Tech Guardians</title>
+<meta name="robots" content="noindex"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<link rel="stylesheet" href="/css/tg-checkout.css"/>
+</head>
+<body>
+<nav class="topnav" aria-label="Order">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/tg-logo.png" alt=""/><span>Tech Guardians<small>Your order</small></span></a>
+    <div class="nav-links"><a href="/pdf-store">PDF Store</a><a class="hide-sm" href="/">Home</a></div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="wrap" style="max-width:760px">
+    <section class="card" aria-live="polite">
+      <div id="loading" style="display:flex;align-items:center;gap:10px;color:var(--muted)"><span class="spinner"></span> Loading your order…</div>
+
+      <div id="order" hidden>
+        <div class="sum-item">
+          <div id="media"></div>
+          <div style="min-width:0">
+            <div class="sum-type" id="type"></div>
+            <h1 id="title" style="font-size:clamp(20px,3vw,26px);margin-top:4px"></h1>
+            <div style="color:var(--muted);font-size:13.5px;margin-top:6px"><span id="amount"></span> · Order <span id="oid" style="font-family:var(--mono)"></span> · <span id="date"></span></div>
+          </div>
+        </div>
+        <div style="margin-top:20px" id="status"></div>
+        <p id="message" style="color:var(--muted)"></p>
+        <div class="err" id="notready" role="alert"></div>
+        <div class="btn-row" id="actions"></div>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:18px">Bookmark this page. It is your receipt, and for PDFs you can download again from here any time. Please do not share the link.</p>
+      </div>
+
+      <div id="missing" hidden>
+        <h1 style="font-size:24px">We couldn’t find this order</h1>
+        <p style="color:var(--muted)" id="missing-text">Open the exact link you received after payment. If you lost it, message us on WhatsApp with your UPI transaction ID.</p>
+        <div class="btn-row"><a class="btn btn-pri" id="missing-wa" href="https://wa.me/919929193136" target="_blank" rel="noopener">💬 WhatsApp support</a></div>
+      </div>
+    </section>
+
+    <section class="card" id="mine" style="margin-top:20px" hidden>
+      <h2>My purchases on this device</h2>
+      <ul class="orders" id="mine-list"></ul>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var q = new URLSearchParams(location.search);
+  var id = q.get('id') || '', token = q.get('token') || '';
+  var timer = null;
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+
+  function mine() {
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem('tg_my_orders') || '[]'); } catch (e) {}
+    if (id && token && !list.some(function (o) { return o.id === id; })) {
+      // Opening an order link on a new device remembers it here too.
+      list.unshift({ id: id, token: token, title: 'Order ' + id.slice(0, 6), at: Date.now() });
+    }
+    $('mine').hidden = list.length < 2;
+    $('mine-list').innerHTML = list.slice(0, 12).map(function (o) {
+      return '<li><span>' + esc(o.title) + (o.id === id ? ' (this order)' : '') + '</span>' + (o.id === id ? '' : '<a href="/order.html?id=' + esc(o.id) + '&token=' + esc(o.token) + '">Open →</a>') + '</li>';
+    }).join('');
+    return list;
+  }
+
+  function render(d) {
+    $('loading').hidden = true; $('order').hidden = false;
+    var pdf = d.type === 'pdf';
+    $('type').textContent = pdf ? 'PDF download' : 'Course enrollment';
+    $('title').textContent = d.title || 'Your order';
+    $('amount').textContent = d.amount || '';
+    $('oid').textContent = d.id.slice(0, 8).toUpperCase();
+    $('date').textContent = d.date || '';
+    $('media').innerHTML = d.cover ? '<img src="' + esc(d.cover) + '" alt=""/>' : '<div class="ph">' + (pdf ? '📘' : '🎓') + '</div>';
+    var labels = { pending: '⏳ Verifying your payment', approved: '✓ Payment approved', rejected: '✕ Payment not verified', recorded: '✓ Recorded' };
+    $('status').innerHTML = '<span class="status ' + esc(d.status) + '">' + labels[d.status] + '</span>';
+    var wa = ((d.settings && d.settings.whatsapp) || '919929193136').replace(/\D/g, '');
+    var waBtn = '<a class="btn btn-ghost" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent('Hi, about my Tech Guardians order ' + d.id + ' for "' + d.title + '".') + '">💬 WhatsApp us</a>';
+    var msg, actions = waBtn;
+    if (d.status === 'approved' && pdf && d.canDownload) {
+      msg = 'Thank you' + (d.name ? ', ' + d.name : '') + '! Your PDF is ready. The download opens Google Drive, where you can save it to your device.';
+      actions = '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + esc(id) + '&token=' + esc(token) + '">⬇ Download PDF</a>' + waBtn;
+    } else if (d.status === 'approved' && pdf) {
+      msg = 'Your payment is approved. The download link is being prepared — please check back shortly or message us on WhatsApp.';
+    } else if (d.status === 'approved') {
+      msg = 'Your enrollment is confirmed. Course access details are shared on WhatsApp and email.';
+    } else if (d.status === 'rejected') {
+      msg = 'We could not match this payment with our bank records. If you have paid, message us on WhatsApp with your payment screenshot and we will fix it.';
+    } else {
+      msg = 'We are matching your UPI transaction with our bank records, usually within a few hours. This page updates by itself' + (pdf ? ' and shows the download button once approved.' : '.');
+    }
+    $('message').textContent = msg;
+    $('actions').innerHTML = actions;
+    clearTimeout(timer);
+    if (d.status === 'pending' || (d.status === 'approved' && pdf && !d.canDownload)) timer = setTimeout(load, 20000);
+    if (q.get('notready') && !d.canDownload) { $('notready').textContent = 'Your download is not available yet. It unlocks as soon as your payment is approved.'; $('notready').classList.add('show'); }
+    // remember the real title for "My purchases"
+    try {
+      var list = mine().map(function (o) { return o.id === d.id ? { id: o.id, token: o.token, title: d.title, at: o.at } : o; });
+      localStorage.setItem('tg_my_orders', JSON.stringify(list.slice(0, 30)));
+    } catch (e) {}
+    mine();
+  }
+
+  function load() {
+    if (!id || !token) { $('loading').hidden = true; $('missing').hidden = false; mine(); return; }
+    fetch('/api/payments.php?action=order&id=' + encodeURIComponent(id) + '&token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error); return d; }); })
+      .then(render)
+      .catch(function (e) { $('loading').hidden = true; $('order').hidden = true; $('missing').hidden = false; if (e && e.message) $('missing-text').textContent = e.message; mine(); });
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && id) load(); });
+  load();
+})();
+</script>
+<script src="/js/tg-editor.js" defer></script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import About from "./pages/About.tsx";
 import CyberPortal from "./pages/CyberPortal.tsx";
+import { PdfProduct, PdfStore } from "./pages/PdfStore.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import CourseDetail from "./pages/CourseDetail.tsx";
@@ -47,6 +48,8 @@ const App = () => (
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/cyber-crime-support" element={<Gate path="/cyber-crime-support"><CyberCrimeSupport /></Gate>} />
           <Route path="/admin" element={<Navigate to="/login" replace />} />
+          <Route path="/pdf-store" element={<Gate path="/pdf-store"><PdfStore /></Gate>} />
+          <Route path="/pdf-store/:id" element={<Gate path="/pdf-store"><PdfProduct /></Gate>} />
           <Route path="/cyber-portal" element={<Gate path="/cyber-portal"><CyberPortal /></Gate>} />
           <Route path="/threat-intel" element={<Gate path="/threat-intel"><ThreatIntel /></Gate>} />
           <Route path="/cyber-news" element={<Gate path="/cyber-news"><CyberNewsPortal /></Gate>} />

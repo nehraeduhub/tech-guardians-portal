@@ -1,5 +1,5 @@
 # Only the endpoint scripts are reachable; helpers and config are not.
-<FilesMatch "^(config|lib)\.php$">
+<FilesMatch "^(config|lib|store-lib)\.php$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
