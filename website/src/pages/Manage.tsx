@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
-import { type LucideIcon, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, isAdmin, uploadImage } from '@/lib/api';
 import AdminPasswordPanel from '@/components/AdminPasswordPanel';
 import HomeContentPanel from '@/components/HomeContentPanel';
 import LayoutPanel from '@/components/admin/LayoutPanel';
+import ThemePanel from '@/components/admin/ThemePanel';
 import ListEditor from '@/components/admin/ListEditor';
 import { CUSTOM_SECTIONS, MEDIA_LIST, PDF_LIST, VIDEO_LIST } from '@/lib/content-lists';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
@@ -71,10 +72,11 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
-type ManageTab = 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos'
+type ManageTab = 'themes' | 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos'
   | 'payments' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
+  themes: { label: 'Themes', icon: Palette },
   layout: { label: 'Sections & Pages', icon: LayoutList },
   home: { label: 'Homepage Text', icon: Home },
   custom: { label: 'Custom Sections', icon: Plus },
@@ -330,7 +332,9 @@ const Manage = () => {
             ))}
           </div>
 
-          {tab === 'layout' ? (
+          {tab === 'themes' ? (
+            <ThemePanel onPublish={publish} />
+          ) : tab === 'layout' ? (
             <LayoutPanel onPublish={publish} />
           ) : tab === 'custom' ? (
             <ListEditor def={CUSTOM_SECTIONS} onPublish={publish} />

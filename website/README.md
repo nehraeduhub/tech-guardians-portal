@@ -210,6 +210,7 @@ When you upload a new build later, **do not delete or overwrite `api/data/` or `
 
 After signing in at `/login`:
 
+- **Manage → Themes** — six one-click themes (Cyber Neon original, Quantum Grid, Aurora Glass, Royal Command, Matrix Ops, Arctic Light). Each sets colours, fonts, card style and an animated 3D background on every page, course and payment pages included. Preview shows a theme only to you; Apply makes it live for everyone. Theme engine: `public/js/tg-theme.js`.
 - **Manage → Sections & Pages** — show, hide and reorder all 29 homepage sections (plus your custom ones), and switch whole pages off. A hidden page leaves the menus and shows "not found".
 - **Manage → Custom Sections** — add, edit, delete, reorder and show/hide your own homepage sections (title, text, image, button).
 - **Manage → PDF Library / Media Gallery / YouTube Videos**, plus Events, Courses, Blogs, Trainings At, Organization Services — add, edit, delete and show/hide items.

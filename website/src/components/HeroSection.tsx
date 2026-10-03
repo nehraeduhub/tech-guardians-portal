@@ -33,11 +33,11 @@ const HeroSection = () => {
               className="mt-6 text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-foreground"
               style={{ textWrap: 'balance' }}
             >
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(100deg, hsl(190 100% 62%) 0%, hsl(158 100% 55%) 45%, hsl(280 90% 72%) 100%)' }}>
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'var(--tg-hero-gradient, linear-gradient(100deg, hsl(190 100% 62%) 0%, hsl(158 100% 55%) 45%, hsl(280 90% 72%) 100%))' }}>
                 {home.heroTitle}
               </span>
               <br className="hidden sm:block" />
-              <span className="italic" style={{ color: 'hsl(35 100% 60%)' }}>{home.heroTitleAccent}</span>
+              <span className="italic" style={{ color: 'var(--tg-hero-accent, hsl(35 100% 60%))' }}>{home.heroTitleAccent}</span>
             </motion.h1>
 
             <motion.p
