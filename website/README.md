@@ -210,6 +210,8 @@ When you upload a new build later, **do not delete or overwrite `api/data/` or `
 
 After signing in at `/login`:
 
+- **Manage → PDF Store & Payments** — sell PDFs: title, description, price and offer price, cover, preview pages (shown as a gallery), tags, and the private Google Drive download link. Set the payee name, UPI ID, QR code, WhatsApp and email used on the payment page, choose whether buyers download after you approve (recommended) or instantly, and set the Google Sheet link.
+- **Manage → Payment History** — every course and PDF order plus rows synced from the Google Sheet. Approve or reject, WhatsApp the buyer their order link, search, filter, export to Excel. Refreshes every 15 seconds.
 - **Manage → Themes** — six one-click themes (Cyber Neon original, Quantum Grid, Aurora Glass, Royal Command, Matrix Ops, Arctic Light). Each sets colours, fonts, card style and an animated 3D background on every page, course and payment pages included. Preview shows a theme only to you; Apply makes it live for everyone. Theme engine: `public/js/tg-theme.js`.
 - **Manage → Sections & Pages** — show, hide and reorder all 29 homepage sections (plus your custom ones), and switch whole pages off. A hidden page leaves the menus and shows "not found".
 - **Manage → Custom Sections** — add, edit, delete, reorder and show/hide your own homepage sections (title, text, image, button).
@@ -232,6 +234,8 @@ Everything the admin changes on the Manage page (WhatsApp number, events, course
   - `settings.php` — public site settings (WhatsApp number, events, courses, blogs, ...). Anyone can read them; only a signed-in admin can save.
   - `news.php?feed=global|india` — cyber news and threat intel from public RSS feeds and NVD, cached for 5 minutes.
   - `payments.php` — the payment page saves each enrollment and screenshot here. Only a signed-in admin can read them (Manage → Payment History, or the history button on the payment page). Limited to 10 submissions per hour per IP.
+  - `store.php` — the PDF store (public product list without Drive links; admin save). Data in `api/data/store.json`.
+  - `payments.php` also serves each buyer's order page (`/order.html?id=…&token=…`) and redirects approved PDF buyers to the Drive link (`action=download`). Drive links are never sent to the browser before approval. New orders are posted to the Google Sheet; the sheet is read back at most once a minute (Apps Script `doGet` returning the rows, or a "Publish to web" CSV link — see Manage → PDF Store & Payments).
   - `upload.php` — admin-only image upload; files are saved in `/uploads/`, which never runs scripts.
 - The admin username and the default password hash are in `public/api/config.php`. A password changed from the Manage page is saved in `api/data/admin.json` and replaces the default. If you forget it, delete `api/data/admin.json` to go back to the password in `config.php`, or put a new hash there (`php -r 'echo password_hash("NewPassword", PASSWORD_DEFAULT);'`).
 - Requires PHP 8 with the `curl` extension (standard on Hostinger).
