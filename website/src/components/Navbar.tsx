@@ -8,6 +8,7 @@ import { isCoursesNavVisible } from '@/lib/courses-store';
 import { waLink } from '@/lib/site-settings';
 import { loadOrganizationOfferings, type OrganizationOffering } from '@/lib/organization-offerings-store';
 import { loadAboutVisibility } from '@/lib/about-settings';
+import { useHomeContent } from '@/lib/home-content';
 
 const BLOGS_PATH = '/tg-blogs';
 const LOGIN_PATH = '/login';
@@ -37,6 +38,7 @@ const Navbar = () => {
   const [organizationPortals, setOrganizationPortals] = useState<OrganizationOffering[]>([]);
   const [showAbout, setShowAbout] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
+  const home = useHomeContent();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -99,7 +101,7 @@ const Navbar = () => {
       {/* Top strip */}
       <div className="hidden md:block" style={{ background: 'hsl(var(--topbar))', color: 'hsl(var(--topbar-foreground))' }}>
         <div className="container mx-auto flex items-center justify-between h-9 px-4 text-xs">
-          <span className="opacity-80">Keep Learning and Keep Sharing · Cybersecurity, Awareness & Forensics</span>
+          <span className="opacity-80">{home.topBar}</span>
           <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition">
             <MessageCircle className="w-3.5 h-3.5" /> Support Center
           </a>

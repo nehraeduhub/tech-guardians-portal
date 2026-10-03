@@ -5,6 +5,7 @@ import { waLink } from '@/lib/site-settings';
 import { useEffect, useState } from 'react';
 import { loadOrganizationOfferings, type OrganizationOffering } from '@/lib/organization-offerings-store';
 import { loadAboutVisibility } from '@/lib/about-settings';
+import { useHomeContent } from '@/lib/home-content';
 
 const HIDDEN_ORGANIZATION_PORTALS = new Set(['security-assessment', 'cyber-range']);
 
@@ -14,6 +15,7 @@ const Footer = () => {
 
   const [organizationPortals, setOrganizationPortals] = useState<OrganizationOffering[]>([]);
   const [showAbout, setShowAbout] = useState(true);
+  const home = useHomeContent();
 
   useEffect(() => {
     const refresh = () => {
@@ -51,8 +53,7 @@ const Footer = () => {
               <span className="text-base font-semibold text-foreground">Tech Guardians</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-              An all-in-one cybersecurity, awareness, and digital forensics platform —
-              built to protect people, families, and businesses at the source. Keep Learning and Keep Sharing.
+              {home.footerAbout}
             </p>
           </div>
 

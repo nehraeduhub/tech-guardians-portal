@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { ShieldCheck, Fingerprint, Activity } from 'lucide-react';
 import HeroScene from './HeroScene';
+import { useHomeContent } from '@/lib/home-content';
 
 const HeroSection = () => {
+  const home = useHomeContent();
   return (
     <section id="home" className="relative overflow-hidden">
       {/* Soft brand gradient wash */}
@@ -23,7 +25,7 @@ const HeroSection = () => {
               className="rl-pill"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              Keep Learning and Keep Sharing
+              {home.heroBadge}
             </motion.span>
 
             <motion.h1
@@ -32,19 +34,17 @@ const HeroSection = () => {
               style={{ textWrap: 'balance' }}
             >
               <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(100deg, hsl(190 100% 62%) 0%, hsl(158 100% 55%) 45%, hsl(280 90% 72%) 100%)' }}>
-                Secure Your Digital Life
+                {home.heroTitle}
               </span>
               <br className="hidden sm:block" />
-              <span className="italic" style={{ color: 'hsl(35 100% 60%)' }}>with Tech Guardians</span>
+              <span className="italic" style={{ color: 'hsl(35 100% 60%)' }}>{home.heroTitleAccent}</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
               className="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed"
             >
-              Tech Guardians is an all-in-one cybersecurity, awareness, and forensics platform
-              that keeps scams, fraud, and modern digital threats at bay — for people, families,
-              and businesses.
+              {home.heroText}
             </motion.p>
 
             <motion.div
@@ -64,7 +64,7 @@ const HeroSection = () => {
           >
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-primary/30 bg-card shadow-[0_30px_80px_-30px_hsl(var(--primary)/0.45)]">
               <img
-                src="/images/tech-guardians-home-team.png"
+                src={home.heroImage}
                 alt="Tech Guardians cyber security awareness and training team"
                 className="absolute inset-0 h-full w-full object-contain"
                 loading="eager"

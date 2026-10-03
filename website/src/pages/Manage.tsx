@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
-import { BookOpen, KeyRound, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
+import { BookOpen, Home, KeyRound, Building2, CalendarClock, CloudDownload, Download, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Upload, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, isAdmin, uploadImage } from '@/lib/api';
 import AdminPasswordPanel from '@/components/AdminPasswordPanel';
+import HomeContentPanel from '@/components/HomeContentPanel';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
 import {
   PaymentRecord,
@@ -69,7 +70,7 @@ const emptyEvent = (): TGEvent => ({
 
 const Manage = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<'events' | 'courses' | 'blogs' | 'payments' | 'contact' | 'trainers' | 'video' | 'offerings' | 'about' | 'password'>('events');
+  const [tab, setTab] = useState<'events' | 'courses' | 'blogs' | 'payments' | 'contact' | 'trainers' | 'video' | 'offerings' | 'about' | 'password' | 'home'>('home');
   const [about, setAbout] = useState(loadAboutVisibility);
   const [publishError, setPublishError] = useState('');
   const [blogs, setBlogs] = useState<TGBlog[]>([]);
@@ -281,7 +282,7 @@ const Manage = () => {
 
           {publishError && <p role="alert" className="mb-5 text-sm text-destructive">{publishError}</p>}
           <div className="flex flex-wrap gap-2 mb-6">
-            {(['events', 'offerings', 'courses', 'blogs', 'payments', 'trainers', 'contact', 'video', 'about', 'password'] as const).map((t) => (
+            {(['home', 'events', 'offerings', 'courses', 'blogs', 'payments', 'trainers', 'contact', 'video', 'about', 'password'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -289,13 +290,15 @@ const Manage = () => {
                   tab === t ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {t === 'password' ? <KeyRound className="w-4 h-4" /> : t === 'events' ? <CalendarClock className="w-4 h-4" /> : t === 'offerings' ? <Building2 className="w-4 h-4" /> : t === 'courses' ? <GraduationCap className="w-4 h-4" /> : t === 'blogs' ? <BookOpen className="w-4 h-4" /> : t === 'payments' ? <Wallet className="w-4 h-4" /> : t === 'trainers' ? <Users className="w-4 h-4" /> : t === 'about' ? <Eye className="w-4 h-4" /> : t === 'video' ? <Video className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
-                {t === 'password' ? 'Admin Password' : t === 'events' ? 'Manage Events' : t === 'offerings' ? 'Organization Services' : t === 'courses' ? 'Manage Courses' : t === 'blogs' ? 'Manage Blogs' : t === 'payments' ? 'Payment History' : t === 'trainers' ? 'Trainings At' : t === 'video' ? 'Featured Training' : t === 'about' ? 'About Us' : 'WhatsApp Number'}
+                {t === 'home' ? <Home className="w-4 h-4" /> : t === 'password' ? <KeyRound className="w-4 h-4" /> : t === 'events' ? <CalendarClock className="w-4 h-4" /> : t === 'offerings' ? <Building2 className="w-4 h-4" /> : t === 'courses' ? <GraduationCap className="w-4 h-4" /> : t === 'blogs' ? <BookOpen className="w-4 h-4" /> : t === 'payments' ? <Wallet className="w-4 h-4" /> : t === 'trainers' ? <Users className="w-4 h-4" /> : t === 'about' ? <Eye className="w-4 h-4" /> : t === 'video' ? <Video className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
+                {t === 'home' ? 'Homepage' : t === 'password' ? 'Admin Password' : t === 'events' ? 'Manage Events' : t === 'offerings' ? 'Organization Services' : t === 'courses' ? 'Manage Courses' : t === 'blogs' ? 'Manage Blogs' : t === 'payments' ? 'Payment History' : t === 'trainers' ? 'Trainings At' : t === 'video' ? 'Featured Training' : t === 'about' ? 'About Us' : 'WhatsApp Number'}
               </button>
             ))}
           </div>
 
-          {tab === 'password' ? (
+          {tab === 'home' ? (
+            <HomeContentPanel onPublish={publish} />
+          ) : tab === 'password' ? (
             <AdminPasswordPanel />
           ) : tab === 'about' ? (
             <div className="space-y-5 max-w-xl">
