@@ -8,12 +8,18 @@ export interface HomeSectionInfo { id: string; label: string }
 
 /** Every built-in homepage section, in default order. Custom sections use `custom:<id>`. */
 export const HOME_SECTIONS: HomeSectionInfo[] = [
-  { id: 'hero', label: 'Hero (headline and photo)' },
+  { id: 'hero', label: 'Hero banner (headline and 3D shield)' },
+  { id: 'highlights', label: 'Service cards (4)' },
+  { id: 'ecosystem', label: 'Ecosystem picture cards (3)' },
+  { id: 'courses', label: 'Training Programs' },
+  { id: 'products', label: 'Products & Solutions' },
+  { id: 'events', label: 'Events & Workshops' },
+  { id: 'pdf-store', label: 'PDF Store (books for sale)' },
+  { id: 'portals', label: 'Portals' },
+  { id: 'contact', label: 'Contact banner' },
   { id: 'cyber-crime-banner', label: 'Cyber crime help banner' },
   { id: 'featured-training', label: 'Featured training video' },
-  { id: 'courses', label: 'Courses' },
-  { id: 'pdf-store', label: 'PDF Store (books for sale)' },
-  { id: 'news-events', label: 'News & events' },
+  { id: 'news-events', label: 'News & quick events (older design)' },
   { id: 'organization-offerings', label: 'Organization services' },
   { id: 'awareness', label: 'Awareness & trainings at' },
   { id: 'about', label: 'About' },
@@ -37,8 +43,12 @@ export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'trust', label: 'Trust / partners' },
   { id: 'enroll', label: 'Enroll call-to-action' },
   { id: 'enroll-form', label: 'Enroll form' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'contact-form', label: 'Contact form (older design)' },
 ];
+
+/** The clean homepage: these sections show unless the admin turns them on. */
+export const DEFAULT_HIDDEN_SECTIONS = HOME_SECTIONS.slice(9).map((s) => s.id);
+
 
 /** Pages that can be switched off. A switched-off page shows "not found". */
 export const SITE_PAGES: { path: string; label: string }[] = [
@@ -53,6 +63,9 @@ export const SITE_PAGES: { path: string; label: string }[] = [
   { path: '/cyber-range', label: 'Cyber Range' },
   { path: '/cyber-portal', label: 'Cyber Safety Portal' },
   { path: '/pdf-store', label: 'PDF Store' },
+  { path: '/training', label: 'Training Programs' },
+  { path: '/products', label: 'Products' },
+  { path: '/events', label: 'Events' },
   { path: '/account', label: 'Student accounts (My Account)' },
 ];
 
@@ -61,21 +74,26 @@ export interface SiteLayout {
   order: string[];
   hidden: string[];
   hiddenPages: string[];
+  /** 2 = the redesigned homepage. Older saved layouts keep only their page switches. */
+  version?: number;
 }
 
 export const LAYOUT_KEY = 'tg_layout';
 const EMPTY: SiteLayout = { order: [], hidden: [], hiddenPages: [] };
+export const LAYOUT_VERSION = 2;
 
 export const loadLayout = (): SiteLayout => {
   const saved = readSetting<Partial<SiteLayout>>(LAYOUT_KEY, EMPTY) || EMPTY;
+  const current = saved.version === LAYOUT_VERSION;
   return {
-    order: Array.isArray(saved.order) ? saved.order : [],
-    hidden: Array.isArray(saved.hidden) ? saved.hidden : [],
+    order: current && Array.isArray(saved.order) ? saved.order : [],
+    hidden: current && Array.isArray(saved.hidden) ? saved.hidden : DEFAULT_HIDDEN_SECTIONS,
     hiddenPages: Array.isArray(saved.hiddenPages) ? saved.hiddenPages : [],
+    version: LAYOUT_VERSION,
   };
 };
 
-export const saveLayout = (layout: SiteLayout) => publishSetting(LAYOUT_KEY, layout);
+export const saveLayout = (layout: SiteLayout) => publishSetting(LAYOUT_KEY, { ...layout, version: LAYOUT_VERSION });
 
 /** Full ordered list of section ids: saved order first, then anything new. */
 export const orderedSectionIds = (layout: SiteLayout, customIds: string[]) => {

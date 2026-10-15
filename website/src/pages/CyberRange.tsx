@@ -101,7 +101,7 @@ const CyberRange = () => {
   return (
     <SiteFrame>
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-10">
+      <section className="tg-dark tg-band relative overflow-hidden px-4 pb-16 pt-12">
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 grid-pattern" />
         <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[480px] w-[480px] rounded-full bg-primary/15 blur-[120px]" />
         <div className="container relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.05fr]">

@@ -1,4 +1,5 @@
 import { waLink } from '@/lib/site-settings';
+import PageHero from '@/components/pro/PageHero';
 import { useState } from 'react';
 import { Send, ShieldAlert, Phone, AlertTriangle } from 'lucide-react';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -21,7 +22,10 @@ const CyberCrimeSupport = () => {
   };
 
   return (
-    <SiteFrame mainClassName="pt-24">
+    <SiteFrame>
+      <PageHero variant="radar" eyebrow="Help after cyber crime" title="Cyber Crime Support"
+        lead="Victim of online fraud, hacking, identity theft or another cyber crime? Our experts guide you through reporting, recovery and protecting yourself."
+        actions={<><a href="tel:1930" className="tg-btn !bg-red-600 text-white hover:!bg-red-500">Call 1930 now</a><a href="https://cybercrime.gov.in/" target="_blank" rel="noopener noreferrer" className="tg-btn-outline">cybercrime.gov.in</a></>} />
       <section className="section-padding">
         <div className="container mx-auto max-w-4xl">
           {/* Emergency Banner */}
@@ -30,9 +34,9 @@ const CyberCrimeSupport = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 border border-red-500/40 mb-4">
                 <ShieldAlert className="w-8 h-8 text-red-500" />
               </div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-red-500 mb-3" style={{ lineHeight: 1.1 }}>
-                Cyber Crime Support
-              </h1>
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-red-600 mb-3" style={{ lineHeight: 1.1 }}>
+                Report within the first hour
+              </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Have you been a victim of online fraud, hacking, identity theft, or any cyber crime?
                 <strong className="text-foreground"> Tech Guardians is here to help.</strong> Our experts will guide you through the process of reporting, recovering, and protecting yourself.

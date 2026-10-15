@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import HeroBand from '@/components/pro/HeroBand';
 import { motion } from 'framer-motion';
 import {
   Search, Phone, Mail, CreditCard, Car, Camera, Smartphone, MapPin, Activity,
@@ -175,9 +176,9 @@ const IntelligenceHub = () => {
   useEffect(() => { document.title = 'Tech Guardians — Intelligence Hub'; }, []);
 
   return (
-    <SiteFrame mainClassName="pt-24">
+    <SiteFrame>
       {/* HERO */}
-      <section className="section-padding pb-10 relative overflow-hidden">
+      <HeroBand variant="rings" align="center" className="section-padding pb-10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-cyber-green/10 blur-[140px]" />
         </div>
@@ -220,7 +221,7 @@ const IntelligenceHub = () => {
             </div>
           </ScrollReveal>
         </div>
-      </section>
+      </HeroBand>
 
       {/* LIVE QUERY TOOLS (IP + PIN) — at top under hero */}
       <section className="section-padding pt-6 pb-10">

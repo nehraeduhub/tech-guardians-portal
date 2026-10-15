@@ -129,7 +129,46 @@ export const RANGE_SCENARIOS: ListDef = {
   ]),
 };
 
-export const MANAGED_LISTS = [CUSTOM_SECTIONS, PDF_LIST, MEDIA_LIST, VIDEO_LIST, NEWS_ALERTS, RANGE_SCENARIOS];
+export const HOME_HIGHLIGHTS: ListDef = {
+  key: 'tg_home_highlights',
+  title: 'Homepage service cards',
+  description: 'The four cards just below the homepage banner.',
+  itemLabel: 'card',
+  fields: [
+    { key: 'title', label: 'Title' },
+    { key: 'text', label: 'Short text', type: 'textarea' },
+    { key: 'icon', label: 'Icon', type: 'select', options: ['ShieldCheck', 'Laptop', 'Users', 'Settings', 'GraduationCap', 'Radar', 'Code2', 'Lock', 'Search', 'Server'] },
+    { key: 'link', label: 'Link', type: 'url', placeholder: '/training or https://…' },
+  ],
+  seed: seed([
+    { title: 'Cybersecurity Training', text: 'Structured programs from basics to advanced, real-world skills.', icon: 'ShieldCheck', link: '/training' },
+    { title: 'Practical Labs', text: 'Hands-on labs, tools and scenarios that build real confidence.', icon: 'Laptop', link: '/cyber-range' },
+    { title: 'Cyber Awareness', text: 'Digital safety sessions, tips and guides for everyone.', icon: 'Users', link: '/training/awareness-booking' },
+    { title: 'Technology Solutions', text: 'Security tools, audits and secure development for your business.', icon: 'Settings', link: '/products' },
+  ]),
+};
+
+export const HOME_ECOSYSTEM: ListDef = {
+  key: 'tg_home_ecosystem',
+  title: 'Homepage feature cards',
+  description: 'The large picture cards in “Explore the Tech Guardians ecosystem”.',
+  itemLabel: 'card',
+  fields: [
+    { key: 'eyebrow', label: 'Small label' },
+    { key: 'title', label: 'Title' },
+    { key: 'text', label: 'Text', type: 'textarea' },
+    { key: 'image', label: 'Picture', type: 'image' },
+    { key: 'buttonText', label: 'Button text' },
+    { key: 'buttonLink', label: 'Button link', type: 'url', placeholder: '/training or https://…' },
+  ],
+  seed: seed([
+    { eyebrow: 'Training Programs', title: 'Upgrade your skills with practical cybersecurity training', text: 'Live classes and hands-on labs for students, professionals and organisations.', image: '/images/site/home-training.jpg', buttonText: 'View Training', buttonLink: '/training' },
+    { eyebrow: 'Resources & Guides', title: 'Stay informed. Stay ahead.', text: 'Handbooks, guides, checklists and the latest cybersecurity news.', image: '/images/site/home-resources.jpg', buttonText: 'Explore Resources', buttonLink: '/pdf-store' },
+    { eyebrow: 'Cyber Awareness', title: 'A safer digital world for everyone', text: 'Awareness sessions with real examples to keep students, staff and families safe online.', image: '/images/site/home-awareness.jpg', buttonText: 'Book a Session', buttonLink: '/training/awareness-booking' },
+  ]),
+};
+
+export const MANAGED_LISTS = [CUSTOM_SECTIONS, PDF_LIST, MEDIA_LIST, VIDEO_LIST, NEWS_ALERTS, RANGE_SCENARIOS, HOME_HIGHLIGHTS, HOME_ECOSYSTEM];
 
 export const newRowId = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 

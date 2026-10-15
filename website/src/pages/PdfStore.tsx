@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import PageHero from '@/components/pro/PageHero';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight, Download, FileText, Lock, ShieldCheck, ShoppingCart, X } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
@@ -41,14 +42,11 @@ export const PdfStore = () => {
   useEffect(() => { loadStore().then((d) => setProducts(d.products)).catch(() => setError('The store could not be loaded. Please refresh the page.')); }, []);
 
   return (
-    <SiteFrame mainClassName="pt-24">
+    <SiteFrame>
+      <PageHero variant="crystal" eyebrow="Tech Guardians PDF Store" title="Practical cyber security guides" accent="you can keep"
+        lead="Field-tested handbooks written by our trainers. Look inside before you buy, pay by UPI, and download as soon as your payment is confirmed." />
       <section className="section-padding">
         <div className="container mx-auto max-w-6xl space-y-10">
-          <header className="max-w-2xl space-y-3">
-            <span className="text-xs font-display uppercase tracking-[0.3em] text-primary">Tech Guardians PDF Store</span>
-            <h1 className="font-display text-3xl font-bold md:text-5xl" style={{ textWrap: 'balance' }}>Practical cyber security guides you can keep</h1>
-            <p className="text-muted-foreground">Field-tested handbooks written by our trainers. Look inside before you buy, pay by UPI, and download instantly once your payment is confirmed.</p>
-          </header>
 
           {error && <p role="alert" className="text-destructive">{error}</p>}
           {!products && !error && <p className="text-muted-foreground">Loading PDFs…</p>}

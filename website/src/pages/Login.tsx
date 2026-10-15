@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import HeroBand from '@/components/pro/HeroBand';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, ShieldCheck, LogIn } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
@@ -28,8 +29,8 @@ const Login = () => {
   };
 
   return (
-    <SiteFrame mainClassName="pt-24">
-      <section className="section-padding relative">
+    <SiteFrame>
+      <HeroBand variant="rings" align="center" className="section-padding">
         <div className="container mx-auto max-w-md">
           <div className="rounded-2xl border border-border bg-card/80 backdrop-blur shadow-[0_20px_60px_-20px_rgba(30,64,175,0.25)] p-8 md:p-10">
             <div className="flex flex-col items-center text-center mb-8">
@@ -81,10 +82,10 @@ const Login = () => {
 
           <p className="text-center text-xs text-muted-foreground mt-6">
             New here? <a href="/#courses" className="text-primary hover:underline">Browse courses</a> or{' '}
-            <a href="/courses/awareness-booking.html" className="text-primary hover:underline">book an awareness session</a>.
+            <a href="/training/awareness-booking" className="text-primary hover:underline">book an awareness session</a>.
           </p>
         </div>
-      </section>
+      </HeroBand>
     </SiteFrame>
   );
 };

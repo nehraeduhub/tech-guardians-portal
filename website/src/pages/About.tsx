@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import HeroBand from '@/components/pro/HeroBand';
 import { ArrowRight, Award, BookOpen, Eye, Globe2, ShieldCheck, Target, Users } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -22,7 +23,7 @@ const stats = [
 
 const About = () => (
   <SiteFrame>
-    <section className="section-padding relative overflow-hidden border-b border-border/70">
+    <HeroBand variant="rings" align="center" className="section-padding">
       <div className="absolute inset-0 grid-pattern opacity-40" aria-hidden="true" />
       <div className="container relative mx-auto max-w-6xl text-center">
         <ScrollReveal>
@@ -34,7 +35,7 @@ const About = () => (
           <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-muted-foreground">Tech Guardians is a cybersecurity awareness, practical training, and digital forensics organization helping citizens, learners, and institutions understand threats, build skills, and respond confidently.</p>
         </ScrollReveal>
       </div>
-    </section>
+    </HeroBand>
 
     <section className="section-padding">
       <div className="container mx-auto grid max-w-6xl gap-6 md:grid-cols-2">

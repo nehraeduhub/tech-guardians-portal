@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import HeroBand from '@/components/pro/HeroBand';
 import SiteFrame from '@/components/SiteFrame';
 import ScrollReveal from '@/components/ScrollReveal';
 import {
@@ -91,7 +92,7 @@ const SecurityAssessment = () => {
 
   return (
   <SiteFrame>
-    <section className="px-4 pt-8 pb-12">
+    <HeroBand variant="rings" align="right" className="px-4 pt-14 pb-16">
       <div className="container mx-auto max-w-6xl">
         <ScrollReveal>
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">
@@ -116,7 +117,7 @@ const SecurityAssessment = () => {
           </div>
         </ScrollReveal>
       </div>
-    </section>
+    </HeroBand>
 
     {/* Services */}
     <section className="px-4 pb-14">

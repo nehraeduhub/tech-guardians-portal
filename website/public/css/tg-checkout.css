@@ -53,7 +53,7 @@ h2{font-size:18px}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:999px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;transition:filter .2s,transform .1s}
 .btn:active{transform:scale(.98)}
-.btn-pri{background:linear-gradient(135deg,var(--cyan),var(--green));color:#001018;width:100%;font-size:15.5px}
+.btn-pri{background:linear-gradient(135deg,#1a6dff,#0057e0);color:#fff;width:100%;font-size:15.5px;box-shadow:0 12px 26px -14px rgba(0,87,224,.9)}
 .btn-pri:hover{filter:brightness(1.07)}
 .btn-pri[disabled]{opacity:.55;cursor:not-allowed}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}

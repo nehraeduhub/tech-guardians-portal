@@ -9,6 +9,13 @@ export interface HomeContent {
   heroTitleAccent: string;
   heroText: string;
   heroImage: string;
+  heroPoints: string;
+  heroPrimaryText: string;
+  heroPrimaryLink: string;
+  heroSecondaryText: string;
+  heroSecondaryLink: string;
+  ctaTitle: string;
+  ctaText: string;
   footerAbout: string;
 }
 
@@ -16,12 +23,19 @@ export const HOME_CONTENT_KEY = 'tg_home_content';
 
 export const DEFAULT_HOME_CONTENT: HomeContent = {
   topBar: 'Keep Learning and Keep Sharing · Cybersecurity, Awareness & Forensics',
-  heroBadge: 'Keep Learning and Keep Sharing',
-  heroTitle: 'Secure Your Digital Life',
-  heroTitleAccent: 'with Tech Guardians',
+  heroBadge: 'Cybersecurity • Technology • Learning',
+  heroTitle: 'Build Skills.',
+  heroTitleAccent: 'Strengthen Security.',
   heroText:
-    'Tech Guardians is an all-in-one cybersecurity, awareness, and forensics platform that keeps scams, fraud, and modern digital threats at bay — for people, families, and businesses.',
+    'Practical cybersecurity training, security tools and awareness programmes for a safer connected world — for students, professionals and organisations.',
   heroImage: '/images/tech-guardians-home-team.png',
+  heroPoints: 'Expert Guidance | Hands-on Learning | Real-world Skills | For Students, Professionals & Organisations',
+  heroPrimaryText: 'Explore Training',
+  heroPrimaryLink: '/training',
+  heroSecondaryText: 'Explore Products',
+  heroSecondaryLink: '/products',
+  ctaTitle: 'Ready to strengthen your security?',
+  ctaText: 'Talk to Tech Guardians about training for your team, a security assessment or one of our tools.',
   footerAbout:
     'An all-in-one cybersecurity, awareness, and digital forensics platform — built to protect people, families, and businesses at the source. Keep Learning and Keep Sharing.',
 };

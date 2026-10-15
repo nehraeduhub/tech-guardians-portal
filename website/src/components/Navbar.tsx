@@ -1,281 +1,170 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, MessageCircle, ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, ChevronDown, ExternalLink, Menu, Search, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import tgLogo from '@/assets/tg-logo.png';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { sectionLinks, toSectionId } from '@/lib/site-nav';
-import { isCoursesNavVisible } from '@/lib/courses-store';
-import { waLink } from '@/lib/site-settings';
-import { loadOrganizationOfferings, offeringMenuLabel, type OrganizationOffering } from '@/lib/organization-offerings-store';
-import { loadAboutVisibility } from '@/lib/about-settings';
-import { useHomeContent } from '@/lib/home-content';
+import { useSiteMenus } from '@/lib/site-nav';
 import { useLayout } from '@/lib/layout';
-
-const BLOGS_PATH = '/tg-blogs';
-const LOGIN_PATH = '/login';
-const ACCOUNT_PATH = '/account';
-
-const fixedPortals: { label: string; path: string; external?: boolean }[] = [
-  { label: 'Cyber News Portal', path: '/cyber-news' },
-  { label: 'Threat Intel Hub', path: '/threat-intel' },
-  { label: 'Cyber & Forensic Hub', path: '/forensic-engine.html' },
-  { label: 'Cyber Safety Portal', path: '/cyber-portal' },
-];
-
-const allCourses: { label: string; path: string }[] = [
-  { label: 'Web Server & Hosting', path: '/courses/web-server-hosting.html' },
-  { label: 'Learn Sophos Firewall', path: '/courses/sophos-firewall.html' },
-  { label: 'Learn Active Directory', path: '/courses/active-directory.html' },
-  { label: 'Build Your First AI Agent', path: '/courses/ai-agent.html' },
-  { label: 'Ethical Hacking: Password Cracking', path: '/courses/password-cracking.html' },
-  { label: 'Social Media & Android Hacking', path: '/courses/social-android-hacking.html' },
-  { label: 'Cyber Awareness Booking', path: '/courses/awareness-booking.html' },
-];
+import { iconFor } from '@/components/pro/icons';
+import SiteSearch from '@/components/pro/SiteSearch';
+import SmartLink from '@/components/pro/SmartLink';
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<null | 'portals' | 'courses'>(null);
-  const [showCourses, setShowCourses] = useState(true);
-  const [organizationPortals, setOrganizationPortals] = useState<OrganizationOffering[]>([]);
-  const [showAbout, setShowAbout] = useState(true);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const home = useHomeContent();
+  const menus = useSiteMenus();
   const layout = useLayout();
-  const pageOn = (path: string) => !layout.hiddenPages.includes(path.split(/[?#]/)[0]);
+  const [open, setOpen] = useState<string | null>(null);
+  const [mobile, setMobile] = useState(false);
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const bar = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const accountOn = !layout.hiddenPages.includes('/account');
 
   useEffect(() => {
-    const refreshSettings = () => {
-      setShowCourses(isCoursesNavVisible());
-      setOrganizationPortals(loadOrganizationOfferings().filter((item) => item.menuVisible));
-      setShowAbout(loadAboutVisibility().headerVisible);
-    };
-    refreshSettings();
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('tg-settings-changed', refreshSettings);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('tg-settings-changed', refreshSettings);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  const tgPortals: { label: string; path: string; external?: boolean }[] = [
-    ...organizationPortals.map((item) => ({ label: offeringMenuLabel(item), path: item.page })),
-    ...fixedPortals,
-  ].filter((p) => pageOn(p.path));
-
+  useEffect(() => { setOpen(null); setMobile(false); }, [location.pathname, location.hash]);
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpenMenu(null);
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+    const close = (e: MouseEvent) => { if (bar.current && !bar.current.contains(e.target as Node)) setOpen(null); };
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(null); };
+    document.addEventListener('mousedown', close);
+    document.addEventListener('keydown', esc);
+    return () => { document.removeEventListener('mousedown', close); document.removeEventListener('keydown', esc); };
   }, []);
+  useEffect(() => { document.body.style.overflow = mobile ? 'hidden' : ''; return () => { document.body.style.overflow = ''; }; }, [mobile]);
 
-  const goToSection = (label: string) => {
-    const id = toSectionId(label);
-    if (location.pathname === '/') {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      navigate(id === 'home' ? '/' : `/#${id}`);
-    }
-    setMobileOpen(false);
-    setOpenMenu(null);
+  const goContact = () => {
+    setMobile(false);
+    if (location.pathname === '/') document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    else navigate('/#contact');
   };
+  const active = (href: string) => href !== '/' && location.pathname.startsWith(href);
+  const menuActive = (id: string) => menus.find((m) => m.id === id)?.items.some((i) => active(i.href)) || (id === 'training' && active('/training')) || (id === 'products' && active('/products'));
 
-
-  const openLink = (path: string, external?: boolean) => {
-    if (external) {
-      window.open(path, '_blank', 'noopener,noreferrer');
-    } else if (path.endsWith('.html')) {
-      window.location.href = path;
-    } else {
-      navigate(path);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    setOpenMenu(null);
-    setMobileOpen(false);
-  };
+  const linkCls = (on: boolean) => `relative inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-[14.5px] font-medium transition-colors ${on ? 'text-white' : 'text-slate-300 hover:text-white'}`;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      {/* Top strip */}
-      <div className="hidden md:block" style={{ background: 'hsl(var(--topbar))', color: 'hsl(var(--topbar-foreground))' }}>
-        <div className="container mx-auto flex items-center justify-between h-9 px-4 text-xs">
-          <span className="opacity-80">{home.topBar}</span>
-          <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition">
-            <MessageCircle className="w-3.5 h-3.5" /> Support Center
-          </a>
-        </div>
+    <header className="tg-dark fixed inset-x-0 top-0 z-50">
+      <div ref={bar} className={`border-b transition-[background,box-shadow] duration-300 ${scrolled ? 'border-white/10 bg-[#061330]/95 shadow-[0_10px_30px_-18px_rgba(0,0,0,.8)] backdrop-blur-xl' : 'border-white/5 bg-[#061330]'}`}>
+        <nav className="tg-container flex h-[72px] items-center justify-between gap-4" aria-label="Main">
+          <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="Tech Guardians home">
+            <img src={tgLogo} alt="" className="h-11 w-11 object-contain" />
+            <span className="leading-tight">
+              <span className="block font-display text-[19px] font-extrabold tracking-tight text-white">Tech <span className="text-[#3b8bff]">Guardians</span></span>
+              <span className="block text-[11px] font-medium tracking-wide text-slate-400">Keep Learning Keep Sharing</span>
+            </span>
+          </Link>
+
+          <div className="hidden items-center gap-0.5 xl:flex">
+            <Link to="/" className={linkCls(location.pathname === '/')}>
+              Home{location.pathname === '/' && <span className="absolute inset-x-3 -bottom-[17px] h-0.5 rounded bg-[#3b8bff]" />}
+            </Link>
+            {menus.map((m) => (
+              <div key={m.id} className="relative">
+                <button
+                  type="button"
+                  className={linkCls(open === m.id || !!menuActive(m.id))}
+                  aria-expanded={open === m.id}
+                  aria-haspopup="true"
+                  onClick={() => setOpen(open === m.id ? null : m.id)}
+                  onMouseEnter={() => open && setOpen(m.id)}
+                >
+                  {m.label}<ChevronDown className={`h-3.5 w-3.5 transition-transform ${open === m.id ? 'rotate-180' : ''}`} />
+                  {menuActive(m.id) && <span className="absolute inset-x-3 -bottom-[17px] h-0.5 rounded bg-[#3b8bff]" />}
+                </button>
+                <AnimatePresence>
+                  {open === m.id && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.16 }}
+                      className={`absolute left-1/2 top-[calc(100%+14px)] -translate-x-1/2 rounded-2xl border border-white/10 bg-[#0a1a3d] p-2 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] ${m.items.length > 5 ? 'w-[620px]' : 'w-[340px]'}`}
+                    >
+                      <div className={`grid gap-1 ${m.items.length > 5 ? 'grid-cols-2' : ''}`}>
+                        {m.items.map((item) => {
+                          const Icon = iconFor(item.icon);
+                          return (
+                            <SmartLink key={item.href + item.label} item={item} className="group flex items-start gap-3 rounded-xl p-3 hover:bg-white/5" onClick={() => setOpen(null)}>
+                              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#1d4ed8]/25 text-[#60a5fa] group-hover:bg-[#2563eb] group-hover:text-white"><Icon className="h-[18px] w-[18px]" /></span>
+                              <span className="min-w-0">
+                                <span className="flex items-center gap-1 text-sm font-semibold text-white">{item.label}{item.external && <ExternalLink className="h-3 w-3 text-slate-400" />}</span>
+                                {item.description && <span className="mt-0.5 block text-xs leading-snug text-slate-400">{item.description}</span>}
+                              </span>
+                            </SmartLink>
+                          );
+                        })}
+                      </div>
+                      {m.footer && (
+                        <SmartLink item={m.footer} className="mt-1 flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 text-sm font-semibold text-[#60a5fa] hover:bg-white/10" onClick={() => setOpen(null)}>
+                          {m.footer.label}<ArrowRight className="h-4 w-4" />
+                        </SmartLink>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+            <button type="button" onClick={goContact} className={linkCls(false)}>Contact</button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button type="button" onClick={() => setSearching(true)} className="grid h-10 w-10 place-items-center rounded-lg text-slate-300 hover:bg-white/5 hover:text-white" aria-label="Search the website">
+              <Search className="h-5 w-5" />
+            </button>
+            {accountOn && <a href="/account.html" className="hidden whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:text-white md:inline-flex xl:hidden 2xl:inline-flex">My Account</a>}
+            <Link to="/training" className="tg-btn-primary hidden whitespace-nowrap !py-2.5 sm:inline-flex">Explore Training <ArrowRight className="h-4 w-4" /></Link>
+            <button type="button" onClick={() => setMobile(true)} className="grid h-10 w-10 place-items-center rounded-lg text-white hover:bg-white/5 xl:hidden" aria-label="Open menu">
+              <Menu className="h-6 w-6" />
+            </button>
+          </div>
+        </nav>
       </div>
 
-      <motion.nav
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className={`transition-all duration-300 ${scrolled ? 'bg-background/90 backdrop-blur-xl border-b border-border shadow-sm' : 'bg-background/60 backdrop-blur-md border-b border-transparent'}`}
-      >
-        <div className="container mx-auto flex items-center justify-between h-16 px-4">
-          <button onClick={() => goToSection('Home')} className="flex items-center gap-2 group">
-            <img src={tgLogo} alt="Tech Guardians logo" className="w-9 h-9 rounded-md object-contain" />
-            <span className="text-lg font-semibold tracking-tight text-foreground">
-              Tech<span className="text-primary"> Guardians</span>
-            </span>
-          </button>
-
-          <div ref={menuRef} className="hidden lg:flex items-center gap-1">
-            <button
-              onClick={() => goToSection('Home')}
-              className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      <AnimatePresence>
+        {mobile && (
+          <motion.div className="fixed inset-0 z-50 xl:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <button className="absolute inset-0 bg-black/60" aria-label="Close menu" onClick={() => setMobile(false)} />
+            <motion.aside
+              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'tween', duration: 0.25 }}
+              className="absolute inset-y-0 right-0 flex w-[min(92vw,380px)] flex-col overflow-y-auto bg-[#071633] p-4"
+              aria-label="Menu"
             >
-              Home
-            </button>
-
-            {/* Courses dropdown */}
-            <div className="relative" style={{ display: showCourses ? undefined : 'none' }}>
-              <button
-                onClick={() => setOpenMenu(openMenu === 'courses' ? null : 'courses')}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
-              >
-                Courses <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              {openMenu === 'courses' && (
-                <div className="absolute right-0 mt-1 w-72 bg-popover border border-border rounded-xl shadow-lg py-2 z-50">
-                  {allCourses.map((c) => (
-                    <button
-                      key={c.path}
-                      onClick={() => openLink(c.path)}
-                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                    >
-                      {c.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* TG Portals dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setOpenMenu(openMenu === 'portals' ? null : 'portals')}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
-              >
-                TG Portals <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              {openMenu === 'portals' && (
-                <div className="absolute right-0 mt-1 w-60 bg-popover border border-border rounded-xl shadow-lg py-2 z-50">
-                  {tgPortals.map((p) => (
-                    <button
-                      key={p.path}
-                      onClick={() => openLink(p.path, p.external)}
-                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {sectionLinks.map((link) => (
-              <button
-                key={link}
-                onClick={() => goToSection(link)}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link}
-              </button>
-            ))}
-
-            {pageOn('/pdf-store') && (
-              <button onClick={() => openLink('/pdf-store')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                PDF Store
-              </button>
-            )}
-            {showAbout && pageOn('/about') && (
-              <button onClick={() => openLink('/about')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                About Us
-              </button>
-            )}
-
-          </div>
-
-          <div className="hidden lg:flex items-center gap-2">
-            {pageOn(ACCOUNT_PATH)
-              ? <a href="/account.html" className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">My Account</a>
-              : <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">Login</button>}
-            {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full border-2 border-primary text-primary px-5 py-2 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
-              TG Blogs
-            </button>}
-          </div>
-
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-foreground p-2" aria-label="Toggle menu">
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-background border-b border-border overflow-hidden"
-            >
-              <div className="flex flex-col p-4 gap-1">
-                {sectionLinks.map((link) => (
-                  <button key={link} onClick={() => goToSection(link)} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
-                    {link}
-                  </button>
-                ))}
-
-                {pageOn('/pdf-store') && (
-                  <button onClick={() => { openLink('/pdf-store'); setMobileOpen(false); }} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
-                    PDF Store
-                  </button>
-                )}
-                {showAbout && pageOn('/about') && (
-                  <button onClick={() => openLink('/about')} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
-                    About Us
-                  </button>
-                )}
-
-                {showCourses && (
-                  <>
-                    <div className="mt-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Courses</div>
-                    {allCourses.map((c) => (
-                      <button key={c.path} onClick={() => openLink(c.path)} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
-                        {c.label}
-                      </button>
-                    ))}
-                  </>
-                )}
-
-                <div className="mt-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">TG Portals</div>
-                {tgPortals.map((p) => (
-                  <button key={p.path} onClick={() => openLink(p.path, p.external)} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
-                    {p.label}
-                  </button>
-                ))}
-
-
-                {pageOn(ACCOUNT_PATH)
-                  ? <a href="/account.html" className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">My Account</a>
-                  : <button onClick={() => { navigate(LOGIN_PATH); setMobileOpen(false); }} className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">
-                  Login
-                </button>}
-                {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full bg-primary text-primary-foreground text-center px-5 py-3 text-sm font-semibold">
-                  TG Blogs
-                </button>}
+              <div className="mb-3 flex items-center justify-between">
+                <span className="font-display text-lg font-bold text-white">Menu</span>
+                <button onClick={() => setMobile(false)} className="grid h-10 w-10 place-items-center rounded-lg text-white hover:bg-white/5" aria-label="Close menu"><X className="h-6 w-6" /></button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
-    </div>
+              <Link to="/" className="rounded-xl px-3 py-3 font-semibold text-white hover:bg-white/5">Home</Link>
+              {menus.map((m) => (
+                <div key={m.id} className="border-t border-white/5">
+                  <button onClick={() => setMobileSection(mobileSection === m.id ? null : m.id)} className="flex w-full items-center justify-between rounded-xl px-3 py-3 font-semibold text-white hover:bg-white/5" aria-expanded={mobileSection === m.id}>
+                    {m.label}<ChevronDown className={`h-4 w-4 transition-transform ${mobileSection === m.id ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileSection === m.id && (
+                    <div className="pb-2 pl-2">
+                      {[...m.items, ...(m.footer ? [m.footer] : [])].map((item) => (
+                        <SmartLink key={item.href + item.label} item={item} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white" onClick={() => setMobile(false)}>
+                          {item.label}{item.external && <ExternalLink className="h-3 w-3" />}
+                        </SmartLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <button onClick={goContact} className="border-t border-white/5 px-3 py-3 text-left font-semibold text-white hover:bg-white/5">Contact</button>
+              <div className="mt-auto grid gap-2 pt-6">
+                {accountOn && <a href="/account.html" className="tg-btn-outline">My Account</a>}
+                <Link to="/training" className="tg-btn-primary" onClick={() => setMobile(false)}>Explore Training <ArrowRight className="h-4 w-4" /></Link>
+              </div>
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <SiteSearch open={searching} onClose={() => setSearching(false)} />
+    </header>
   );
 };
 

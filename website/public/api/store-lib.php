@@ -97,6 +97,67 @@ function tg_public_settings(): array
     ];
 }
 
+/* ---------- Training Programs and products (prices are decided here, never by the browser) ---------- */
+
+function tg_amount($v): float
+{
+    $n = (float)preg_replace('/[^\d.]/', '', (string)$v);
+    return $n > 0 ? round($n, 2) : 0.0;
+}
+
+/** Programs: content/courses.json merged with the admin's edits (setting tg_courses_admin). */
+function tg_programs(): array
+{
+    $base = json_decode((string)@file_get_contents(dirname(__DIR__) . '/content/courses.json'), true) ?: [];
+    $settings = tg_read_json('settings.json', []);
+    $edits = $settings['tg_courses_admin']['value'] ?? [];
+    $byId = [];
+    foreach ($base as $c) if (is_array($c) && !empty($c['id'])) $byId[(string)$c['id']] = $c;
+    if (is_array($edits)) foreach ($edits as $c) if (is_array($c) && !empty($c['id'])) $byId[(string)$c['id']] = array_merge($byId[(string)$c['id']] ?? [], $c);
+    $out = [];
+    foreach ($byId as $id => $c) {
+        $mrp = tg_amount($c['price'] ?? '');
+        $offer = tg_amount($c['offer'] ?? '');
+        $sale = $offer > 0 ? $offer : $mrp;
+        $out[] = [
+            'id' => $id, 'title' => (string)($c['title'] ?? $id), 'description' => (string)($c['description'] ?? ''),
+            'page' => '/training/' . $id, 'image' => (string)($c['image'] ?? ''), 'kind' => (string)($c['kind'] ?? 'course'),
+            'enabled' => !array_key_exists('enabled', $c) || !empty($c['enabled']),
+            'amount' => $sale, 'regular' => ($offer > 0 && $mrp > $offer) ? $mrp : 0,
+        ];
+    }
+    return $out;
+}
+
+function tg_program(string $id): ?array
+{
+    foreach (tg_programs() as $p) if ($p['id'] === $id && $p['enabled']) return $p;
+    return null;
+}
+
+/** A product from Manage → Products that can be bought online. */
+function tg_buyable_product(string $id): ?array
+{
+    $settings = tg_read_json('settings.json', []);
+    $rows = $settings['tg_products']['value'] ?? [];
+    if (!is_array($rows)) return null;
+    foreach ($rows as $p) {
+        if (!is_array($p) || ($p['id'] ?? '') !== $id) continue;
+        if (empty($p['visible']) || ($p['cta'] ?? '') !== 'buy' || ($p['status'] ?? '') === 'Coming soon') return null;
+        $mrp = tg_amount($p['price'] ?? '');
+        $offer = tg_amount($p['offer'] ?? '');
+        $sale = $offer > 0 ? $offer : $mrp;
+        if ($sale <= 0) return null;
+        return ['id' => $id, 'title' => (string)($p['name'] ?? $id), 'image' => (string)($p['image'] ?? ''), 'amount' => $sale, 'regular' => ($offer > 0 && $mrp > $offer) ? $mrp : 0];
+    }
+    return null;
+}
+
+function tg_rupees(float $n): string
+{
+    return '₹' . rtrim(rtrim(number_format($n, 2, '.', ''), '0'), '.');
+}
+
 /** Send an enrollment to the Google Sheet (Apps Script) in the format the sheet already uses. */
 function tg_post_to_sheet(array $record): void
 {

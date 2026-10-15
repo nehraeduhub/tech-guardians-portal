@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import PageHero from '@/components/pro/PageHero';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CalendarDays, User, Clock, Search } from 'lucide-react';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -30,18 +31,14 @@ const Blog = () => {
   const remainingPosts = displayPosts.slice(1);
 
   return (
-    <SiteFrame mainClassName="pt-24">
+    <SiteFrame>
+      <PageHero variant="network" eyebrow="Tech Guardians Blog" title="Insights, tutorials" accent="& cyber awareness" lead="Practical tips, case studies and guides from our trainers." compact />
       <section className="section-padding pb-10">
         <div className="container mx-auto max-w-6xl">
           <ScrollReveal>
             <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div className="max-w-2xl">
-                <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/10 px-4 py-1 text-primary">
-                  Tech Guardians Blog
-                </Badge>
-                <h1 className="font-display text-3xl font-bold leading-[1.05] md:text-5xl" style={{ textWrap: 'balance' } as React.CSSProperties}>
-                  Insights, tutorials &amp; cyber awareness
-                </h1>
+                <h2 className="font-display text-2xl font-bold md:text-3xl">Latest articles</h2>
               </div>
               <div className="relative w-full max-w-xs">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

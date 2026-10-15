@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import HeroBand from '@/components/pro/HeroBand';
 import { Award, BookOpen, Bot, BriefcaseBusiness, CheckCircle2, ExternalLink, Network, ServerCog, ShieldCheck, TerminalSquare } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -32,7 +33,7 @@ const certifications = [
 
 const RJNehra = () => (
   <SiteFrame>
-    <section className="section-padding relative overflow-hidden border-b border-border/70">
+    <HeroBand variant="network" align="right" className="section-padding">
       <div className="absolute inset-0 grid-pattern opacity-40" aria-hidden="true" />
       <div className="container relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_360px]">
         <ScrollReveal>
@@ -66,7 +67,7 @@ const RJNehra = () => (
           </motion.div>
         </ScrollReveal>
       </div>
-    </section>
+    </HeroBand>
 
     <section className="section-padding">
       <div className="container mx-auto max-w-6xl">

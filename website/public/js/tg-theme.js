@@ -6,18 +6,44 @@
 (function () {
   if (window.tgTheme) return;
 
-  var CACHE = 'tg_theme_cache';
-  var DEFAULT_ID = 'cyber-neon';
+  var CACHE = 'tg_theme_cache_v2';
+  var DEFAULT_ID = 'guardian-pro';
 
   // Shorthand: React tokens are HSL triplets ("h s% l%"), static pages use hex.
   var THEMES = [
+    {
+      id: 'guardian-pro',
+      name: 'Guardian Pro',
+      tagline: 'The new Tech Guardians look: deep navy and electric blue around clean, bright pages.',
+      swatch: ['#071633', '#0066ff', '#f4f7fc', '#22d3ee'],
+      fontUrl: 'family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500',
+      fonts: { head: "'Plus Jakarta Sans', 'Inter', sans-serif", body: "'Inter', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" },
+      // The React app's own stylesheet already is this design.
+      reactNative: true, light: true, navDark: true,
+      css: { bg: '#f4f7fc', bg2: '#eaf0f9', surface: '#ffffff', surface2: '#f3f6fb', surface3: '#e7edf7', text: '#0b1b33', muted: '#4a5a73', border: 'rgba(11,27,51,.12)', primary: '#0066ff', primary2: '#2f7bff', secondary: '#0e9f6e', accent: '#e8590c', gold: '#b45309' },
+      pageBg: '#f4f7fc',
+      heroGradient: 'linear-gradient(100deg, #2f7bff 0%, #22d3ee 100%)', heroAccent: '#2f7bff',
+      tilt: true,
+    },
     {
       id: 'cyber-neon',
       name: 'Cyber Neon',
       tagline: 'The original Tech Guardians look: neon cyan on deep space blue.',
       swatch: ['#020617', '#00D4FF', '#00FF9C', '#FF9F1C'],
+      fontUrl: 'family=Orbitron:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500',
       fonts: { head: "'Orbitron', 'Inter', sans-serif", body: "'Inter', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" },
-      original: true,
+      react: {
+        background: '222 60% 4%', foreground: '210 100% 95%', card: '222 52% 7%', popover: '222 55% 6%',
+        primary: '190 100% 50%', primaryFg: '222 60% 4%', secondary: '222 45% 12%', secondaryFg: '190 100% 80%',
+        muted: '222 40% 12%', mutedFg: '213 25% 70%', accent: '158 100% 50%', accentFg: '222 60% 4%',
+        border: '200 60% 18%', input: '222 40% 16%', ring: '190 100% 50%',
+        blue: '190 100% 50%', green: '158 100% 50%', purple: '265 90% 66%', orange: '33 100% 55%', red: '0 100% 62%',
+        topbar: '222 70% 3%', topbarFg: '190 60% 80%', radius: '0.9rem',
+      },
+      css: { bg: '#020617', bg2: '#06102a', surface: '#0b1426', surface2: '#101c33', surface3: '#16243f', text: '#e6f1ff', muted: '#8ea3bf', border: 'rgba(0,212,255,.18)', primary: '#00D4FF', primary2: '#5ce1ff', secondary: '#00FF9C', accent: '#FF9F1C', gold: '#FFB800' },
+      pageBg: 'radial-gradient(1100px 700px at 82% -10%, rgba(0,212,255,.10), transparent 60%), radial-gradient(900px 600px at -8% 18%, rgba(0,255,156,.08), transparent 60%), #020617',
+      heroGradient: 'linear-gradient(100deg, #00D4FF 0%, #00FF9C 45%, #b18cff 100%)', heroAccent: '#FF9F1C',
+      neon: true,
     },
     {
       id: 'quantum-grid',
@@ -133,12 +159,12 @@
   }
 
   function themeCss(t) {
-    if (t.original) return '';
     var r = t.react, c = t.css, f = t.fonts, sel = ':root[data-tg-theme="' + t.id + '"]';
     var react = sel + ':not([data-tg-static])';
     var stat = sel + '[data-tg-static]';
     var prgb = hexToRgb(c.primary);
     var out = [];
+    if (!t.reactNative) {
     // React app tokens
     out.push(react + '{--background:' + r.background + ';--foreground:' + r.foreground + ';--card:' + r.card + ';--card-foreground:' + r.foreground +
       ';--popover:' + r.popover + ';--popover-foreground:' + r.foreground + ';--primary:' + r.primary + ';--primary-foreground:' + r.primaryFg +
@@ -146,6 +172,17 @@
       ';--accent:' + r.accent + ';--accent-foreground:' + r.accentFg + ';--border:' + r.border + ';--input:' + r.input + ';--ring:' + r.ring +
       ';--radius:' + r.radius + ';--cyber-blue:' + r.blue + ';--cyber-green:' + r.green + ';--cyber-purple:' + r.purple + ';--cyber-orange:' + r.orange +
       ';--cyber-red:' + r.red + ';--destructive:' + r.red + ';--glass-bg:' + r.card + ';--glass-border:' + r.primary + ';--topbar:' + r.topbar + ';--topbar-foreground:' + r.topbarFg + '}');
+    // Dark themes: the navy bands (.tg-dark) use the theme's own dark colours.
+    if (!t.light) {
+      out.push(react + ' .tg-dark{--background:' + r.background + ';--foreground:' + r.foreground + ';--card:' + r.card + ';--card-foreground:' + r.foreground +
+        ';--popover:' + r.popover + ';--popover-foreground:' + r.foreground + ';--primary:' + r.primary + ';--primary-foreground:' + r.primaryFg +
+        ';--secondary:' + r.secondary + ';--secondary-foreground:' + r.secondaryFg + ';--muted:' + r.muted + ';--muted-foreground:' + r.mutedFg +
+        ';--accent:' + r.accent + ';--accent-foreground:' + r.accentFg + ';--border:' + r.border + ';--input:' + r.input +
+        ';--cyber-blue:' + r.blue + ';--cyber-green:' + r.green + ';--cyber-purple:' + r.purple + ';--cyber-orange:' + r.orange + ';--cyber-red:' + r.red + '}');
+      out.push(react + ' .tg-band{background:radial-gradient(900px 520px at 78% 30%, hsl(' + r.primary + ' / .16), transparent 62%), linear-gradient(180deg, hsl(' + r.background + '), hsl(' + r.card + ')) !important}');
+      out.push(react + ' .tg-btn-primary,' + react + ' .cyber-btn-primary{background:hsl(var(--primary)) !important;color:hsl(var(--primary-foreground)) !important}');
+    }
+    }
     // Homepage headline colours follow the theme.
     out.push(sel + '{--tg-hero-gradient:' + (t.heroGradient || ('linear-gradient(100deg, ' + c.primary + ' 0%, ' + c.secondary + ' 50%, ' + c.primary2 + ' 100%)')) + ';--tg-hero-accent:' + (t.heroAccent || c.accent) + '}');
     // Static page variables (each static page names its palette a little differently)
@@ -162,13 +199,15 @@
     // Page background lives on <html> so the 3D layer can sit between it and the content.
     out.push(sel + '{background:' + t.pageBg + ' !important;background-attachment:fixed !important;color-scheme:' + (t.light ? 'light' : 'dark') + '}');
     out.push(sel + ' body{background:transparent !important;isolation:isolate}');
+    if (t.reactNative) out.push(sel + ':not([data-tg-static]) body{background:hsl(var(--background)) !important}');
     out.push(sel + ' body{font-family:' + f.body + '}');
     out.push(sel + ' h1,' + sel + ' h2,' + sel + ' h3,' + sel + ' .font-display{font-family:' + f.head + ' !important}');
+    if (t.neon) out.push(react + ' .neon-text{text-shadow:0 0 18px hsl(var(--primary) / .55)}');
     out.push(sel + ' code,' + sel + ' pre,' + sel + ' kbd,' + sel + ' .font-mono{font-family:' + f.mono + ' !important}');
     out.push(sel + ':not([data-tg-static]) body{color:hsl(var(--foreground))}');
     out.push(sel + '[data-tg-static] body{color:' + c.text + '}');
     // Components from the main stylesheet that use fixed colours
-    out.push(sel + ' .glass-card{background:' + (t.cardBg || 'linear-gradient(180deg, hsl(var(--card) / .92), hsl(var(--background) / .92))') + ' !important;border-color:hsl(var(--primary) / .22) !important}');
+    if (!t.reactNative) out.push(sel + ' .glass-card{background:' + (t.cardBg || 'linear-gradient(180deg, hsl(var(--card) / .92), hsl(var(--background) / .92))') + ' !important;border-color:hsl(var(--primary) / .22) !important}');
     out.push(sel + ' .rl-pill{background:hsl(var(--card) / .85) !important;border-color:hsl(var(--primary) / .3) !important}');
     out.push(sel + ' .grid-pattern{background-image:linear-gradient(hsl(var(--primary) / .06) 1px, transparent 1px),linear-gradient(90deg, hsl(var(--primary) / .06) 1px, transparent 1px) !important}');
     out.push(sel + ' ::-webkit-scrollbar-track{background:' + c.bg + '}' + sel + ' ::-webkit-scrollbar-thumb{background:rgba(' + prgb + ',.35)}');
@@ -183,12 +222,17 @@
     if (t.light) {
       // Light theme: soft layered shadows instead of glow, darker neon text.
       out.push(sel + ' .neon-text,' + sel + ' .neon-text-green,' + sel + ' .neon-text-purple,' + sel + ' .neon-text-red,' + sel + ' .neon-text-orange{text-shadow:none !important}');
-      out.push(sel + ' .glass-card,' + sel + ':not([data-tg-static]) .rounded-2xl.border,' + sel + ':not([data-tg-static]) .rounded-xl.border{box-shadow:0 1px 2px rgba(15,23,42,.06), 0 12px 32px -16px rgba(15,23,42,.25) !important}');
-      out.push(sel + ':not([data-tg-static]) .text-white{color:hsl(var(--foreground)) !important}');
+      if (!t.reactNative) out.push(sel + ' .glass-card,' + sel + ':not([data-tg-static]) .rounded-2xl.border,' + sel + ':not([data-tg-static]) .rounded-xl.border{box-shadow:0 1px 2px rgba(15,23,42,.06), 0 12px 32px -16px rgba(15,23,42,.25) !important}');
+      if (!t.reactNative) out.push(sel + ':not([data-tg-static]) .text-white:not(.tg-dark .text-white){color:hsl(var(--foreground)) !important}');
       // Static pages: their headers and a few panels use fixed dark colours.
       var ls = sel + '[data-tg-static] ';
-      out.push(ls + 'nav,' + ls + '.topnav,' + ls + '.header{background:rgba(255,255,255,.9) !important;border-bottom:1px solid ' + c.border + ' !important;box-shadow:0 6px 24px -14px rgba(15,23,42,.25) !important}');
-      out.push(ls + '.logo-text .name,' + ls + '.directory-toolbar .result-info{color:' + c.text + ' !important}');
+      if (t.navDark) {
+        out.push(ls + 'nav,' + ls + '.topnav,' + ls + '.header{background:#071633 !important;border-bottom:1px solid rgba(255,255,255,.08) !important;box-shadow:0 10px 30px -18px rgba(2,8,23,.6) !important;' +
+          '--text:#f1f5ff;--text2:#f1f5ff;--muted:#a9b8d3;--border:rgba(255,255,255,.16);--surface:#0e2149;--surface2:#13295a;--card:#0e2149;color:#f1f5ff}');
+      } else {
+        out.push(ls + 'nav,' + ls + '.topnav,' + ls + '.header{background:rgba(255,255,255,.9) !important;border-bottom:1px solid ' + c.border + ' !important;box-shadow:0 6px 24px -14px rgba(15,23,42,.25) !important}');
+      }
+      out.push((t.navDark ? '' : ls + '.logo-text .name,') + ls + '.directory-toolbar .result-info{color:' + c.text + ' !important}');
       out.push(ls + '.logo-text .sub{color:' + c.primary + ' !important}' + ls + '.hdr-back{background:' + c.primary + ' !important;color:#fff !important}');
       out.push(ls + '.hero{color:' + c.text + ' !important}' + ls + '.hero-sub{color:' + c.muted + ' !important}');
       out.push(ls + '.stat{background:#fff !important;border-color:' + c.border + ' !important;box-shadow:0 10px 26px -16px rgba(15,23,42,.3)}');
@@ -196,7 +240,7 @@
       out.push(ls + '.directory-toolbar{background:rgba(255,255,255,.96) !important;border-bottom-color:' + c.border + ' !important}');
       out.push(ls + '.portal-search{background:#fff !important;color:' + c.text + ' !important;border-color:' + c.border + ' !important}');
       out.push(ls + '.hub-disclaimer{background:#fff7e0 !important;color:#5e4b17 !important;border-color:#e2bd54 !important}');
-      out.push(sel + ':not([data-tg-static]) .bg-primary .text-white,' + sel + ':not([data-tg-static]) [class*="bg-gradient"] .text-white,' + sel + ':not([data-tg-static]) .bg-destructive.text-white{color:#fff !important}');
+      if (!t.reactNative) out.push(sel + ':not([data-tg-static]) .bg-primary .text-white,' + sel + ':not([data-tg-static]) [class*="bg-gradient"] .text-white,' + sel + ':not([data-tg-static]) .bg-destructive.text-white{color:#fff !important}');
     }
     // 3D: cards lift towards the viewer on hover.
     if (t.tilt && !reduceMotion) {
@@ -308,7 +352,7 @@
       if (!reduceMotion) startMatrix(canvas);
     }
     // Hide the original theme's own 3D hero globe and matrix canvases behind a new theme's background.
-    root.classList.toggle('tg-theme-custom', !t.original);
+    root.classList.toggle('tg-theme-custom', t.id !== DEFAULT_ID);
   }
 
   // Interactive 3D tilt: cards follow the pointer.
@@ -338,7 +382,7 @@
     current = t;
     root.setAttribute('data-tg-theme', t.id);
     styleEl.textContent = fxCss() + '\n' + themeCss(t) +
-      '\n:root.tg-theme-custom:not([data-tg-static]) #home canvas{opacity:.35}';
+      '';
     loadFont(t);
     tiltOn = !!t.tilt && !reduceMotion;
     renderFxWhenReady(t);

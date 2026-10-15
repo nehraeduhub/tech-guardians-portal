@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type LucideIcon, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, Globe2, Package, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
@@ -12,9 +12,9 @@ import PaymentsPanel from '@/components/admin/PaymentsPanel';
 import StudentsPanel from '@/components/admin/StudentsPanel';
 import StoreAdminPanel from '@/components/admin/StoreAdminPanel';
 import ListEditor from '@/components/admin/ListEditor';
-import { CUSTOM_SECTIONS, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
+import { CUSTOM_SECTIONS, HOME_ECOSYSTEM, HOME_HIGHLIGHTS, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
+import { EventsAdmin, PortalsAdmin, ProductsAdmin, TrainingAdmin } from '@/components/admin/CatalogPanels';
 import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
-import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
   getWhatsAppNumber,
@@ -37,44 +37,26 @@ import {
 } from '@/lib/trainers-store';
 import { DEFAULT_BLOGS, TGBlog, emptyBlog, loadBlogs, saveBlogs } from '@/lib/blogs-store';
 import {
-  COURSE_ICON_NAMES,
-  ManagedCourse,
-  emptyCourse,
-  isCoursesHomeVisible,
-  isCoursesNavVisible,
-  loadManagedCourses,
-  saveCourseOverrides,
-  setCoursesHomeVisible,
-  setCoursesNavVisible,
-} from '@/lib/courses-store';
-import {
   emptyOrganizationOffering,
   loadOrganizationOfferings,
   saveOrganizationOfferings,
   type OrganizationOffering,
 } from '@/lib/organization-offerings-store';
 
-const COLORS: TGEvent['color'][] = ['cyber-green', 'cyber-blue', 'cyber-purple', 'cyber-orange'];
-
-const emptyEvent = (): TGEvent => ({
-  id: `e${Date.now()}`,
-  title: '',
-  when: '',
-  tag: 'Live',
-  color: 'cyber-green',
-});
-
-type ManageTab = 'themes' | 'layout' | 'home' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'range'
+type ManageTab = 'themes' | 'layout' | 'home' | 'homecards' | 'custom' | 'events' | 'offerings' | 'courses' | 'products' | 'portals' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'range'
   | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
   layout: { label: 'Sections & Pages', icon: LayoutList },
   home: { label: 'Homepage Text', icon: Home },
-  custom: { label: 'Custom Sections', icon: Plus },
+  homecards: { label: 'Homepage Cards', icon: LayoutList },
+  courses: { label: 'Training Programs', icon: GraduationCap },
+  products: { label: 'Products', icon: Package },
+  portals: { label: 'Portals (subdomains)', icon: Globe2 },
   events: { label: 'Events', icon: CalendarClock },
+  custom: { label: 'Custom Sections', icon: Plus },
   offerings: { label: 'Organization Services', icon: Building2 },
-  courses: { label: 'Courses', icon: GraduationCap },
   blogs: { label: 'Blogs', icon: BookOpen },
   pdfs: { label: 'PDF Library', icon: FileText },
   media: { label: 'Media Gallery', icon: ImageIcon },
@@ -102,18 +84,12 @@ const Manage = () => {
   const [blogsSaved, setBlogsSaved] = useState(false);
   const [blogImageError, setBlogImageError] = useState('');
   const [blogImageBusy, setBlogImageBusy] = useState<string | null>(null);
-  const [courses, setCourses] = useState<ManagedCourse[]>([]);
-  const [coursesSaved, setCoursesSaved] = useState(false);
-  const [coursesNav, setCoursesNav] = useState(true);
-  const [coursesHome, setCoursesHome] = useState(true);
   const [trainers, setTrainers] = useState<TrainerOrg[]>([]);
   const [trainersSaved, setTrainersSaved] = useState(false);
   const [waNumber, setWaNumber] = useState(DEFAULT_WA_NUMBER);
   const [waSaved, setWaSaved] = useState(false);
   const [videoData, setVideoData] = useState({ id: DEFAULT_VIDEO_ID, title: DEFAULT_VIDEO_TITLE, tagline: DEFAULT_VIDEO_TAGLINE });
   const [videoSaved, setVideoSaved] = useState(false);
-  const [events, setEvents] = useState<TGEvent[]>([]);
-  const [saved, setSaved] = useState(false);
   const [offerings, setOfferings] = useState<OrganizationOffering[]>([]);
   const [offeringsSaved, setOfferingsSaved] = useState(false);
 
@@ -125,16 +101,12 @@ const Manage = () => {
       if (status.mustChange && active) { setMustChange(true); setTab('password'); }
       try { await refreshSettings(); } catch (error) { if (active) setPublishError('Could not load shared settings. Please check your connection.'); }
       if (!active) return;
-      setEvents(loadEvents());
       setWaNumber(getWhatsAppNumber());
       setVideoData(getFeaturedVideo());
       setTrainers(loadTrainers());
       setBlogs(loadBlogs());
-      setCoursesNav(isCoursesNavVisible());
-      setCoursesHome(isCoursesHomeVisible());
       setOfferings(loadOrganizationOfferings());
       setAbout(loadAboutVisibility());
-      void loadManagedCourses().then(setCourses);
     })();
     return () => { active = false; };
   }, [navigate]);
@@ -144,15 +116,6 @@ const Manage = () => {
     try { await job; onSuccess?.(); }
     catch (error) { setPublishError(error instanceof Error ? error.message : 'Publishing failed. Try again.'); }
   };
-
-  const update = (id: string, patch: Partial<TGEvent>) =>
-    setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, ...patch } : e)));
-
-  const persist = () => {
-    void publish(saveEvents(events.filter((e) => e.title.trim())), () => setSaved(true));
-    window.setTimeout(() => setSaved(false), 2200);
-  };
-
 
   const updateTrainer = (id: string, patch: Partial<TrainerOrg>) =>
     setTrainers((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
@@ -215,15 +178,6 @@ const Manage = () => {
     } finally {
       setBlogImageBusy(null);
     }
-  };
-
-  const updateCourse = (id: string, patch: Partial<ManagedCourse>) =>
-    setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
-
-  const persistCourses = () => {
-    const rows = courses.filter((c) => c.title.trim());
-    void publish(saveCourseOverrides(rows), () => { setCourses(rows); setCoursesSaved(true); });
-    window.setTimeout(() => setCoursesSaved(false), 2200);
   };
 
   const persistVideo = () => {
@@ -340,125 +294,15 @@ const Manage = () => {
               </div>
             </div>
           ) : tab === 'courses' ? (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-border bg-card/70 p-5 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-base font-semibold text-foreground">Courses tab on the website</h2>
-                  <p className="text-xs text-muted-foreground">Show or hide the Courses menu in the website header on desktop and mobile.</p>
-                </div>
-                <button
-                  onClick={() => {
-                    const next = !coursesNav;
-                    setCoursesNav(next);
-                    void publish(setCoursesNavVisible(next));
-                  }}
-                  className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
-                >
-                  {coursesNav ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                  {coursesNav ? 'Visible' : 'Hidden'}
-                </button>
-              </div>
-
-              <div className="rounded-2xl border border-border bg-card/70 p-5 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-base font-semibold text-foreground">Courses section on the homepage</h2>
-                  <p className="text-xs text-muted-foreground">Show or hide all course cards on the front page.</p>
-                </div>
-                <button
-                  onClick={() => {
-                    const next = !coursesHome;
-                    setCoursesHome(next);
-                    void publish(setCoursesHomeVisible(next));
-                  }}
-                  className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
-                >
-                  {coursesHome ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                  {coursesHome ? 'Visible' : 'Hidden'}
-                </button>
-              </div>
-
-              {courses.map((c) => (
-                <div key={c.id} className="rounded-2xl border border-border bg-card/70 p-5 grid gap-3 md:grid-cols-12">
-                  <input
-                    value={c.title}
-                    onChange={(e) => updateCourse(c.id, { title: e.target.value })}
-                    placeholder="Course title"
-                    className="md:col-span-5 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <input
-                    value={c.page}
-                    onChange={(e) => updateCourse(c.id, { page: e.target.value })}
-                    placeholder="/courses/new-course.html"
-                    className="md:col-span-5 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <select
-                    value={c.icon_name}
-                    onChange={(e) => updateCourse(c.id, { icon_name: e.target.value })}
-                    className="md:col-span-2 bg-muted/30 border border-border rounded-lg px-2 py-2 text-xs text-foreground"
-                  >
-                    {COURSE_ICON_NAMES.map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
-                  <textarea
-                    value={c.description}
-                    onChange={(e) => updateCourse(c.id, { description: e.target.value })}
-                    placeholder="Short description"
-                    rows={2}
-                    className="md:col-span-6 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <input
-                    value={c.price}
-                    onChange={(e) => updateCourse(c.id, { price: e.target.value })}
-                    placeholder="Regular price (₹999)"
-                    className="md:col-span-2 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <input
-                    value={c.offer}
-                    onChange={(e) => updateCourse(c.id, { offer: e.target.value })}
-                    placeholder="Offer price (₹499)"
-                    className="md:col-span-2 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <div className="md:col-span-2 flex gap-2 justify-end items-start">
-                    <button
-                      onClick={() => updateCourse(c.id, { showPrice: !c.showPrice })}
-                      className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${c.showPrice ? 'border-cyber-green/50 text-cyber-green' : 'border-border text-muted-foreground'}`}
-                    >
-                      {c.showPrice ? 'Price shown' : 'Price hidden'}
-                    </button>
-                  </div>
-                  <div className="md:col-span-12 flex gap-2 justify-end">
-                    <button
-                      onClick={() => updateCourse(c.id, { enabled: !c.enabled })}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground hover:bg-muted transition-colors"
-                    >
-                      {c.enabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      {c.enabled ? 'Shown on site' : 'Hidden'}
-                    </button>
-                    <button
-                      onClick={() => setCourses((prev) => prev.filter((x) => x.id !== c.id))}
-                      className="inline-flex items-center justify-center rounded-lg border border-destructive/40 text-destructive hover:bg-destructive/10 transition-colors px-3 py-2"
-                      aria-label="Delete course"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              <div className="flex flex-wrap gap-3 pt-2">
-                <button onClick={() => setCourses((p) => [...p, emptyCourse()])} className="inline-flex items-center gap-2 rounded-full border border-primary/50 text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary/10 transition-colors">
-                  <Plus className="w-4 h-4" /> Add Course
-                </button>
-                <button onClick={persistCourses} className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity">
-                  <Save className="w-4 h-4" /> Save & Publish
-                </button>
-                {coursesSaved && <span className="self-center text-xs text-cyber-green">Saved — courses updated on the website.</span>}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                To add a brand-new course page, upload its HTML file into the <code>/courses/</code> folder of the
-                website and enter that path above (for example <code>/courses/my-course.html</code>).
-              </p>
+            <TrainingAdmin onPublish={publish} />
+          ) : tab === 'products' ? (
+            <ProductsAdmin onPublish={publish} />
+          ) : tab === 'portals' ? (
+            <PortalsAdmin onPublish={publish} />
+          ) : tab === 'homecards' ? (
+            <div className="space-y-10">
+              <ListEditor def={HOME_HIGHLIGHTS} onPublish={publish} />
+              <ListEditor def={HOME_ECOSYSTEM} onPublish={publish} />
             </div>
           ) : tab === 'blogs' ? (
             <div className="space-y-4">
@@ -732,58 +576,7 @@ const Manage = () => {
               </div>
             </div>
           ) : tab === 'events' ? (
-            <div className="space-y-4">
-              {events.map((ev) => (
-                <div key={ev.id} className="rounded-2xl border border-border bg-card/70 p-5 grid gap-3 md:grid-cols-12">
-                  <input
-                    value={ev.title}
-                    onChange={(e) => update(ev.id, { title: e.target.value })}
-                    placeholder="Event title"
-                    className="md:col-span-5 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <input
-                    value={ev.when}
-                    onChange={(e) => update(ev.id, { when: e.target.value })}
-                    placeholder="When (e.g. Sat • 7:00 PM IST)"
-                    className="md:col-span-3 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <input
-                    value={ev.tag}
-                    onChange={(e) => update(ev.id, { tag: e.target.value })}
-                    placeholder="Tag"
-                    className="md:col-span-2 bg-muted/30 border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                  />
-                  <select
-                    value={ev.color}
-                    onChange={(e) => update(ev.id, { color: e.target.value as TGEvent['color'] })}
-                    className="md:col-span-1 bg-muted/30 border border-border rounded-lg px-2 py-2 text-xs text-foreground"
-                  >
-                    {COLORS.map((c) => (
-                      <option key={c} value={c}>
-                        {c.replace('cyber-', '')}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={() => setEvents((prev) => prev.filter((x) => x.id !== ev.id))}
-                    className="md:col-span-1 inline-flex items-center justify-center rounded-lg border border-destructive/40 text-destructive hover:bg-destructive/10 transition-colors py-2"
-                    aria-label="Delete event"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-
-              <div className="flex flex-wrap gap-3 pt-2">
-                <button onClick={() => setEvents((p) => [...p, emptyEvent()])} className="inline-flex items-center gap-2 rounded-full border border-primary/50 text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary/10 transition-colors">
-                  <Plus className="w-4 h-4" /> Add Event
-                </button>
-                <button onClick={persist} className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity">
-                  <Save className="w-4 h-4" /> Save & Publish
-                </button>
-                {saved && <span className="self-center text-xs text-cyber-green">Saved — homepage events updated.</span>}
-              </div>
-            </div>
+            <EventsAdmin onPublish={publish} />
           ) : tab === 'payments' ? (
             <PaymentsPanel />
           ) : tab === 'students' ? (

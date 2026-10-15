@@ -1,7 +1,8 @@
 <?php
 // Orders and enrollments (courses and PDFs).
 // Public (buyer):
-//   POST payments.php                         { type: course|pdf, productId?, course?, amount?, name, email, phone, utr, date, shot? }
+//   POST payments.php                         { type: course|pdf|product, programId?|productId?|itemId?, name, email, phone, utr, date, shot? }
+//                                             (the amount is always taken from the server's catalogue)
 //                                             -> { id, token, status, orderUrl }
 //   GET  payments.php?action=order&id=&token= -> order status for the buyer's order page
 //   GET  payments.php?action=download&id=&token= -> redirects to the PDF once the order is approved
@@ -227,7 +228,7 @@ if ($action !== '' && $action !== 'create') tg_error('Unknown action.', 404);
 tg_rate_limit('payments', 10, 3600);
 
 $text = fn(string $k, int $max) => mb_substr(trim((string)($body[$k] ?? '')), 0, $max);
-$type = ($body['type'] ?? '') === 'pdf' ? 'pdf' : 'course';
+$type = in_array($body['type'] ?? '', ['pdf', 'product'], true) ? $body['type'] : 'course';
 $store = tg_store();
 $record = [
     'id' => bin2hex(random_bytes(8)),
@@ -246,6 +247,29 @@ $record = [
 if ($record['name'] === '' || $record['utr'] === '') tg_error('Please enter your name and the UPI transaction ID.');
 if (!filter_var($record['email'], FILTER_VALIDATE_EMAIL)) tg_error('Please enter a valid email address.');
 if (!preg_match('/^[A-Za-z0-9]{6,30}$/', $record['utr'])) tg_error('The transaction ID (UTR) should be 6–30 letters or digits, as shown in your UPI app.');
+
+if ($type === 'course') {
+    // Training Programs: the price always comes from the catalogue, never from the browser.
+    $program = tg_program($text('programId', 80));
+    if (!$program && $record['course'] !== '') {
+        $want = preg_replace('/[^a-z0-9]+/', ' ', strtolower($record['course']));
+        foreach (tg_programs() as $p) {
+            if ($p['enabled'] && trim(preg_replace('/[^a-z0-9]+/', ' ', strtolower($p['title']))) === trim($want)) { $program = $p; break; }
+        }
+    }
+    if (!$program || $program['amount'] <= 0) tg_error('Please choose a training program from the list.', 404);
+    $record['programId'] = $program['id'];
+    $record['course'] = $program['title'];
+    $record['amount'] = tg_rupees($program['amount']);
+}
+
+if ($type === 'product') {
+    $item = tg_buyable_product($text('itemId', 80));
+    if (!$item) tg_error('This product cannot be bought online yet.', 404);
+    $record['itemId'] = $item['id'];
+    $record['course'] = $item['title'];
+    $record['amount'] = tg_rupees($item['amount']);
+}
 
 if ($type === 'pdf') {
     $p = tg_store_product($text('productId', 80));

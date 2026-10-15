@@ -6,11 +6,17 @@ import { DEFAULT_HOME_CONTENT, HomeContent, loadHomeContent, saveHomeContent } f
 const inputClass = 'w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground';
 
 const FIELDS: { key: Exclude<keyof HomeContent, 'heroImage'>; label: string; rows?: number }[] = [
-  { key: 'topBar', label: 'Top bar text' },
-  { key: 'heroBadge', label: 'Hero badge' },
-  { key: 'heroTitle', label: 'Hero headline' },
-  { key: 'heroTitleAccent', label: 'Hero headline, second line' },
+  { key: 'heroBadge', label: 'Small line above the headline' },
+  { key: 'heroTitle', label: 'Hero headline (white)' },
+  { key: 'heroTitleAccent', label: 'Hero headline, second line (blue)' },
   { key: 'heroText', label: 'Hero paragraph', rows: 3 },
+  { key: 'heroPoints', label: 'Hero points (separate with | )' },
+  { key: 'heroPrimaryText', label: 'Main button text' },
+  { key: 'heroPrimaryLink', label: 'Main button link' },
+  { key: 'heroSecondaryText', label: 'Second button text' },
+  { key: 'heroSecondaryLink', label: 'Second button link' },
+  { key: 'ctaTitle', label: 'Closing banner headline' },
+  { key: 'ctaText', label: 'Closing banner text', rows: 2 },
   { key: 'footerAbout', label: 'Footer description', rows: 3 },
 ];
 
@@ -79,7 +85,7 @@ const HomeContentPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, on
         </label>
       ))}
       <div className="space-y-2">
-        <span className="text-xs font-semibold text-muted-foreground">Hero photo</span>
+        <span className="text-xs font-semibold text-muted-foreground">Team photo (used by the optional “About” homepage section)</span>
         <div className="flex flex-wrap items-center gap-4">
           <img src={content.heroImage} alt="Current hero" className="h-24 w-32 rounded-lg border border-border object-contain bg-card" />
           <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted">

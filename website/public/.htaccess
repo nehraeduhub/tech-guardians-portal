@@ -17,6 +17,9 @@ RewriteRule (^|/)\.(?!well-known/) - [F,L]
 RewriteRule \.(bak|backup|old|orig|sql|sqlite|log|sh|ini|env|map|md|lock|ts|tsx)$ - [F,L,NC]
 RewriteRule ^api/data(/|$) - [F,L]
 
+# Old course pages now live at /training/<name>.
+RewriteRule ^courses/(?!payment\.html)([a-z0-9-]+)\.html$ /training/$1 [R=301,L,NC]
+
 # Single-page app: unknown paths load the React app.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

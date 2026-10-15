@@ -79,7 +79,7 @@
   function render(d) {
     $('loading').hidden = true; $('order').hidden = false;
     var pdf = d.type === 'pdf';
-    $('type').textContent = pdf ? 'PDF download' : 'Course enrollment';
+    $('type').textContent = pdf ? 'PDF download' : d.type === 'product' ? 'Product purchase' : 'Training Program';
     $('title').textContent = d.title || 'Your order';
     $('amount').textContent = d.amount || '';
     $('oid').textContent = d.id.slice(0, 8).toUpperCase();
@@ -96,7 +96,7 @@
     } else if (d.status === 'approved' && pdf) {
       msg = 'Your payment is approved. The download link is being prepared — please check back shortly or message us on WhatsApp.';
     } else if (d.status === 'approved') {
-      msg = 'Your enrollment is confirmed. Course access details are shared on WhatsApp and email.';
+      msg = d.type === 'product' ? 'Your purchase is confirmed. Access details are shared on WhatsApp and email.' : 'Your enrollment is confirmed. Access details are shared on WhatsApp and email, and the program appears in My Account.';
     } else if (d.status === 'rejected') {
       msg = 'We could not match this payment with our bank records. If you have paid, message us on WhatsApp with your payment screenshot and we will fix it.';
     } else {

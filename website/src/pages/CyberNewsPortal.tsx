@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import HeroBand from '@/components/pro/HeroBand';
 import { useQuery } from '@tanstack/react-query';
 import {
   AlertTriangle, ArrowRight, Clock, ExternalLink, Flame, Globe2, LayoutGrid, List, Loader2, Newspaper,
@@ -133,9 +134,10 @@ const CyberNewsPortal = () => {
 
   return (
     <SiteFrame>
+      <HeroBand variant="globe" className="pb-2">
       {/* Breaking ticker */}
       {ticker.length > 0 && (
-        <div className="border-y border-border/60 bg-card/80">
+        <div className="border-b border-white/10 bg-white/[0.03]">
           <div className="container mx-auto flex max-w-7xl items-center gap-3 overflow-hidden px-4 py-2">
             <span className="inline-flex shrink-0 items-center gap-1.5 rounded bg-red-600 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Live
@@ -154,7 +156,7 @@ const CyberNewsPortal = () => {
       )}
 
       {/* Masthead */}
-      <header className="border-b border-border/60 pb-6 pt-8">
+      <header className="pb-6 pt-8">
         <div className="container mx-auto max-w-7xl px-4">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -207,6 +209,7 @@ const CyberNewsPortal = () => {
           )}
         </div>
       </header>
+      </HeroBand>
 
       <div className="container mx-auto max-w-7xl px-4 py-8">
         {/* Admin alerts */}

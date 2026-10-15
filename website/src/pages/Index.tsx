@@ -1,45 +1,51 @@
-import { useEffect, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { useLocation } from 'react-router-dom';
 import HeroSection from '@/components/HeroSection';
-import CyberCrimeBanner from '@/components/CyberCrimeBanner';
-import SocialHackingVideoSection from '@/components/SocialHackingVideoSection';
-import OrganizationOfferingsSection from '@/components/OrganizationOfferingsSection';
-import AwarenessSection from '@/components/AwarenessSection';
-import EnrollFormSection from '@/components/EnrollFormSection';
-import CoursesSection from '@/components/CoursesSection';
-import NewsEventsSection from '@/components/NewsEventsSection';
-import AboutSection from '@/components/AboutSection';
-import FeaturesSection from '@/components/FeaturesSection';
-import ServicesSection from '@/components/ServicesSection';
-import ProtectionPlatformSection from '@/components/ProtectionPlatformSection';
-import SecurityModulesSection from '@/components/SecurityModulesSection';
-import StepByStepSection from '@/components/StepByStepSection';
-import IndianCyberSection from '@/components/IndianCyberSection';
-import CyberTerminalSection from '@/components/CyberTerminalSection';
-import ThreatIntelCard from '@/components/ThreatIntelCard';
-import CyberNewsPortalCard from '@/components/CyberNewsPortalCard';
-import ForensicEngineCard from '@/components/ForensicEngineCard';
-import SecurityAssessmentBanner from '@/components/SecurityAssessmentBanner';
-import DownloadToolsSection from '@/components/DownloadToolsSection';
-import PdfLibrarySection from '@/components/PdfLibrarySection';
-import MediaGallerySection from '@/components/MediaGallerySection';
-import YouTubeSection from '@/components/YouTubeSection';
-import FoundersSection from '@/components/FoundersSection';
-import TestimonialsSection from '@/components/TestimonialsSection';
-import TrustSection from '@/components/TrustSection';
-import EnrollSection from '@/components/EnrollSection';
-import ContactSection from '@/components/ContactSection';
+const CyberCrimeBanner = lazy(() => import('@/components/CyberCrimeBanner'));
+const SocialHackingVideoSection = lazy(() => import('@/components/SocialHackingVideoSection'));
+const OrganizationOfferingsSection = lazy(() => import('@/components/OrganizationOfferingsSection'));
+const AwarenessSection = lazy(() => import('@/components/AwarenessSection'));
+const EnrollFormSection = lazy(() => import('@/components/EnrollFormSection'));
+const NewsEventsSection = lazy(() => import('@/components/NewsEventsSection'));
+const AboutSection = lazy(() => import('@/components/AboutSection'));
+const FeaturesSection = lazy(() => import('@/components/FeaturesSection'));
+const ServicesSection = lazy(() => import('@/components/ServicesSection'));
+const ProtectionPlatformSection = lazy(() => import('@/components/ProtectionPlatformSection'));
+const SecurityModulesSection = lazy(() => import('@/components/SecurityModulesSection'));
+const StepByStepSection = lazy(() => import('@/components/StepByStepSection'));
+const IndianCyberSection = lazy(() => import('@/components/IndianCyberSection'));
+const CyberTerminalSection = lazy(() => import('@/components/CyberTerminalSection'));
+const ThreatIntelCard = lazy(() => import('@/components/ThreatIntelCard'));
+const CyberNewsPortalCard = lazy(() => import('@/components/CyberNewsPortalCard'));
+const ForensicEngineCard = lazy(() => import('@/components/ForensicEngineCard'));
+const SecurityAssessmentBanner = lazy(() => import('@/components/SecurityAssessmentBanner'));
+const DownloadToolsSection = lazy(() => import('@/components/DownloadToolsSection'));
+const PdfLibrarySection = lazy(() => import('@/components/PdfLibrarySection'));
+const MediaGallerySection = lazy(() => import('@/components/MediaGallerySection'));
+const YouTubeSection = lazy(() => import('@/components/YouTubeSection'));
+const FoundersSection = lazy(() => import('@/components/FoundersSection'));
+const TestimonialsSection = lazy(() => import('@/components/TestimonialsSection'));
+const TrustSection = lazy(() => import('@/components/TrustSection'));
+const EnrollSection = lazy(() => import('@/components/EnrollSection'));
+const ContactSection = lazy(() => import('@/components/ContactSection'));
 import CustomSection from '@/components/CustomSection';
-import PdfStoreSection from '@/components/PdfStoreSection';
+const PdfStoreSection = lazy(() => import('@/components/PdfStoreSection'));
+import { CtaSection, EcosystemSection, EventsSection, HighlightsSection, PortalsSection, ProductsSection, ProgramsSection } from '@/components/home/HomeSections';
 import SiteFrame from '@/components/SiteFrame';
 import { orderedSectionIds, useLayout } from '@/lib/layout';
 import { CUSTOM_SECTIONS, useList } from '@/lib/content-lists';
 
 const SECTIONS: Record<string, ComponentType> = {
   hero: HeroSection,
+  highlights: HighlightsSection,
+  ecosystem: EcosystemSection,
+  courses: ProgramsSection,
+  products: ProductsSection,
+  events: EventsSection,
+  portals: PortalsSection,
+  contact: CtaSection,
   'cyber-crime-banner': CyberCrimeBanner,
   'featured-training': SocialHackingVideoSection,
-  courses: CoursesSection,
   'pdf-store': PdfStoreSection,
   'news-events': NewsEventsSection,
   'organization-offerings': OrganizationOfferingsSection,
@@ -65,7 +71,7 @@ const SECTIONS: Record<string, ComponentType> = {
   trust: TrustSection,
   enroll: EnrollSection,
   'enroll-form': EnrollFormSection,
-  contact: ContactSection,
+  'contact-form': ContactSection,
 };
 
 const Index = () => {
@@ -92,7 +98,7 @@ const Index = () => {
         const custom = customById.get(id);
         if (custom) return custom.visible ? <CustomSection key={id} row={custom} /> : null;
         const Section = SECTIONS[id];
-        return Section ? <div key={id} data-tg-section={id} style={{ display: 'contents' }}><Section /></div> : null;
+        return Section ? <div key={id} data-tg-section={id} style={{ display: 'contents' }}><Suspense fallback={null}><Section /></Suspense></div> : null;
       })}
     </SiteFrame>
   );

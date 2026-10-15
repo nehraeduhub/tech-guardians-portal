@@ -3,7 +3,7 @@ import ScrollReveal from './ScrollReveal';
 import { Award, MessageSquare, Monitor, Wifi, Terminal } from 'lucide-react';
 import { getTrainerIcon, loadTrainers, type TrainerOrg } from '@/lib/trainers-store';
 
-const AWARENESS_BOOKING_URL = '/courses/awareness-booking.html';
+const AWARENESS_BOOKING_URL = '/training/awareness-booking';
 
 const features = [
   { icon: Monitor, label: 'Custom Sessions' },

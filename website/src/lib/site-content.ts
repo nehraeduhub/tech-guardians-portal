@@ -7,16 +7,16 @@ import courseSocialAndroid from '@/assets/course-social-android.jpg';
 
 export const courseVisuals = [courseWebHosting, courseSophosFirewall, courseActiveDirectory, courseAiAgentBuild, coursePasswordCracking, courseSocialAndroid] as const;
 
-export const ENROLL_URL = '/courses/payment.html';
+export const ENROLL_URL = '/training/payment';
 
 export const coursePageMap: Record<string, string> = {
-  'web server': '/courses/web-server-hosting.html',
-  'sophos firewall': '/courses/sophos-firewall.html',
-  'active directory': '/courses/active-directory.html',
-  'ai agent': '/courses/ai-agent.html',
-  'password cracking': '/courses/password-cracking.html',
-  'social media': '/courses/social-android-hacking.html',
-  'android hacking': '/courses/social-android-hacking.html',
+  'web server': '/training/web-server-hosting',
+  'sophos firewall': '/training/sophos-firewall',
+  'active directory': '/training/active-directory',
+  'ai agent': '/training/ai-agent',
+  'password cracking': '/training/password-cracking',
+  'social media': '/training/social-android-hacking',
+  'android hacking': '/training/social-android-hacking',
 };
 
 export const fallbackBlogPosts = [

@@ -29,18 +29,10 @@ function tg_user_public(array $u): array
     return $u;
 }
 
-/** Course catalogue: content/courses.json merged with the admin's course edits. */
+/** Course catalogue (store-lib.php): id, title, page and description. */
 function tg_course_catalogue(): array
 {
-    $base = json_decode((string)@file_get_contents(dirname(__DIR__) . '/content/courses.json'), true) ?: [];
-    $settings = tg_read_json('settings.json', []);
-    $edits = $settings['tg_courses_admin']['value'] ?? [];
-    $byId = [];
-    foreach ($base as $c) if (!empty($c['id'])) $byId[$c['id']] = $c;
-    if (is_array($edits)) foreach ($edits as $c) if (is_array($c) && !empty($c['id'])) $byId[$c['id']] = array_merge($byId[$c['id']] ?? [], $c);
-    $out = [];
-    foreach ($byId as $id => $c) $out[] = ['id' => (string)$id, 'title' => (string)($c['title'] ?? $id), 'page' => (string)($c['page'] ?? ''), 'description' => (string)($c['description'] ?? '')];
-    return $out;
+    return array_map(fn($p) => ['id' => $p['id'], 'title' => $p['title'], 'page' => $p['page'], 'description' => $p['description']], tg_programs());
 }
 
 function tg_norm(string $s): string { return preg_replace('/[^a-z0-9]+/', ' ', strtolower(trim($s))); }
@@ -64,6 +56,7 @@ function tg_user_purchases(array $u, array $courses): array
         }
         // approved website orders, or payments recorded in the Google Sheet
         if (($o['type'] ?? '') === 'pdf' && !empty($o['productId'])) { $found['pdfs'][] = (string)$o['productId']; continue; }
+        if (!empty($o['programId'])) { $found['courses'][] = (string)$o['programId']; continue; }
         $t = tg_norm($title);
         if ($t === '') continue;
         foreach ($courses as $c) {

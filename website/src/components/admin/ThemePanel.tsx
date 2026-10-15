@@ -26,11 +26,11 @@ const fontName = (stack: string) => stack.split(',')[0].replace(/['"]/g, '').tri
 /** Pick the website theme. One click restyles every page for every visitor. */
 const ThemePanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onSuccess?: () => void) => Promise<void> }) => {
   const themes = engine()?.themes || [];
-  const [live, setLive] = useState(() => readSetting<string>(THEME_KEY, 'cyber-neon'));
+  const [live, setLive] = useState(() => readSetting<string>(THEME_KEY, 'guardian-pro'));
   const [previewing, setPreviewing] = useState<string | null>(null);
 
   useEffect(() => {
-    const refresh = () => setLive(readSetting<string>(THEME_KEY, 'cyber-neon'));
+    const refresh = () => setLive(readSetting<string>(THEME_KEY, 'guardian-pro'));
     window.addEventListener('tg-settings-changed', refresh);
     return () => {
       window.removeEventListener('tg-settings-changed', refresh);
@@ -79,7 +79,7 @@ const ThemePanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onSucces
                 {isLive && <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground"><Check className="h-3 w-3" /> Live</span>}
               </div>
               <div className="flex flex-1 flex-col gap-2 p-4">
-                <h3 className="text-base font-semibold text-foreground">{t.name}{t.original ? ' (original)' : ''}</h3>
+                <h3 className="text-base font-semibold text-foreground">{t.name}{t.id === 'guardian-pro' ? ' (default)' : t.id === 'cyber-neon' ? ' (previous look)' : ''}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{t.tagline}</p>
                 <p className="text-[11px] text-muted-foreground">Fonts: {fontName(t.fonts.head)} / {fontName(t.fonts.body)}{t.light ? ' · light' : ' · dark'}</p>
                 <div className="mt-auto flex flex-wrap gap-2 pt-2">

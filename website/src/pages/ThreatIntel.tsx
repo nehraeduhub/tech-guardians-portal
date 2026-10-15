@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import HeroBand from '@/components/pro/HeroBand';
 import { motion } from 'framer-motion';
 import {
   Activity, AlertTriangle, Clock, ExternalLink, Globe, Loader2, Radar,
@@ -107,7 +108,7 @@ const ThreatIntel = () => {
   }, [items]);
 
   return (
-    <SiteFrame mainClassName="pt-24">
+    <SiteFrame>
       {/* LIVE TICKER — top */}
       <section className="pt-2">
         <div className="container mx-auto max-w-7xl px-4">
@@ -138,7 +139,7 @@ const ThreatIntel = () => {
       </section>
 
       {/* HERO */}
-      <section className="section-padding pb-8 relative overflow-hidden">
+      <HeroBand variant="globe" align="center" className="section-padding pb-8">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-cyber-orange/10 blur-[140px]" />
         </div>
@@ -190,7 +191,7 @@ const ThreatIntel = () => {
             </div>
           </ScrollReveal>
         </div>
-      </section>
+      </HeroBand>
 
       {/* LIVE FEED */}
       <section id="threats" className="section-padding pt-4">

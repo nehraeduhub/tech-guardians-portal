@@ -9,9 +9,10 @@ interface SiteFrameProps {
 }
 
 const SiteFrame = ({ children, mainClassName }: SiteFrameProps) => (
-  <div className="relative min-h-screen">
+  <div className="relative min-h-screen bg-background">
+    <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
     <Navbar />
-    <main className={cn('relative z-10 pt-24', mainClassName)}>{children}</main>
+    <main id="main" className={cn('relative pt-[72px]', mainClassName)}>{children}</main>
     <Footer />
   </div>
 );

@@ -2,6 +2,7 @@
 // PDF store.
 //   GET  store.php                 -> { products: [...], settings: {payment details} }   (public; no Drive links)
 //   GET  store.php?id=ID           -> { product, settings }                              (public)
+//   GET  store.php?action=checkout[&program=ID|&item=ID] -> server-side price for the checkout (public)
 //   GET  store.php?action=admin    -> full store incl. Drive links and sheet settings    (admin)
 //   POST store.php?action=save     { settings, products }                                 (admin)
 require_once __DIR__ . '/store-lib.php';
@@ -12,6 +13,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($action === 'admin') {
         tg_require_admin();
         tg_json(tg_store());
+    }
+    if ($action === 'checkout') {
+        // What the checkout page shows and charges, decided by the server.
+        if (isset($_GET['program'])) {
+            $p = tg_program((string)$_GET['program']);
+            if (!$p) tg_error('This training program is not available.', 404);
+            if ($p['amount'] <= 0) tg_error('Online payment is not open for this program. Please contact us on WhatsApp.', 409);
+            tg_json(['item' => ['type' => 'course', 'id' => $p['id'], 'title' => $p['title'], 'amount' => $p['amount'], 'regular' => $p['regular'], 'image' => $p['image'], 'kind' => $p['kind']], 'settings' => tg_public_settings()]);
+        }
+        if (isset($_GET['item'])) {
+            $p = tg_buyable_product((string)$_GET['item']);
+            if (!$p) tg_error('This product cannot be bought online yet. Please contact us on WhatsApp.', 404);
+            tg_json(['item' => ['type' => 'product', 'id' => $p['id'], 'title' => $p['title'], 'amount' => $p['amount'], 'regular' => $p['regular'], 'image' => $p['image']], 'settings' => tg_public_settings()]);
+        }
+        $list = array_values(array_filter(tg_programs(), fn($p) => $p['enabled'] && $p['amount'] > 0));
+        tg_json(['programs' => array_map(fn($p) => ['id' => $p['id'], 'title' => $p['title'], 'amount' => $p['amount'], 'regular' => $p['regular']], $list), 'settings' => tg_public_settings()]);
     }
     $store = tg_store();
     if (isset($_GET['id'])) {

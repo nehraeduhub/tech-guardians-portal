@@ -5,7 +5,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Secure Checkout — Tech Guardians</title>
-<meta name="description" content="Pay for Tech Guardians courses and PDFs securely by UPI."/>
+<meta name="description" content="Pay for Tech Guardians training programs, products and PDFs securely by UPI."/>
 <meta name="robots" content="noindex"/>
 <link rel="icon" href="/favicon.png" type="image/png"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
@@ -42,7 +42,7 @@
         <form id="step1" novalidate>
           <h2>Your details</h2>
           <div id="course-pick" hidden>
-            <label class="field"><span>Course</span><select id="course-select"></select></label>
+            <label class="field"><span>Training Program</span><select id="course-select"></select></label>
           </div>
           <div class="grid2">
             <label class="field"><span>Full name</span><input id="name" autocomplete="name" placeholder="Ravi Sharma" required/></label>
@@ -128,14 +128,11 @@
 
 <script>
 (function () {
-  var COURSES = {
-    'Web Server and Hosting': 799, 'Learn Sophos Firewall': 499, 'Learn Active Directory': 799,
-    'Build Your First AI Agent': 499, 'Ethical Hacking: Password Cracking': 799,
-    'Learn Social Media and Ethical Hacking': 499, 'Awareness Session (Online)': 999
-  };
+  // Prices come from the server (api/store.php?action=checkout), never from the link.
+  var PROGRAMS = [];
   var MY = 'tg_my_orders';
   var params = new URLSearchParams(location.search);
-  var state = { type: 'course', product: null, title: '', amount: 0, settings: {}, shot: '' };
+  var state = { type: 'course', product: null, itemId: '', programId: '', title: '', amount: 0, regular: 0, image: '', settings: {}, shot: '' };
   var $ = function (id) { return document.getElementById(id); };
   var rupees = function (n) { return '₹' + Number(n).toLocaleString('en-IN'); };
 
@@ -153,18 +150,24 @@
 
   function renderSummary() {
     var p = state.product;
-    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : 'Course enrollment';
-    $('sum-title').textContent = state.title || 'Choose a course';
+    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : state.type === 'product' ? 'Product' : 'Training Program';
+    $('sum-title').textContent = state.title || 'Choose a training program';
     $('sum-sub').textContent = p ? (p.pages ? p.pages + ' pages · ' : '') + (p.format || 'PDF') : '';
-    $('sum-media').innerHTML = p && p.cover ? '<img src="' + p.cover + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : '🎓') + '</div>';
-    var hasOffer = p && p.offerPrice > 0 && p.price > p.offerPrice;
+    var img = p && p.cover ? p.cover : state.image;
+    $('sum-media').innerHTML = img ? '<img src="' + String(img).replace(/"/g, '') + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : '🎓') + '</div>';
+    var regular = p ? (p.offerPrice > 0 && p.price > p.offerPrice ? p.price : 0) : state.regular;
+    var hasOffer = regular > state.amount && state.amount > 0;
     $('row-price').hidden = !hasOffer; $('row-discount').hidden = !hasOffer;
-    if (hasOffer) { $('sum-price').textContent = rupees(p.price); $('sum-discount').textContent = '− ' + rupees(p.price - p.offerPrice); }
+    if (hasOffer) {
+      $('sum-price').textContent = rupees(regular);
+      $('sum-discount').textContent = '− ' + rupees(regular - state.amount) + ' (' + Math.round((regular - state.amount) / regular * 100) + '% off)';
+    }
     $('sum-total').textContent = rupees(state.amount);
     ['pay-amount', 'pay-amount-2'].forEach(function (id) { $(id).textContent = rupees(state.amount); });
     $('perks').innerHTML = (state.type === 'pdf'
       ? ['📥 Download link on your order page', '♾️ Re-download any time from the same link', '🧾 Your order link is your receipt']
-      : ['🎓 Course access shared on WhatsApp and email', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
+      : state.type === 'product' ? ['📦 Product access shared on WhatsApp and email', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
+      : ['🎓 Access details shared on WhatsApp and email', '👤 Also appears in My Account', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
     ).map(function (t) { return '<li>' + t + '</li>'; }).join('');
     document.title = (state.title ? state.title + ' — ' : '') + 'Secure Checkout — Tech Guardians';
   }
@@ -197,33 +200,55 @@
     }).join('');
   }
 
-  function setupCourse() {
-    var name = params.get('course') || '';
-    var amount = Number(String(params.get('amount') || '').replace(/[^\d.]/g, ''));
-    if (!name || !amount) {
-      $('course-pick').hidden = false;
-      $('course-select').innerHTML = Object.keys(COURSES).map(function (c) { return '<option value="' + c + '">' + c + ' — ' + rupees(COURSES[c]) + '</option>'; }).join('');
-      if (name && COURSES[name]) $('course-select').value = name;
-      var pick = function () { state.title = $('course-select').value; state.amount = COURSES[state.title]; renderSummary(); renderPayment(); };
-      $('course-select').addEventListener('change', pick); pick();
-    } else {
-      state.title = name; state.amount = amount;
-    }
+  function pick(prog) {
+    state.programId = prog ? prog.id : ''; state.title = prog ? prog.title : ''; state.amount = prog ? prog.amount : 0;
+    state.regular = prog ? prog.regular : 0; state.image = prog && prog.image ? prog.image : '';
+  }
+
+  function setupCourse(list, chosen) {
+    PROGRAMS = list || [];
+    if (chosen) { pick(chosen); $('page-title').textContent = 'Enroll in “' + chosen.title + '”'; return; }
+    // Old links: ?course=Name — match it to a program, else let the buyer choose.
+    var name = (params.get('course') || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    var match = PROGRAMS.filter(function (c) { return c.title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() === name; })[0];
+    $('course-pick').hidden = false;
+    $('course-select').innerHTML = PROGRAMS.map(function (c) {
+      var off = c.regular > c.amount ? ' (was ' + rupees(c.regular) + ')' : '';
+      return '<option value="' + c.id + '">' + c.title.replace(/</g, '&lt;') + ' — ' + rupees(c.amount) + off + '</option>';
+    }).join('');
+    if (match) $('course-select').value = match.id;
+    var change = function () { pick(PROGRAMS.filter(function (c) { return c.id === $('course-select').value; })[0]); renderSummary(); renderPayment(); };
+    $('course-select').addEventListener('change', change); change();
+  }
+
+  function getJson(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Not available.'); return d; }); });
   }
 
   function init() {
-    var productId = params.get('product');
-    var job = productId
-      ? fetch('/api/store.php?id=' + encodeURIComponent(productId)).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error); return d; }); })
-          .then(function (d) {
-            state.type = 'pdf'; state.product = d.product; state.title = d.product.title; state.settings = d.settings;
-            state.amount = d.product.offerPrice > 0 ? d.product.offerPrice : d.product.price;
-            $('page-title').textContent = 'Buy “' + d.product.title + '”';
-          })
-      : fetch('/api/store.php').then(function (r) { return r.json(); }).then(function (d) { state.settings = d.settings || {}; setupCourse(); });
+    var productId = params.get('product'), programId = params.get('program'), itemId = params.get('product_item');
+    var job;
+    if (productId) {
+      job = getJson('/api/store.php?id=' + encodeURIComponent(productId)).then(function (d) {
+        state.type = 'pdf'; state.product = d.product; state.title = d.product.title; state.settings = d.settings;
+        state.amount = d.product.offerPrice > 0 ? d.product.offerPrice : d.product.price;
+        $('page-title').textContent = 'Buy “' + d.product.title + '”';
+      });
+    } else if (itemId) {
+      job = getJson('/api/store.php?action=checkout&item=' + encodeURIComponent(itemId)).then(function (d) {
+        state.type = 'product'; state.itemId = d.item.id; state.title = d.item.title; state.amount = d.item.amount;
+        state.regular = d.item.regular; state.image = d.item.image; state.settings = d.settings;
+        $('page-title').textContent = 'Buy “' + d.item.title + '”';
+      });
+    } else if (programId) {
+      job = Promise.all([getJson('/api/store.php?action=checkout&program=' + encodeURIComponent(programId)), getJson('/api/store.php?action=checkout')])
+        .then(function (r) { state.settings = r[0].settings; setupCourse(r[1].programs, r[0].item); });
+    } else {
+      job = getJson('/api/store.php?action=checkout').then(function (d) { state.settings = d.settings || {}; setupCourse(d.programs); });
+    }
     job.catch(function (e) {
-      if (productId) { fail('err1', (e && e.message) || 'This PDF is not available.'); $('step1').querySelector('button[type=submit]').disabled = true; }
-      else setupCourse();
+      fail('err1', (e && e.message) || 'This item is not available.');
+      $('step1').querySelector('button[type=submit]').disabled = true;
     }).then(function () { renderSummary(); renderPayment(); renderMyOrders(); });
   }
 
@@ -276,7 +301,8 @@
       method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
       body: JSON.stringify({
         type: state.type, productId: state.product ? state.product.id : undefined,
-        course: state.title, amount: rupees(state.amount),
+        programId: state.programId || undefined, itemId: state.itemId || undefined,
+        course: state.title,
         name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.replace(/\D/g, ''),
         utr: utr, date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), shot: state.shot || undefined
       })

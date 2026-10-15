@@ -3,26 +3,33 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import About from "./pages/About.tsx";
-import CyberPortal from "./pages/CyberPortal.tsx";
-import { PdfProduct, PdfStore } from "./pages/PdfStore.tsx";
-import Blog from "./pages/Blog.tsx";
-import BlogPost from "./pages/BlogPost.tsx";
-import CourseDetail from "./pages/CourseDetail.tsx";
-import CyberCrimeSupport from "./pages/CyberCrimeSupport.tsx";
-
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import ThreatIntel from "./pages/ThreatIntel.tsx";
-import CyberNewsPortal from "./pages/CyberNewsPortal.tsx";
-import Login from "./pages/Login.tsx";
-import Manage from "./pages/Manage.tsx";
-import SecurityAssessment from "./pages/SecurityAssessment.tsx";
-import TGBlogs from "./pages/TGBlogs.tsx";
-import CyberRange from "./pages/CyberRange.tsx";
-import RJNehra from "./pages/RJNehra.tsx";
 import { useLayout } from "@/lib/layout";
-import type { ReactNode } from "react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { useLocation } from "react-router-dom";
+
+const About = lazy(() => import("./pages/About.tsx"));
+const CyberPortal = lazy(() => import("./pages/CyberPortal.tsx"));
+const PdfProduct = lazy(() => import("./pages/PdfStore.tsx").then((m) => ({ default: m.PdfProduct })));
+const PdfStore = lazy(() => import("./pages/PdfStore.tsx").then((m) => ({ default: m.PdfStore })));
+const Blog = lazy(() => import("./pages/Blog.tsx"));
+const BlogPost = lazy(() => import("./pages/BlogPost.tsx"));
+const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
+const CyberCrimeSupport = lazy(() => import("./pages/CyberCrimeSupport.tsx"));
+const ThreatIntel = lazy(() => import("./pages/ThreatIntel.tsx"));
+const CyberNewsPortal = lazy(() => import("./pages/CyberNewsPortal.tsx"));
+const Login = lazy(() => import("./pages/Login.tsx"));
+const Manage = lazy(() => import("./pages/Manage.tsx"));
+const SecurityAssessment = lazy(() => import("./pages/SecurityAssessment.tsx"));
+const TGBlogs = lazy(() => import("./pages/TGBlogs.tsx"));
+const CyberRange = lazy(() => import("./pages/CyberRange.tsx"));
+const RJNehra = lazy(() => import("./pages/RJNehra.tsx"));
+const TrainingDetail = lazy(() => import("./pages/Training.tsx").then((m) => ({ default: m.TrainingDetail })));
+const TrainingList = lazy(() => import("./pages/Training.tsx").then((m) => ({ default: m.TrainingList })));
+const ProductDetail = lazy(() => import("./pages/Products.tsx").then((m) => ({ default: m.ProductDetail })));
+const ProductList = lazy(() => import("./pages/Products.tsx").then((m) => ({ default: m.ProductList })));
+const Events = lazy(() => import("./pages/Events.tsx"));
 
 // Pages the admin switched off in Manage → Sections & Pages show "not found".
 const Gate = ({ path, children }: { path: string; children: ReactNode }) => {
@@ -36,6 +43,15 @@ const StaticPage = ({ href }: { href: string }) => {
   return null;
 };
 
+// New page: start at the top (unless the link points to a section).
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+  useEffect(() => { if (!hash) window.scrollTo(0, 0); }, [pathname, hash]);
+  return null;
+};
+
+const PageLoading = () => <div className="min-h-screen bg-background" aria-busy="true" />;
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -44,12 +60,21 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
+        <Suspense fallback={<PageLoading />}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<Gate path="/about"><About /></Gate>} />
           <Route path="/rj-nehra" element={<Gate path="/rj-nehra"><RJNehra /></Gate>} />
           
           <Route path="/course/:id" element={<CourseDetail />} />
+          <Route path="/training" element={<Gate path="/training"><TrainingList /></Gate>} />
+          <Route path="/training/:id" element={<Gate path="/training"><TrainingDetail /></Gate>} />
+          <Route path="/courses" element={<Navigate to="/training" replace />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
+          <Route path="/products" element={<Gate path="/products"><ProductList /></Gate>} />
+          <Route path="/products/:id" element={<Gate path="/products"><ProductDetail /></Gate>} />
+          <Route path="/events" element={<Gate path="/events"><Events /></Gate>} />
           <Route path="/blog" element={<Gate path="/blog"><Blog /></Gate>} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/cyber-crime-support" element={<Gate path="/cyber-crime-support"><CyberCrimeSupport /></Gate>} />
@@ -69,6 +94,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

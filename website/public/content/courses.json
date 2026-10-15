@@ -1,9 +1,1419 @@
 [
-  { "id": "web-server-hosting", "title": "Learn Web Server & Web Hosting", "description": "Master web server setup, domain management, and secure hosting from scratch.", "icon_name": "Globe", "page": "/courses/web-server-hosting.html" },
-  { "id": "sophos-firewall", "title": "Learn Sophos Firewall", "description": "Configure, harden, and manage enterprise Sophos XG firewalls end-to-end.", "icon_name": "Shield", "page": "/courses/sophos-firewall.html" },
-  { "id": "active-directory", "title": "Learn Active Directory", "description": "Deploy, secure and administer Windows Active Directory environments.", "icon_name": "Server", "page": "/courses/active-directory.html" },
-  { "id": "ai-agent", "title": "Build Your First AI Agent", "description": "Create intelligent AI agents to automate tasks and power smart workflows.", "icon_name": "Bot", "page": "/courses/ai-agent.html" },
-  { "id": "password-cracking", "title": "Ethical Hacking: Password Cracking", "description": "Hands-on password auditing with Hashcat, John the Ripper and real wordlists.", "icon_name": "Key", "page": "/courses/password-cracking.html" },
-  { "id": "social-android-hacking", "title": "Learn Social Media & Android Hacking", "description": "Explore social engineering, Android security testing, and mobile threat analysis.", "icon_name": "Smartphone", "page": "/courses/social-android-hacking.html" },
-  { "id": "awareness-booking", "title": "Cyber Awareness Session Booking", "description": "Book an online or offline cyber-awareness session for your school, college or org.", "icon_name": "BookOpen", "page": "/courses/awareness-booking.html" }
+ {
+  "id": "web-server-hosting",
+  "title": "Learn Web Server & Web Hosting",
+  "description": "Master web server setup, domain management, and secure hosting from scratch.",
+  "icon_name": "Globe",
+  "page": "/training/web-server-hosting",
+  "price": "1599",
+  "offer": "799",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "course",
+  "category": "IT Infrastructure",
+  "headline": "Master Web Servers & Hosting from Scratch",
+  "intro": "From Apache to Nginx, cPanel to cloud — learn to deploy, configure, and secure any website on any hosting platform. Built for real-world skills, not just theory.",
+  "duration": "6 Weeks",
+  "level": "Beginner to Pro",
+  "mode": "Live online classes",
+  "image": "/images/site/training-web-server-hosting.jpg",
+  "highlights": [
+   "Live Sessions",
+   "Certificate",
+   "Lifetime Access"
+  ],
+  "tags": [
+   "Apache",
+   "Nginx",
+   "cPanel",
+   "Cloud",
+   "SSL/TLS",
+   "DNS"
+  ],
+  "stats": [
+   {
+    "value": "30+",
+    "label": "Lessons"
+   },
+   {
+    "value": "6",
+    "label": "Weeks"
+   },
+   {
+    "value": "1:1",
+    "label": "Support"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "How Web Servers Work",
+    "text": "Understand client-server architecture, HTTP/HTTPS requests, how browsers talk to servers, and what happens behind every URL you type.",
+    "chips": [
+     "HTTP",
+     "HTTPS",
+     "Request/Response"
+    ]
+   },
+   {
+    "title": "Apache & Nginx Setup",
+    "text": "Install, configure, and manage the two most popular web servers in the world. Set up virtual hosts, handle rewrites, and optimise performance.",
+    "chips": [
+     "Apache",
+     "Nginx",
+     "Virtual Hosts"
+    ]
+   },
+   {
+    "title": "SSL/TLS & HTTPS",
+    "text": "Secure your website with free SSL certificates using Let's Encrypt. Force HTTPS redirects, configure TLS versions, and understand certificate chains.",
+    "chips": [
+     "Let's Encrypt",
+     "Certbot",
+     "TLS 1.3"
+    ]
+   },
+   {
+    "title": "cPanel & Shared Hosting",
+    "text": "Master cPanel from top to bottom — File Manager, Email setup, phpMyAdmin, backups, subdomains, FTP, and one-click WordPress installs.",
+    "chips": [
+     "cPanel",
+     "FTP",
+     "phpMyAdmin"
+    ]
+   },
+   {
+    "title": "Cloud Hosting & VPS",
+    "text": "Deploy on AWS, DigitalOcean, or Hostinger VPS. Set up a Linux server from scratch, configure firewall rules, SSH keys, and auto deployments.",
+    "chips": [
+     "VPS",
+     "AWS",
+     "SSH",
+     "Ubuntu"
+    ]
+   },
+   {
+    "title": "Domain & DNS Management",
+    "text": "Buy and configure domains, point DNS to your server, set up A, CNAME, MX records, manage subdomains, and understand TTL and propagation.",
+    "chips": [
+     "DNS",
+     "A Record",
+     "CNAME",
+     "MX"
+    ]
+   }
+  ],
+  "modules": [
+   {
+    "label": "Week 1",
+    "title": "Internet & Web Fundamentals",
+    "topics": [
+     "How the internet works",
+     "Client-server model",
+     "HTTP vs HTTPS",
+     "Status codes (200, 301, 404, 500)",
+     "Ports 80 & 443",
+     "DNS resolution flow"
+    ]
+   },
+   {
+    "label": "Week 2",
+    "title": "Linux Server Basics",
+    "topics": [
+     "Linux command line for beginners",
+     "File permissions",
+     "SSH remote login",
+     "User management",
+     "Firewall (UFW)",
+     "Installing packages (apt)"
+    ]
+   },
+   {
+    "label": "Week 3",
+    "title": "Apache & Nginx Web Servers",
+    "topics": [
+     "Install Apache/Nginx on Ubuntu",
+     "Configure virtual hosts",
+     ".htaccess rules",
+     "URL rewriting",
+     "Serve static & PHP sites",
+     "Error pages",
+     "Logs"
+    ]
+   },
+   {
+    "label": "Week 4",
+    "title": "Domain, DNS & SSL Setup",
+    "topics": [
+     "Register a domain",
+     "Point DNS to server",
+     "Configure A, CNAME records",
+     "Install free SSL with Let's Encrypt + Certbot",
+     "Force HTTPS redirect"
+    ]
+   },
+   {
+    "label": "Week 5",
+    "title": "cPanel & Shared Hosting Mastery",
+    "topics": [
+     "Full cPanel walkthrough",
+     "Upload files via FTP",
+     "Create email accounts",
+     "MySQL database setup",
+     "WordPress install",
+     "Backup & restore"
+    ]
+   },
+   {
+    "label": "Week 6",
+    "title": "Cloud VPS & Deployment",
+    "topics": [
+     "Setup DigitalOcean / AWS Lightsail VPS",
+     "Deploy a live website",
+     "Nginx reverse proxy",
+     "PM2 for Node.js",
+     "Auto-deploy with GitHub",
+     "Monitoring basics"
+    ]
+   }
+  ],
+  "tools": [
+   {
+    "name": "Apache",
+    "type": "Web Server"
+   },
+   {
+    "name": "Nginx",
+    "type": "Web Server / Proxy"
+   },
+   {
+    "name": "Ubuntu Linux",
+    "type": "Server OS"
+   },
+   {
+    "name": "Certbot",
+    "type": "SSL / Let's Encrypt"
+   },
+   {
+    "name": "cPanel",
+    "type": "Hosting Control"
+   },
+   {
+    "name": "MySQL",
+    "type": "Database"
+   },
+   {
+    "name": "AWS / DigitalOcean",
+    "type": "Cloud Hosting"
+   },
+   {
+    "name": "FileZilla FTP",
+    "type": "File Transfer"
+   },
+   {
+    "name": "SSH / Terminal",
+    "type": "Remote Access"
+   },
+   {
+    "name": "WordPress",
+    "type": "CMS Deployment"
+   }
+  ]
+ },
+ {
+  "id": "sophos-firewall",
+  "title": "Learn Sophos Firewall",
+  "description": "Configure, harden, and manage enterprise Sophos XG firewalls end-to-end.",
+  "icon_name": "Shield",
+  "page": "/training/sophos-firewall",
+  "price": "999",
+  "offer": "499",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "course",
+  "category": "Network Security",
+  "headline": "Master Sophos Firewall & Network Security",
+  "intro": "From initial setup to advanced threat protection — learn to configure, manage, and secure enterprise networks using Sophos XG/XGS Firewall. Real labs, real scenarios, zero shortcuts.",
+  "duration": "6 Weeks",
+  "level": "Beginner to Pro",
+  "mode": "Live online classes",
+  "image": "/images/site/training-sophos-firewall.jpg",
+  "highlights": [
+   "Live Sessions",
+   "Certificate",
+   "Lifetime Access"
+  ],
+  "tags": [
+   "Firewall Rules",
+   "IPS/IDS",
+   "VPN",
+   "Web Filter",
+   "SD-WAN",
+   "ATP"
+  ],
+  "stats": [
+   {
+    "value": "35+",
+    "label": "Lessons"
+   },
+   {
+    "value": "6",
+    "label": "Weeks"
+   },
+   {
+    "value": "1:1",
+    "label": "Support"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "Firewall Fundamentals",
+    "text": "Understand how Sophos XG/XGS Firewall works, the dashboard layout, licensing, initial setup wizard, network zones, and interface configuration.",
+    "chips": [
+     "XG Firewall",
+     "XGS",
+     "Zones",
+     "Interfaces"
+    ]
+   },
+   {
+    "title": "Firewall Rules & Policies",
+    "text": "Create, manage, and troubleshoot firewall rules. Understand rule ordering, NAT policies, traffic shaping, and application-based policies.",
+    "chips": [
+     "ACL",
+     "NAT",
+     "Traffic Shaping",
+     "App Control"
+    ]
+   },
+   {
+    "title": "IPS & Threat Protection",
+    "text": "Configure Intrusion Prevention System, enable Advanced Threat Protection, set up sandboxing, and respond to real-time security events.",
+    "chips": [
+     "IPS",
+     "ATP",
+     "Sandboxing",
+     "Sandstorm"
+    ]
+   },
+   {
+    "title": "Web Filtering & Application Control",
+    "text": "Set up URL filtering, HTTPS inspection, web categories, application signatures, and control social media and streaming at the network level.",
+    "chips": [
+     "URL Filter",
+     "HTTPS Inspect",
+     "DPI",
+     "App Filter"
+    ]
+   },
+   {
+    "title": "VPN Configuration",
+    "text": "Configure Site-to-Site IPsec VPN, SSL VPN for remote access, Sophos Connect client setup, and troubleshoot VPN tunnels end-to-end.",
+    "chips": [
+     "IPSec",
+     "SSL VPN",
+     "RED",
+     "Sophos Connect"
+    ]
+   },
+   {
+    "title": "Monitoring, Logs & Reports",
+    "text": "Analyse firewall logs, set up alerts, read security dashboards, configure Sophos Central cloud management, and generate compliance reports.",
+    "chips": [
+     "Log Viewer",
+     "SIEM",
+     "Sophos Central",
+     "Reports"
+    ]
+   }
+  ],
+  "modules": [
+   {
+    "label": "Week 1",
+    "title": "Network Security & Firewall Basics",
+    "topics": [
+     "Networking fundamentals for firewalls",
+     "OSI model recap",
+     "TCP/IP subnetting",
+     "What is a Next-Gen Firewall",
+     "Sophos product lineup",
+     "Licensing & editions"
+    ]
+   },
+   {
+    "label": "Week 2",
+    "title": "Sophos XG Setup & Initial Configuration",
+    "topics": [
+     "Deploy Sophos XG on VM & hardware",
+     "Run the setup wizard",
+     "Configure WAN / LAN zones",
+     "DHCP server setup",
+     "Admin access & password policies",
+     "Backup & restore"
+    ]
+   },
+   {
+    "label": "Week 3",
+    "title": "Firewall Rules, NAT & Routing",
+    "topics": [
+     "Create inbound & outbound rules",
+     "SNAT / DNAT / Masquerading",
+     "Static routes & dynamic routing (OSPF)",
+     "Rule troubleshooting",
+     "Connection tracking",
+     "SD-WAN basics"
+    ]
+   },
+   {
+    "label": "Week 4",
+    "title": "Web Filtering, IPS & Application Control",
+    "topics": [
+     "Configure web policies & categories",
+     "Enable SSL/TLS inspection",
+     "IPS policy creation",
+     "Detect & block exploits",
+     "App control profiles",
+     "Bandwidth management"
+    ]
+   },
+   {
+    "label": "Week 5",
+    "title": "VPN — IPsec, SSL & RED",
+    "topics": [
+     "Site-to-Site IPsec tunnel setup",
+     "Phase 1 & Phase 2 explained",
+     "SSL VPN remote access",
+     "Sophos Connect client",
+     "RED (Remote Ethernet Device)",
+     "VPN troubleshooting"
+    ]
+   },
+   {
+    "label": "Week 6",
+    "title": "Advanced Threat Protection & Sophos Central",
+    "topics": [
+     "Enable ATP & Sandstorm",
+     "Malware scanning",
+     "Zero-day threat response",
+     "Sophos Central cloud management",
+     "Email protection",
+     "Reports & compliance",
+     "Real-world lab scenarios"
+    ]
+   }
+  ],
+  "tools": [
+   {
+    "name": "Sophos XG/XGS",
+    "type": "Next-Gen Firewall"
+   },
+   {
+    "name": "Sophos Central",
+    "type": "Cloud Management"
+   },
+   {
+    "name": "IPsec / SSL VPN",
+    "type": "Secure Tunnels"
+   },
+   {
+    "name": "Sophos IPS",
+    "type": "Intrusion Prevention"
+   },
+   {
+    "name": "Sandstorm",
+    "type": "Cloud Sandboxing"
+   },
+   {
+    "name": "Web Filter / DPI",
+    "type": "Deep Packet Inspect"
+   },
+   {
+    "name": "SD-WAN",
+    "type": "WAN Optimisation"
+   },
+   {
+    "name": "Email Protection",
+    "type": "Anti-Spam / Anti-Malware"
+   },
+   {
+    "name": "Sophos Connect",
+    "type": "Remote Access Client"
+   },
+   {
+    "name": "Log & Report Centre",
+    "type": "SIEM / Monitoring"
+   }
+  ]
+ },
+ {
+  "id": "active-directory",
+  "title": "Learn Active Directory",
+  "description": "Deploy, secure and administer Windows Active Directory environments.",
+  "icon_name": "Server",
+  "page": "/training/active-directory",
+  "price": "1599",
+  "offer": "799",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "course",
+  "category": "IT Infrastructure",
+  "headline": "Learn Active Directory & Identity Management",
+  "intro": "From domain setup to enterprise-level Group Policy — learn to deploy, configure, and manage Microsoft Active Directory like a real IT administrator. Hands-on labs, real environments, zero shortcuts.",
+  "duration": "6 Weeks",
+  "level": "Beginner to Pro",
+  "mode": "Live online classes",
+  "image": "/images/site/training-active-directory.jpg",
+  "highlights": [
+   "Live Sessions",
+   "Certificate",
+   "Lifetime Access"
+  ],
+  "tags": [
+   "AD DS",
+   "Group Policy",
+   "DNS / DHCP",
+   "LDAP",
+   "Azure AD",
+   "Kerberos"
+  ],
+  "stats": [
+   {
+    "value": "35+",
+    "label": "Lessons"
+   },
+   {
+    "value": "6",
+    "label": "Weeks"
+   },
+   {
+    "value": "1:1",
+    "label": "Support"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "Active Directory Fundamentals",
+    "text": "Understand what Active Directory is, how domains, forests, and trees work, the role of Domain Controllers, and how AD fits into enterprise IT infrastructure.",
+    "chips": [
+     "AD DS",
+     "Domain",
+     "Forest",
+     "DC"
+    ]
+   },
+   {
+    "title": "Users, Groups & OUs",
+    "text": "Create and manage user accounts, security and distribution groups, Organisational Units, and apply delegation of control for scalable administration.",
+    "chips": [
+     "Users",
+     "Groups",
+     "OU",
+     "Delegation"
+    ]
+   },
+   {
+    "title": "Group Policy (GPO)",
+    "text": "Create, link, and enforce Group Policy Objects to control desktop settings, software deployment, security baselines, and login scripts across the domain.",
+    "chips": [
+     "GPO",
+     "GPMC",
+     "Security Policy",
+     "Loopback"
+    ]
+   },
+   {
+    "title": "DNS, DHCP & AD Integration",
+    "text": "Configure DNS zones and records for Active Directory, set up DHCP scopes, understand SRV records, and troubleshoot name resolution in domain environments.",
+    "chips": [
+     "DNS",
+     "DHCP",
+     "SRV Records",
+     "Forwarders"
+    ]
+   },
+   {
+    "title": "AD Security & Authentication",
+    "text": "Master Kerberos and NTLM authentication, fine-grained password policies, account lockout, audit policies, and protect against common AD attacks.",
+    "chips": [
+     "Kerberos",
+     "NTLM",
+     "LAPS",
+     "Audit"
+    ]
+   },
+   {
+    "title": "Azure AD & Hybrid Identity",
+    "text": "Extend on-premises AD to Microsoft Azure, configure Azure AD Connect, set up Single Sign-On, Multi-Factor Authentication, and manage hybrid identities.",
+    "chips": [
+     "Azure AD",
+     "AD Connect",
+     "SSO",
+     "MFA"
+    ]
+   }
+  ],
+  "modules": [
+   {
+    "label": "Week 1",
+    "title": "Windows Server & AD Basics",
+    "topics": [
+     "Windows Server 2019/2022 overview",
+     "Install & configure Server roles",
+     "What is Active Directory",
+     "Domain vs Workgroup",
+     "AD components explained",
+     "Install AD DS role"
+    ]
+   },
+   {
+    "label": "Week 2",
+    "title": "Domain Setup & DNS Configuration",
+    "topics": [
+     "Promote server to Domain Controller",
+     "Create a new forest & domain",
+     "Configure AD-integrated DNS",
+     "SRV records & zone types",
+     "Join client machines to domain",
+     "FSMO roles explained"
+    ]
+   },
+   {
+    "label": "Week 3",
+    "title": "Users, Groups, OUs & DHCP",
+    "topics": [
+     "Create & manage user accounts",
+     "Bulk user import with PowerShell",
+     "Security vs distribution groups",
+     "OU design best practices",
+     "DHCP scope setup",
+     "Delegation of Control wizard"
+    ]
+   },
+   {
+    "label": "Week 4",
+    "title": "Group Policy — Design & Enforcement",
+    "topics": [
+     "Create & link GPOs",
+     "Default Domain Policy",
+     "Password & lockout policies",
+     "Software restriction policies",
+     "Drive mapping & folder redirection",
+     "GPO inheritance & precedence",
+     "Troubleshoot with RSOP"
+    ]
+   },
+   {
+    "label": "Week 5",
+    "title": "AD Security & Authentication",
+    "topics": [
+     "Kerberos authentication flow",
+     "NTLM vs Kerberos",
+     "Fine-grained password policies",
+     "LAPS — Local Admin Password Solution",
+     "AD auditing & event logs",
+     "Common AD attacks (Pass-the-Hash, Kerberoasting) & defences"
+    ]
+   },
+   {
+    "label": "Week 6",
+    "title": "Azure AD & Hybrid Identity",
+    "topics": [
+     "Introduction to Azure Active Directory",
+     "Azure AD Connect installation & sync",
+     "Password hash sync vs Pass-through Auth",
+     "Configure SSO & Conditional Access",
+     "Enable MFA",
+     "AD backup & disaster recovery"
+    ]
+   }
+  ],
+  "tools": [
+   {
+    "name": "Windows Server",
+    "type": "2019 / 2022"
+   },
+   {
+    "name": "Active Directory",
+    "type": "AD DS / AD CS"
+   },
+   {
+    "name": "Group Policy (GPMC)",
+    "type": "Policy Management"
+   },
+   {
+    "name": "DNS & DHCP",
+    "type": "Name Resolution"
+   },
+   {
+    "name": "PowerShell",
+    "type": "AD Automation"
+   },
+   {
+    "name": "Azure AD",
+    "type": "Cloud Identity"
+   },
+   {
+    "name": "AD Connect",
+    "type": "Hybrid Sync"
+   },
+   {
+    "name": "LAPS",
+    "type": "Local Admin Password"
+   },
+   {
+    "name": "Kerberos / NTLM",
+    "type": "Authentication"
+   },
+   {
+    "name": "Event Viewer",
+    "type": "Audit & Monitoring"
+   }
+  ]
+ },
+ {
+  "id": "ai-agent",
+  "title": "Build Your First AI Agent",
+  "description": "Create intelligent AI agents to automate tasks and power smart workflows.",
+  "icon_name": "Bot",
+  "page": "/training/ai-agent",
+  "price": "999",
+  "offer": "499",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "course",
+  "category": "AI & Automation",
+  "headline": "Build Your First AI Agent with N8n",
+  "intro": "No code. No barriers. Automate real workflows, connect AI models to live data, and deploy intelligent agents that work for you 24/7 — built entirely inside N8n.",
+  "duration": "4 Weeks",
+  "level": "No Coding Required",
+  "mode": "Live online classes",
+  "image": "/images/site/training-ai-agent.jpg",
+  "highlights": [
+   "AI-Powered",
+   "Certificate",
+   "Lifetime Access"
+  ],
+  "tags": [
+   "N8n",
+   "OpenAI",
+   "Webhooks",
+   "Automation",
+   "Workflows",
+   "APIs"
+  ],
+  "stats": [
+   {
+    "value": "25+",
+    "label": "Lessons"
+   },
+   {
+    "value": "4",
+    "label": "Weeks"
+   },
+   {
+    "value": "10+",
+    "label": "Live Agents"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "What is an AI Agent?",
+    "text": "Understand how AI agents think, plan, and act autonomously. Learn the difference between a simple automation and a true AI agent that makes decisions.",
+    "chips": [
+     "AI Concepts",
+     "LLM Basics",
+     "Agent Loop"
+    ]
+   },
+   {
+    "title": "N8n from the Ground Up",
+    "text": "Master N8n's visual workflow builder. Learn nodes, triggers, conditions, loops, and error handling — everything you need to automate anything.",
+    "chips": [
+     "N8n UI",
+     "Nodes",
+     "Triggers",
+     "Logic"
+    ]
+   },
+   {
+    "title": "Connect AI to Real Data",
+    "text": "Plug OpenAI, Gemini, or Mistral into your workflows. Let your AI agent read emails, search the web, query databases, and respond intelligently.",
+    "chips": [
+     "OpenAI",
+     "Gemini",
+     "RAG",
+     "Memory"
+    ]
+   },
+   {
+    "title": "APIs & Webhooks",
+    "text": "Connect N8n to any app using APIs and Webhooks. Trigger workflows from WhatsApp, Telegram, Gmail, Google Sheets, Notion, and more.",
+    "chips": [
+     "REST API",
+     "Webhooks",
+     "JSON",
+     "Auth"
+    ]
+   },
+   {
+    "title": "Build 10+ Real Agents",
+    "text": "Build a customer support bot, lead qualifier, email responder, social media poster, data summariser, invoice reader, and more — all fully functional.",
+    "chips": [
+     "Chatbot",
+     "Email Agent",
+     "Lead Bot"
+    ]
+   },
+   {
+    "title": "Deploy & Self-Host N8n",
+    "text": "Deploy your AI agents 24/7 on the cloud using N8n Cloud or self-host on a VPS. Set up credentials, environment variables, and production-ready workflows.",
+    "chips": [
+     "N8n Cloud",
+     "Self-Host",
+     "Docker",
+     "VPS"
+    ]
+   }
+  ],
+  "modules": [
+   {
+    "label": "Week 1",
+    "title": "AI & Automation Foundations",
+    "topics": [
+     "What is an AI agent",
+     "How LLMs work",
+     "N8n install & setup",
+     "Interface walkthrough",
+     "Your first workflow in 10 minutes",
+     "Understanding nodes & triggers"
+    ]
+   },
+   {
+    "label": "Week 2",
+    "title": "N8n Workflows & Logic",
+    "topics": [
+     "IF / Switch nodes",
+     "Loops & iterations",
+     "HTTP Request node",
+     "Working with JSON data",
+     "Error handling & retries",
+     "Scheduling workflows with Cron"
+    ]
+   },
+   {
+    "label": "Week 3",
+    "title": "Connecting AI Models & Apps",
+    "topics": [
+     "OpenAI Chat node",
+     "Prompt engineering in N8n",
+     "Memory & context management",
+     "Connect Gmail, Google Sheets, Notion, Telegram, WhatsApp via API"
+    ]
+   },
+   {
+    "label": "Week 4",
+    "title": "Build & Deploy Real AI Agents",
+    "topics": [
+     "Customer support agent",
+     "Lead qualification bot",
+     "Email auto-responder",
+     "Social media agent",
+     "Self-host on VPS with Docker",
+     "Go live 24/7"
+    ]
+   },
+   {
+    "label": "BONUS",
+    "title": "Bonus Projects — Advanced AI Agents",
+    "topics": [
+     "RAG agent with your own documents",
+     "Web scraper + AI summariser",
+     "Invoice reader & data extractor",
+     "Multi-step research agent",
+     "Agentic loop with tool calling"
+    ]
+   }
+  ],
+  "tools": [
+   {
+    "name": "N8n",
+    "type": "Workflow Automation"
+   },
+   {
+    "name": "OpenAI / ChatGPT",
+    "type": "AI Language Model"
+   },
+   {
+    "name": "Google Gemini",
+    "type": "AI Model"
+   },
+   {
+    "name": "Gmail / SMTP",
+    "type": "Email Automation"
+   },
+   {
+    "name": "Telegram / WhatsApp",
+    "type": "Messaging Bots"
+   },
+   {
+    "name": "Google Sheets",
+    "type": "Data & Spreadsheets"
+   },
+   {
+    "name": "Notion",
+    "type": "Knowledge Base"
+   },
+   {
+    "name": "Docker",
+    "type": "Self-Hosting"
+   },
+   {
+    "name": "REST APIs",
+    "type": "Any App Integration"
+   },
+   {
+    "name": "Webhooks",
+    "type": "Real-Time Triggers"
+   },
+   {
+    "name": "Pinecone / Qdrant",
+    "type": "Vector Database (RAG)"
+   },
+   {
+    "name": "N8n Cloud / VPS",
+    "type": "Deployment"
+   }
+  ]
+ },
+ {
+  "id": "password-cracking",
+  "title": "Ethical Hacking: Password Cracking",
+  "description": "Hands-on password auditing with Hashcat, John the Ripper and real wordlists.",
+  "icon_name": "Key",
+  "page": "/training/password-cracking",
+  "price": "1599",
+  "offer": "799",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "course",
+  "category": "Ethical Hacking",
+  "headline": "Ethical Hacking: Password Cracking Masterclass",
+  "intro": "From hash theory to GPU-powered cracking — learn how attackers break passwords and how defenders stop them. Real tools, real wordlists, and real lab scenarios built for aspiring penetration testers.",
+  "duration": "6 Weeks",
+  "level": "Beginner to Pro",
+  "mode": "Live online classes",
+  "image": "/images/site/training-password-cracking.jpg",
+  "highlights": [
+   "Live Sessions",
+   "Certificate",
+   "Kali Linux Labs"
+  ],
+  "tags": [
+   "Hashcat",
+   "John the Ripper",
+   "Hydra",
+   "Wordlists",
+   "Rainbow Tables",
+   "Mimikatz"
+  ],
+  "stats": [
+   {
+    "value": "35+",
+    "label": "Lessons"
+   },
+   {
+    "value": "6",
+    "label": "Weeks"
+   },
+   {
+    "value": "1:1",
+    "label": "Support"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "Password & Hashing Theory",
+    "text": "Understand how passwords are stored, what hashing algorithms do, the difference between encryption and hashing, and why salting matters for security.",
+    "chips": [
+     "MD5",
+     "SHA-256",
+     "bcrypt",
+     "Salting"
+    ]
+   },
+   {
+    "title": "Dictionary & Wordlist Attacks",
+    "text": "Build and customise wordlists with Crunch and CeWL, use RockYou and custom dictionaries, and run dictionary attacks with Hashcat and John the Ripper.",
+    "chips": [
+     "RockYou",
+     "Crunch",
+     "CeWL",
+     "John"
+    ]
+   },
+   {
+    "title": "Brute Force & Mask Attacks",
+    "text": "Execute brute force attacks with custom character sets, use Hashcat mask attacks to target specific password patterns, and leverage GPU acceleration for speed.",
+    "chips": [
+     "Hashcat",
+     "Mask Attack",
+     "GPU Crack",
+     "Charset"
+    ]
+   },
+   {
+    "title": "Rainbow Tables & Hash Lookup",
+    "text": "Understand and use precomputed rainbow tables, perform hash lookup attacks, and learn why modern salting techniques render rainbow tables ineffective.",
+    "chips": [
+     "Ophcrack",
+     "Rainbow Tables",
+     "Lookup",
+     "NTLM"
+    ]
+   },
+   {
+    "title": "Online & Network Password Attacks",
+    "text": "Perform credential stuffing, online brute force with Hydra against SSH, FTP, RDP, and HTTP logins, and understand account lockout bypass techniques.",
+    "chips": [
+     "Hydra",
+     "Medusa",
+     "SSH",
+     "RDP"
+    ]
+   },
+   {
+    "title": "Password Defence & Hardening",
+    "text": "Implement strong password policies, enable MFA, configure account lockout, audit password strength, and prevent credential dumping in real environments.",
+    "chips": [
+     "MFA",
+     "LAPS",
+     "PAM",
+     "Audit"
+    ]
+   }
+  ],
+  "modules": [
+   {
+    "label": "Week 1",
+    "title": "Foundations — Passwords & Cryptography",
+    "topics": [
+     "How passwords are stored",
+     "Hashing vs encryption",
+     "MD5, SHA-1, SHA-256, bcrypt, Argon2",
+     "Salting & peppering",
+     "Where hashes live (SAM, /etc/shadow, NTDS.dit)",
+     "Lab: Identify hash types with hash-identifier"
+    ]
+   },
+   {
+    "label": "Week 2",
+    "title": "Wordlists & Dictionary Attacks",
+    "topics": [
+     "RockYou & SecLists wordlists",
+     "Build custom wordlists with Crunch",
+     "Website-based wordlists with CeWL",
+     "Dictionary attacks with John the Ripper",
+     "Rule-based mutations",
+     "Lab: Crack Linux /etc/shadow hashes"
+    ]
+   },
+   {
+    "label": "Week 3",
+    "title": "Hashcat — GPU-Powered Cracking",
+    "topics": [
+     "Install & configure Hashcat",
+     "Attack modes (0–9) explained",
+     "Mask attacks & custom charsets",
+     "Combinator & hybrid attacks",
+     "Hashcat rules (best64, d3ad0ne)",
+     "Lab: Crack Windows NTLM & WPA2 hashes"
+    ]
+   },
+   {
+    "label": "Week 4",
+    "title": "Rainbow Tables & Credential Dumping",
+    "topics": [
+     "Rainbow table theory & Ophcrack demo",
+     "Why salting defeats rainbow tables",
+     "Credential dumping with Mimikatz",
+     "SAM & NTDS.dit extraction",
+     "Pass-the-Hash attack",
+     "Lab: Dump & crack Windows credentials"
+    ]
+   },
+   {
+    "label": "Week 5",
+    "title": "Online Attacks — Hydra & Medusa",
+    "topics": [
+     "Online vs offline cracking",
+     "Hydra setup & syntax",
+     "Attack SSH, FTP, HTTP, RDP, SMB",
+     "Medusa for parallel attacks",
+     "Credential stuffing techniques",
+     "Bypass lockout with low-and-slow",
+     "Lab: Brute force a live login portal"
+    ]
+   },
+   {
+    "label": "Week 6",
+    "title": "Defence, Hardening & Capstone Lab",
+    "topics": [
+     "Password policy design",
+     "Account lockout & MFA implementation",
+     "LAPS for local admin passwords",
+     "Detect brute force with SIEM alerts",
+     "Password auditing with Hashcat",
+     "Full pentest scenario",
+     "Report writing"
+    ]
+   }
+  ],
+  "tools": [
+   {
+    "name": "Hashcat",
+    "type": "GPU Hash Cracker"
+   },
+   {
+    "name": "John the Ripper",
+    "type": "Hash & Password Cracker"
+   },
+   {
+    "name": "Kali Linux",
+    "type": "Pentesting OS"
+   },
+   {
+    "name": "Hydra",
+    "type": "Online Brute Force"
+   },
+   {
+    "name": "Mimikatz",
+    "type": "Credential Dumping"
+   },
+   {
+    "name": "Ophcrack",
+    "type": "Rainbow Table Tool"
+   },
+   {
+    "name": "CeWL & Crunch",
+    "type": "Wordlist Generators"
+   },
+   {
+    "name": "Medusa",
+    "type": "Parallel Login Cracker"
+   },
+   {
+    "name": "SecLists / RockYou",
+    "type": "Wordlist Collections"
+   },
+   {
+    "name": "Wireshark",
+    "type": "Network Capture"
+   }
+  ]
+ },
+ {
+  "id": "social-android-hacking",
+  "title": "Social Media & Android Hacking",
+  "description": "Explore social engineering, Android security testing, and mobile threat analysis.",
+  "icon_name": "Smartphone",
+  "page": "/training/social-android-hacking",
+  "price": "999",
+  "offer": "499",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "course",
+  "category": "Ethical Hacking",
+  "headline": "Social Media & Android Hacking Masterclass",
+  "intro": "Learn how attackers compromise social media accounts and Android devices — then learn to defend them. Real techniques, real lab environments, real-world protection skills.",
+  "duration": "6 Weeks",
+  "level": "Intermediate Level",
+  "mode": "Live online classes",
+  "image": "/images/site/training-social-android-hacking.jpg",
+  "highlights": [
+   "Live Sessions",
+   "Hands-On Labs",
+   "Certificate"
+  ],
+  "tags": [
+   "Phishing",
+   "OSINT",
+   "Android APK",
+   "Metasploit",
+   "Social Eng.",
+   "Kali Linux"
+  ],
+  "stats": [
+   {
+    "value": "35+",
+    "label": "Lessons"
+   },
+   {
+    "value": "6",
+    "label": "Weeks"
+   },
+   {
+    "value": "20+",
+    "label": "Labs"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "Phishing & Account Takeover",
+    "text": "Build and analyse phishing pages that clone Instagram, Facebook, and Gmail. Understand how credential harvesting works and how to detect & block it.",
+    "chips": [
+     "Phishing Pages",
+     "Credential Harvest",
+     "2FA Bypass"
+    ]
+   },
+   {
+    "title": "OSINT — Open Source Intelligence",
+    "text": "Find publicly available information about any target — emails, phone numbers, location, linked accounts — using tools like Maltego, Sherlock, and theHarvester.",
+    "chips": [
+     "Sherlock",
+     "Maltego",
+     "Google Dorks"
+    ]
+   },
+   {
+    "title": "Social Engineering Attacks",
+    "text": "Study the psychology behind manipulation attacks — pretexting, baiting, vishing, smishing. Learn how attackers trick users into giving up credentials without any hacking.",
+    "chips": [
+     "Pretexting",
+     "Vishing",
+     "Smishing"
+    ]
+   },
+   {
+    "title": "Android Architecture & Security",
+    "text": "Understand Android's security model, permissions system, app sandboxing, APK structure, and how malicious apps bypass device security controls.",
+    "chips": [
+     "APK Structure",
+     "Permissions",
+     "ADB"
+    ]
+   },
+   {
+    "title": "Android Exploitation with Metasploit",
+    "text": "Generate Android payloads, embed them into APKs, and establish Meterpreter sessions — all in a legal, isolated lab. Understand exactly how RATs and spyware operate.",
+    "chips": [
+     "Metasploit",
+     "Msfvenom",
+     "Meterpreter"
+    ]
+   },
+   {
+    "title": "Defence, Detection & Hardening",
+    "text": "Enable and enforce 2FA, use passkeys, spot phishing attempts, harden Android devices, audit app permissions, and set up alerts for account compromise.",
+    "chips": [
+     "2FA Setup",
+     "App Audit",
+     "Hardening"
+    ]
+   }
+  ],
+  "modules": [
+   {
+    "label": "Week 1",
+    "title": "Foundations & Lab Setup",
+    "topics": [
+     "Ethical hacking overview",
+     "IT Act 2000 & legal framework",
+     "Kali Linux setup",
+     "Virtual lab environment",
+     "Networking basics for hackers",
+     "Reconnaissance concepts"
+    ]
+   },
+   {
+    "label": "Week 2",
+    "title": "OSINT & Social Media Reconnaissance",
+    "topics": [
+     "Username lookup with Sherlock",
+     "Email OSINT with theHarvester",
+     "Google Dork techniques",
+     "Reverse image search",
+     "Social graph mapping",
+     "Metadata extraction from images"
+    ]
+   },
+   {
+    "label": "Week 3",
+    "title": "Phishing & Social Engineering",
+    "topics": [
+     "Clone phishing pages with SET",
+     "Credential harvester setup",
+     "2FA bypass methods (Evilginx)",
+     "Social engineering psychology",
+     "Vishing & smishing attack simulation",
+     "Email spoofing & detection"
+    ]
+   },
+   {
+    "label": "Week 4",
+    "title": "Android Architecture & APK Analysis",
+    "topics": [
+     "Android security model",
+     "APK decompilation with Jadx",
+     "ADB commands",
+     "Permissions audit",
+     "Static & dynamic app analysis",
+     "Identify malicious apps",
+     "MobSF walkthrough"
+    ]
+   },
+   {
+    "label": "Week 5",
+    "title": "Android Exploitation in the Lab",
+    "topics": [
+     "Msfvenom payload generation",
+     "Embedding payload in APK",
+     "Meterpreter session control",
+     "Post-exploitation on Android",
+     "Camera, mic, SMS, GPS access",
+     "Detect & remove RATs"
+    ]
+   },
+   {
+    "label": "Week 6",
+    "title": "Defence, Hardening & Incident Response",
+    "topics": [
+     "Secure social media accounts",
+     "Passkeys & 2FA enforcement",
+     "Android device hardening",
+     "App permission management",
+     "Detect compromised accounts",
+     "Incident response basics",
+     "Write pentest report"
+    ]
+   }
+  ],
+  "tools": [
+   {
+    "name": "Kali Linux",
+    "type": "Attacker OS"
+   },
+   {
+    "name": "Metasploit",
+    "type": "Exploitation Framework"
+   },
+   {
+    "name": "SET",
+    "type": "Social Engineering Toolkit"
+   },
+   {
+    "name": "Sherlock",
+    "type": "Username OSINT"
+   },
+   {
+    "name": "Maltego",
+    "type": "Link Analysis / OSINT"
+   },
+   {
+    "name": "Jadx / APKTool",
+    "type": "APK Decompiler"
+   },
+   {
+    "name": "MobSF",
+    "type": "Mobile Security Framework"
+   },
+   {
+    "name": "ADB",
+    "type": "Android Debug Bridge"
+   },
+   {
+    "name": "Evilginx",
+    "type": "2FA Phishing Proxy"
+   },
+   {
+    "name": "theHarvester",
+    "type": "Email & Domain OSINT"
+   },
+   {
+    "name": "Wireshark",
+    "type": "Network Analysis"
+   },
+   {
+    "name": "Burp Suite",
+    "type": "Web Proxy / Intercept"
+   }
+  ]
+ },
+ {
+  "id": "awareness-booking",
+  "title": "Cyber Awareness Session",
+  "description": "Book an online or offline cyber-awareness session for your school, college or org.",
+  "icon_name": "BookOpen",
+  "page": "/training/awareness-booking",
+  "price": "999",
+  "offer": "",
+  "showPrice": true,
+  "enabled": true,
+  "kind": "session",
+  "category": "Cyber Awareness",
+  "headline": "Book a Cyber Awareness Session",
+  "intro": "Cybersecurity awareness training by Tech Guardians: real case studies, live demos and practical safety habits for schools, colleges, offices and institutions. Choose online or on-site.",
+  "duration": "Flexible schedule",
+  "level": "All audiences",
+  "mode": "Online or on-site",
+  "image": "/images/site/training-awareness-booking.jpg",
+  "highlights": [
+   "Live expert speaker",
+   "Real cyber-crime case studies",
+   "Interactive Q&A",
+   "Certificate of participation"
+  ],
+  "tags": [
+   "Phishing",
+   "UPI fraud",
+   "Social media safety",
+   "Passwords",
+   "Digital arrest scams",
+   "Reporting on 1930"
+  ],
+  "stats": [
+   {
+    "value": "2",
+    "label": "Formats"
+   },
+   {
+    "value": "Live",
+    "label": "Demos & Q&A"
+   },
+   {
+    "value": "✓",
+    "label": "Certificates"
+   }
+  ],
+  "outcomes": [
+   {
+    "title": "Online awareness session",
+    "text": "Live expert-led session over Zoom or Google Meet for your students, staff or audience. ₹999 one-time, booked instantly.",
+    "chips": [
+     "Zoom / Meet",
+     "Recording on request",
+     "Certificates"
+    ]
+   },
+   {
+    "title": "On-site awareness visit",
+    "text": "Our team visits your campus or office for an in-person programme with live hacking demonstrations. Price depends on location, travel and stay — we confirm before booking.",
+    "chips": [
+     "In person",
+     "Live demos",
+     "Custom quote"
+    ]
+   },
+   {
+    "title": "What your audience learns",
+    "text": "How scams work, how to spot phishing and fake calls, how to secure phones and social media, and how to report cyber crime quickly.",
+    "chips": [
+     "Scams",
+     "Phishing",
+     "Reporting"
+    ]
+   }
+  ],
+  "modules": [],
+  "tools": []
+ }
 ]
