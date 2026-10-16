@@ -245,3 +245,61 @@
 @keyframes tg-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -12px, 0); } }
 .tg-float { animation: tg-float 7s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .tg-float { animation: none; } }
+
+/* Ecosystem: 3D tilt cards (pointer position is set in --rx/--ry/--mx/--my). */
+.eco-stage { perspective: 1100px; }
+.eco-card {
+  --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 30%;
+  position: relative; height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.eco-card.is-tilting { transition: transform .08s linear; }
+.eco-face {
+  position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 1.25rem;
+  background: linear-gradient(160deg, hsl(222 50% 9%), hsl(222 60% 5%));
+  border: 1px solid hsl(var(--primary) / 0.22);
+  box-shadow: 0 30px 60px -30px hsl(var(--primary) / 0.45), 0 18px 36px -24px rgb(0 0 0 / 0.9), inset 0 1px 0 hsl(0 0% 100% / 0.06);
+  transition: border-color .4s ease, box-shadow .4s ease;
+}
+.eco-card:hover .eco-face {
+  border-color: hsl(var(--primary) / 0.6);
+  box-shadow: 0 40px 80px -30px hsl(var(--primary) / 0.65), 0 22px 40px -24px rgb(0 0 0 / 0.95), inset 0 1px 0 hsl(0 0% 100% / 0.1);
+}
+.eco-glare {
+  pointer-events: none; position: absolute; inset: 0; border-radius: 1.25rem; opacity: 0; transition: opacity .4s ease;
+  background: radial-gradient(420px circle at var(--mx) var(--my), hsl(0 0% 100% / 0.14), transparent 45%);
+}
+.eco-card:hover .eco-glare { opacity: 1; }
+.eco-float { position: absolute; transform: translateZ(55px); transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.eco-float-sm { position: absolute; transform: translateZ(30px); }
+.eco-body { transform: translateZ(24px); }
+@media (prefers-reduced-motion: reduce) {
+  .eco-card { transform: none !important; }
+  .eco-float, .eco-float-sm, .eco-body { transform: none; }
+}
+
+/* Events: ticket cards with a tear-off date stub. */
+.ticket {
+  position: relative; display: grid; grid-template-columns: 6rem 1fr; overflow: hidden;
+  border-radius: 1.25rem; border: 1px solid hsl(var(--cyber-green) / 0.25);
+  background: linear-gradient(110deg, hsl(222 50% 8%), hsl(222 60% 5%) 60%);
+  box-shadow: 0 24px 50px -30px hsl(var(--cyber-green) / 0.45);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s ease, box-shadow .35s ease;
+}
+.ticket:hover { transform: translateY(-4px); border-color: hsl(var(--cyber-green) / 0.6); box-shadow: 0 30px 60px -28px hsl(var(--cyber-green) / 0.6); }
+.ticket-stub {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem;
+  padding: 1.25rem .5rem; text-align: center; color: hsl(222 60% 6%);
+  background: linear-gradient(160deg, hsl(var(--cyber-green)), hsl(var(--primary)));
+  border-right: 2px dashed hsl(222 60% 5% / 0.55);
+}
+.ticket-stub::before, .ticket-stub::after {
+  content: ''; position: absolute; right: -0.85rem; width: 1.6rem; height: 1.6rem; border-radius: 9999px;
+  background: hsl(var(--background)); border: 1px solid hsl(var(--cyber-green) / 0.25);
+}
+.ticket-stub::before { top: -0.85rem; }
+.ticket-stub::after { bottom: -0.85rem; }
+@media (min-width: 768px) { .ticket { grid-template-columns: 9rem 1fr 13rem; } }

@@ -13,7 +13,7 @@ export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'events', label: 'Events & Workshops' },
   { id: 'free-tools', label: 'Free tools for everyday cyber safety' },
   { id: 'products', label: 'Products & Solutions' },
-  { id: 'cyber-crime-banner', label: 'Cyber crime help banner' },
+  { id: 'cyber-crime-banner', label: 'Report cyber crime (victim help)' },
   { id: 'featured-training', label: 'Featured training video' },
   { id: 'courses', label: 'Training Programs' },
   { id: 'pdf-store', label: 'PDF Store (books for sale)' },
@@ -41,11 +41,13 @@ export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'trust', label: 'Trust / partners' },
   { id: 'enroll', label: 'Enroll call-to-action' },
   { id: 'enroll-form', label: 'Enroll form' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'contact', label: 'Contact us' },
 ];
 
-/** Shown on a fresh homepage: banner, ecosystem, events and free tools. */
-const DEFAULT_VISIBLE_SECTIONS = ['hero', 'ecosystem', 'events', 'free-tools'];
+/** Shown on a fresh homepage: banner, ecosystem, events, free tools, report-a-crime help and contact. */
+const DEFAULT_VISIBLE_SECTIONS = ['hero', 'ecosystem', 'events', 'free-tools', 'cyber-crime-banner', 'contact'];
+/** Sections switched on for homepages saved before version 3. */
+const ADDED_IN_V3 = ['cyber-crime-banner', 'contact'];
 export const DEFAULT_HIDDEN_SECTIONS = HOME_SECTIONS.map((s) => s.id).filter((id) => !DEFAULT_VISIBLE_SECTIONS.includes(id));
 
 
@@ -73,21 +75,22 @@ export interface SiteLayout {
   order: string[];
   hidden: string[];
   hiddenPages: string[];
-  /** 2 = the homepage with ecosystem, events and free tools. Older layouts keep only their page switches. */
+  /** 3 = adds the cyber crime help banner and contact. 2 = ecosystem, events and free tools. Older layouts keep only their page switches. */
   version?: number;
 }
 
 export const LAYOUT_KEY = 'tg_layout';
 const EMPTY: SiteLayout = { order: [], hidden: [], hiddenPages: [] };
 
-export const LAYOUT_VERSION = 2;
+export const LAYOUT_VERSION = 3;
 
 export const loadLayout = (): SiteLayout => {
   const saved = readSetting<Partial<SiteLayout>>(LAYOUT_KEY, EMPTY) || EMPTY;
-  const current = saved.version === LAYOUT_VERSION;
+  const current = saved.version === LAYOUT_VERSION || saved.version === 2;
+  const hidden = current && Array.isArray(saved.hidden) ? saved.hidden : DEFAULT_HIDDEN_SECTIONS;
   return {
     order: current && Array.isArray(saved.order) ? saved.order : [],
-    hidden: current && Array.isArray(saved.hidden) ? saved.hidden : DEFAULT_HIDDEN_SECTIONS,
+    hidden: saved.version === 2 ? hidden.filter((id) => !ADDED_IN_V3.includes(id)) : hidden,
     hiddenPages: Array.isArray(saved.hiddenPages) ? saved.hiddenPages : [],
     version: LAYOUT_VERSION,
   };

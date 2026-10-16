@@ -115,6 +115,8 @@ export interface Portal {
   icon_name: string;
   newTab: boolean;
   visible: boolean;
+  /** Shown in “Free tools” on the homepage (menus and footer still list it). */
+  homeVisible?: boolean;
 }
 
 export const PORTALS_KEY = 'tg_portals';
@@ -124,11 +126,14 @@ export const DEFAULT_PORTALS: Portal[] = [
   { id: 'news', name: 'Cyber News Portal', description: 'India cyber crime, global threats and advisories, updated live.', url: '', fallback: '/cyber-news', icon_name: 'Newspaper', newTab: true, visible: true },
   { id: 'threat-intel', name: 'Threat Intel Hub', description: 'Live vulnerability and threat intelligence from CISA, NVD and CERT-In.', url: '', fallback: '/threat-intel', icon_name: 'Radar', newTab: true, visible: true },
   { id: 'forensic', name: 'Cyber & Forensic Hub', description: '78 investigation tools and live lookups for analysts and police.', url: '', fallback: '/forensic-engine.html', icon_name: 'ScanSearch', newTab: true, visible: true },
-  { id: 'safety', name: 'Cyber Safety Portal', description: 'Check links, report fraud and learn to stay safe online.', url: '', fallback: '/cyber-portal', icon_name: 'ShieldCheck', newTab: true, visible: true },
-  { id: 'range', name: 'Cyber Range', description: 'Hands-on attack and defence labs for teams and students.', url: '', fallback: '/cyber-range', icon_name: 'Crosshair', newTab: true, visible: true },
+  { id: 'safety', name: 'Cyber Safety Portal', description: 'Check links, report fraud and learn to stay safe online.', url: '', fallback: '/cyber-portal', icon_name: 'ShieldCheck', newTab: true, visible: true, homeVisible: false },
+  { id: 'range', name: 'Cyber Range', description: 'Hands-on attack and defence labs for teams and students.', url: '', fallback: '/cyber-range', icon_name: 'Crosshair', newTab: true, visible: true, homeVisible: false },
 ];
 
-export const emptyPortal = (): Portal => ({ id: newId('portal'), name: '', description: '', url: '', fallback: '', icon_name: 'Globe2', newTab: true, visible: true });
+/** Cyber Safety Portal and Cyber Range stay off the homepage unless the admin turns them on. */
+export const portalOnHome = (p: Portal) => p.homeVisible ?? !(['safety', 'range'].includes(p.id) || ['/cyber-portal', '/cyber-range'].includes(p.fallback));
+
+export const emptyPortal = (): Portal => ({ id: newId('portal'), name: '', description: '', url: '', fallback: '', icon_name: 'Globe2', newTab: true, visible: true, homeVisible: true });
 
 export const usePortals = () => useSettingList<Portal>(PORTALS_KEY, DEFAULT_PORTALS);
 export const loadPortals = () => {

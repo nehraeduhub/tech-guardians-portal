@@ -5,13 +5,14 @@ import ScrollReveal from '@/components/ScrollReveal';
 import SectionHeading from '@/components/pro/SectionHeading';
 import SmartLink from '@/components/pro/SmartLink';
 import ProductCard from '@/components/pro/ProductCard';
-import EventCard from '@/components/pro/EventCard';
+import EcoCard from '@/components/pro/EcoCard';
+import EventTicket from '@/components/pro/EventTicket';
 import PortalCard from '@/components/pro/PortalCard';
 import PriceTag from '@/components/pro/PriceTag';
 import { HOME_ECOSYSTEM, useList } from '@/lib/content-lists';
 import { isCoursesHomeVisible, loadManagedCourses, type ManagedCourse } from '@/lib/courses-store';
 import { courseVisuals } from '@/lib/site-content';
-import { portalIsExternal, splitEvents, useEvents, usePortals, useProducts } from '@/lib/catalog';
+import { portalIsExternal, portalOnHome, splitEvents, useEvents, usePortals, useProducts } from '@/lib/catalog';
 import { useLayout } from '@/lib/layout';
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -66,23 +67,10 @@ export const EcosystemSection = () => {
     <section id="ecosystem" className="tg-section relative">
       <div className="tg-container">
         <SectionHeading eyebrow="Learn • Practice • Protect" title={<>Explore the <span className="neon-text text-primary">Tech Guardians</span> ecosystem</>} lead="Training, products, resources and awareness to help you stay secure in the digital world." />
-        <div className={`grid gap-5 md:grid-cols-2 ${rows.length >= 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`}>
+        <div className={`grid gap-7 md:grid-cols-2 ${rows.length >= 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`}>
           {rows.map((r, i) => (
-            <ScrollReveal key={r.id} delay={i * 0.06}>
-              <article className="group relative flex h-full min-h-[340px] flex-col justify-end overflow-hidden rounded-2xl border border-primary/25 p-6 shadow-[0_24px_50px_-28px_rgba(0,212,255,.45)]">
-                {str(r.image) && <img src={str(r.image)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/85 to-[#020617]/30" />
-                <div className="relative">
-                  <p className="font-display text-[10px] uppercase tracking-[0.25em] text-primary">{str(r.eyebrow)}</p>
-                  <h3 className="mt-2 font-display text-lg font-bold leading-tight text-white">{str(r.title)}</h3>
-                  {str(r.text) && <p className="mt-2 text-xs leading-relaxed text-slate-300">{str(r.text)}</p>}
-                  {str(r.buttonText) && (
-                    <SmartLink item={{ href: str(r.buttonLink) || '/' }} className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/60 px-4 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
-                      {str(r.buttonText)} <ArrowRight className="h-3.5 w-3.5" />
-                    </SmartLink>
-                  )}
-                </div>
-              </article>
+            <ScrollReveal key={r.id} delay={i * 0.06} className="h-full">
+              <EcoCard index={i} card={{ eyebrow: str(r.eyebrow), title: str(r.title), text: str(r.text), image: str(r.image), buttonText: str(r.buttonText), buttonLink: str(r.buttonLink) }} />
             </ScrollReveal>
           ))}
         </div>
@@ -120,8 +108,8 @@ export const EventsSection = () => {
       <div className="tg-container">
         <SectionHeading eyebrow="Events & Workshops" title={<>Join our next <span className="neon-text-green text-cyber-green">live session</span></>}
           lead="Live classes, webinars, bootcamps and awareness drives — online and on campus." />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {upcoming.slice(0, 3).map((e, i) => <ScrollReveal key={e.id} delay={i * 0.06}><EventCard event={e} /></ScrollReveal>)}
+        <div className="mx-auto grid max-w-5xl gap-6">
+          {upcoming.slice(0, 3).map((e, i) => <ScrollReveal key={e.id} delay={i * 0.06}><EventTicket event={e} /></ScrollReveal>)}
         </div>
         <div className="mt-10 text-center"><Link to="/events" className="cyber-btn-outline">All events <ArrowRight className="h-4 w-4" /></Link></div>
       </div>
@@ -132,7 +120,7 @@ export const EventsSection = () => {
 /** Free tools for everyday cyber safety (portals, which can live on their own subdomains). */
 export const FreeToolsSection = () => {
   const layout = useLayout();
-  const portals = usePortals().filter((p) => p.visible && p.name && (portalIsExternal(p) || !layout.hiddenPages.includes(p.fallback)));
+  const portals = usePortals().filter((p) => p.visible && p.name && portalOnHome(p) && (portalIsExternal(p) || !layout.hiddenPages.includes(p.fallback)));
   if (!portals.length) return null;
   return (
     <section id="free-tools" className="tg-section relative">

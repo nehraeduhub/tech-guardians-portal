@@ -3,7 +3,7 @@ import RecordEditor, { type RecordField } from './RecordEditor';
 import { inr, programPrice } from '@/lib/courses-store';
 import {
   EVENT_STATUSES, EVENT_TYPES, PORTAL_ICONS, PRODUCT_CATEGORIES, PRODUCT_ICONS, emptyEvent, emptyPortal, emptyProduct,
-  loadEventsV2, loadPortals, loadProducts, saveEventsV2, savePortals, saveProducts, type Portal, type Product, type TGEventItem,
+  loadEventsV2, loadPortals, loadProducts, saveEventsV2, savePortals, saveProducts, type Portal, type Product, portalOnHome, type TGEventItem,
 } from '@/lib/catalog';
 
 type Publish = (job: Promise<unknown>, onSuccess?: () => void) => Promise<void>;
@@ -70,11 +70,12 @@ const PORTAL_FIELDS: RecordField<Portal>[] = [
   { key: 'url', label: 'Portal address on its subdomain', type: 'url', wide: true, placeholder: 'https://news.techguardians.in', hint: 'When set, every menu, footer and homepage link opens this address. Leave empty to use the page on this website.' },
   { key: 'fallback', label: 'Page on this website (used while the address is empty)', placeholder: '/cyber-news' },
   { key: 'newTab', label: 'Open in a new tab', type: 'checkbox' },
+  { key: 'homeVisible', label: 'Show in “Free tools” on the homepage', type: 'checkbox' },
   { key: 'description', label: 'Short description', type: 'textarea', rows: 2 },
 ];
 
 export const PortalsAdmin = ({ onPublish }: { onPublish: Publish }) => {
-  const [rows] = useState(loadPortals);
+  const [rows] = useState(() => loadPortals().map((p) => ({ ...p, homeVisible: portalOnHome(p) })));
   return (
     <RecordEditor<Portal>
       title="Portals"

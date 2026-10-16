@@ -30,8 +30,8 @@ const ContactSection = () => {
         </ScrollReveal>
 
         <div className="grid lg:grid-cols-5 gap-6 items-start">
-          <ScrollReveal delay={0.1}>
-            <div className="lg:col-span-2 flex flex-col gap-4">
+          <ScrollReveal delay={0.1} className="lg:col-span-2">
+            <div className="flex flex-col gap-4">
               {[
                 { icon: ShieldCheck, title: 'Verified Experts', desc: 'Certified trainers in security, forensics and awareness.' },
                 { icon: Clock, title: 'Fast Response', desc: 'Priority handling for active cyber-fraud incidents.' },
@@ -48,8 +48,8 @@ const ContactSection = () => {
             </div>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.15}>
-            <div className="lg:col-span-3">
+          <ScrollReveal delay={0.15} className="lg:col-span-3">
+            <div>
               <div className="rounded-2xl border border-primary/25 bg-card/70 backdrop-blur overflow-hidden shadow-[0_0_70px_-30px_hsl(var(--primary))]">
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-primary/20 bg-primary/5">
                   <span className="w-2.5 h-2.5 rounded-full bg-destructive/70" />
