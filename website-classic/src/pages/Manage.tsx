@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type LucideIcon, Globe2, Package, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, Globe2, Package, Rss, Scale, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
@@ -14,7 +14,7 @@ import StoreAdminPanel from '@/components/admin/StoreAdminPanel';
 import ListEditor from '@/components/admin/ListEditor';
 import { CUSTOM_SECTIONS, HOME_ECOSYSTEM, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
 import { EventsAdmin, PortalsAdmin, ProductsAdmin } from '@/components/admin/CatalogPanels';
-import { loadAboutVisibility, saveAboutVisibility } from '@/lib/about-settings';
+import { AboutAdmin, LegalAdmin, NewsSourcesAdmin } from '@/components/admin/ContentPanels';
 import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
@@ -65,8 +65,8 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
-type ManageTab = 'themes' | 'layout' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'range'
-  | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'password';
+type ManageTab = 'themes' | 'layout' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'range'
+  | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'legal' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
@@ -84,6 +84,7 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   media: { label: 'Media Gallery', icon: ImageIcon },
   videos: { label: 'YouTube Videos', icon: Youtube },
   newsdesk: { label: 'News Desk Alerts', icon: Newspaper },
+  newssources: { label: 'News Portal Sources', icon: Rss },
   range: { label: 'Cyber Range Labs', icon: Crosshair },
   payments: { label: 'Payment History', icon: Wallet },
   students: { label: 'Students', icon: Users },
@@ -91,7 +92,8 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   trainers: { label: 'Trainings At', icon: Users },
   contact: { label: 'WhatsApp Number', icon: MessageCircle },
   video: { label: 'Featured Training', icon: Video },
-  about: { label: 'About Us Link', icon: Eye },
+  about: { label: 'About Us Page', icon: Eye },
+  legal: { label: 'Terms & Privacy', icon: Scale },
   password: { label: 'Admin Password', icon: KeyRound },
 };
 const TAB_ORDER = Object.keys(TAB_INFO) as ManageTab[];
@@ -99,7 +101,6 @@ const TAB_ORDER = Object.keys(TAB_INFO) as ManageTab[];
 const Manage = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState<ManageTab>('layout');
-  const [about, setAbout] = useState(loadAboutVisibility);
   const [publishError, setPublishError] = useState('');
   const [mustChange, setMustChange] = useState(false);
   const [blogs, setBlogs] = useState<TGBlog[]>([]);
@@ -137,7 +138,6 @@ const Manage = () => {
       setCoursesNav(isCoursesNavVisible());
       setCoursesHome(isCoursesHomeVisible());
       setOfferings(loadOrganizationOfferings());
-      setAbout(loadAboutVisibility());
       void loadManagedCourses().then(setCourses);
     })();
     return () => { active = false; };
@@ -310,16 +310,11 @@ const Manage = () => {
           ) : tab === 'password' ? (
             <AdminPasswordPanel onChanged={() => setMustChange(false)} />
           ) : tab === 'about' ? (
-            <div className="space-y-5 max-w-xl">
-              <h2 className="font-display text-lg font-semibold">About Us visibility</h2>
-              {(['headerVisible', 'footerVisible'] as const).map((field) => (
-                <label key={field} className="flex items-center justify-between gap-4 border-b border-border py-3 text-sm">
-                  <span>Show in {field === 'headerVisible' ? 'header (desktop and mobile)' : 'footer'}</span>
-                  <input type="checkbox" checked={about[field]} onChange={(event) => setAbout({ ...about, [field]: event.target.checked })} className="h-5 w-5 accent-primary" />
-                </label>
-              ))}
-              <button onClick={() => void publish(saveAboutVisibility(about), () => setPublishError(''))} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"><Save className="h-4 w-4" /> Save & Publish</button>
-            </div>
+            <AboutAdmin onPublish={publish} />
+          ) : tab === 'legal' ? (
+            <LegalAdmin onPublish={publish} />
+          ) : tab === 'newssources' ? (
+            <NewsSourcesAdmin onPublish={publish} />
           ) : tab === 'offerings' ? (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">Edit organization services and control whether each appears on the homepage and in TG Portals.</p>

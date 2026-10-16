@@ -76,9 +76,36 @@ $FALLBACK = [
     ],
 ];
 
+// Admin choices (Manage → News Sources): switch built-in feeds off and add
+// your own RSS/Atom feeds. Keys are "feed|url".
+$settings = tg_read_json('settings.json', [], true);
+$cfg = is_array($settings['tg_news_sources']['value'] ?? null) ? $settings['tg_news_sources']['value'] : [];
+$disabled = array_flip(array_map('strval', (array)($cfg['disabled'] ?? [])));
+
+//   GET news.php?action=sources -> built-in source list for the admin page
+if (($_GET['action'] ?? '') === 'sources') {
+    $list = [];
+    foreach ($SOURCES as $f => $rows) {
+        foreach ($rows as $s) $list[] = ['feed' => $f, 'url' => $s[0], 'name' => $s[1], 'category' => $s[2] === 'nvd' ? null : $s[2]];
+    }
+    tg_json($list);
+}
+
+foreach ((array)($cfg['custom'] ?? []) as $c) {
+    if (!is_array($c) || ($c['enabled'] ?? true) === false) continue;
+    $url = trim((string)($c['url'] ?? ''));
+    $f = ($c['feed'] ?? '') === 'india' ? 'india' : 'global';
+    if (!preg_match('#^https?://[^\s]+$#i', $url) || strlen($url) > 500) continue;
+    $name = mb_substr(trim((string)($c['name'] ?? '')), 0, 60) ?: (parse_url($url, PHP_URL_HOST) ?: 'Custom feed');
+    $cat = mb_substr(trim((string)($c['category'] ?? '')), 0, 40);
+    $SOURCES[$f][] = [$url, $name, $f === 'india' ? ($cat ?: 'Cyber Crime') : null, 10];
+}
+$SOURCES[$feed] = array_values(array_filter($SOURCES[$feed], fn($s) => !isset($disabled[$feed . '|' . $s[0]])));
+$cfgHash = substr(md5(json_encode($cfg)), 0, 10);
+
 $cacheFile = "news-$feed.json";
 $cached = tg_read_json($cacheFile, null);
-if (is_array($cached) && ($cached['saved'] ?? 0) > time() - TG_NEWS_CACHE_SECONDS) {
+if (is_array($cached) && ($cached['cfg'] ?? '') === $cfgHash && ($cached['saved'] ?? 0) > time() - TG_NEWS_CACHE_SECONDS) {
     tg_json(['items' => $cached['items'], 'fetched_at' => $cached['fetched_at']]);
 }
 
@@ -173,6 +200,8 @@ foreach ($SOURCES[$feed] as $i => $src) {
         CURLOPT_TIMEOUT => 9,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; TechGuardiansBot/1.0)',
         CURLOPT_ENCODING => '',
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
     ]);
     curl_multi_add_handle($multi, $ch);
     $handles[$i] = $ch;
@@ -208,6 +237,6 @@ usort($merged, fn($a, $b) => (strtotime($b['date'] ?? '') ?: 0) <=> (strtotime($
 
 $items = $merged ? array_slice($merged, 0, $feed === 'india' ? 160 : 90) : $FALLBACK[$feed];
 $fetchedAt = gmdate('c');
-if ($merged) tg_update_json($cacheFile, fn() => ['saved' => time(), 'fetched_at' => $fetchedAt, 'items' => $items], null);
+if ($merged) tg_update_json($cacheFile, fn() => ['saved' => time(), 'cfg' => $cfgHash, 'fetched_at' => $fetchedAt, 'items' => $items], null);
 
 tg_json(['items' => $items, 'fetched_at' => $fetchedAt]);

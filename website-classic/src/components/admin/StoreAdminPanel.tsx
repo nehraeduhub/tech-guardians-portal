@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Copy, Eye, EyeOff, ImagePlus, Link2, Plus, Save, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Copy, Eye, EyeOff, ImagePlus, Link2, Plus, Save, Search, Trash2, X } from 'lucide-react';
 import { uploadImage } from '@/lib/api';
 import { shrinkImageFile } from '@/lib/image-tools';
 import { loadStoreAdmin, saveStoreAdmin, type PaymentSettings, type StoreProduct } from '@/lib/store';
@@ -30,6 +30,9 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
   const [busy, setBusy] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [query, setQuery] = useState('');
+  const [category, setCategory] = useState('');
+  const [bulk, setBulk] = useState({ price: '', offer: '' });
 
   useEffect(() => {
     loadStoreAdmin()
@@ -53,6 +56,22 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
     try { const { url } = await uploadImage(await shrinkImageFile(file, 1400, 1800)); done(url); }
     catch (e) { setError(e instanceof Error ? e.message : 'The image could not be uploaded.'); }
     finally { setBusy(''); }
+  };
+  const categories = [...new Set(products.map((p) => p.category || '').filter(Boolean))];
+  const q = query.trim().toLowerCase();
+  const shown = products.filter((p) => (!category || p.category === category)
+    && (!q || `${p.title} ${p.subtitle} ${p.id} ${p.tags.join(' ')}`.toLowerCase().includes(q)));
+  const filtered = shown.length !== products.length;
+  const applyToShown = (patch: (p: StoreProduct) => Partial<StoreProduct>) => {
+    const ids = new Set(shown.map((p) => p.id));
+    setProducts((ps) => ps.map((p) => (ids.has(p.id) ? { ...p, ...patch(p) } : p))); dirty();
+  };
+  const applyBulkPrice = () => {
+    const price = bulk.price === '' ? null : Math.max(0, Number(bulk.price));
+    const offer = bulk.offer === '' ? null : Math.max(0, Number(bulk.offer));
+    if (price === null && offer === null) { setError('Enter a price or an offer price to apply.'); return; }
+    setError('');
+    applyToShown(() => ({ ...(price !== null ? { price } : {}), ...(offer !== null ? { offerPrice: offer } : {}) }));
   };
   const save = () => onPublish(saveStoreAdmin({ settings, products }), () => setSaved(true));
 
@@ -128,8 +147,33 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
           <h2 className="font-display text-lg font-semibold">PDFs for sale</h2>
           <p className="text-sm text-muted-foreground">Visitors see the cover, preview pages and price. Buyers download only after their payment is approved: either the PDF uploaded to <code>api/books/&lt;id&gt;.pdf</code> on the server (marked “PDF on server ✓”), or a private Google Drive link if you enter one (“Anyone with the link can view”).</p>
         </div>
+        {products.length > 0 && (
+          <div className="space-y-4 rounded-2xl border border-primary/30 bg-primary/5 p-5">
+            <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+              <label className="relative block">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input aria-label="Search PDFs" placeholder="Search by title, tag or id…" className={`${input} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} />
+              </label>
+              <select aria-label="Filter by category" className={input} value={category} onChange={(e) => setCategory(e.target.value)}>
+                <option value="">All categories ({products.length})</option>
+                {categories.map((c) => <option key={c} value={c}>{c} ({products.filter((p) => p.category === c).length})</option>)}
+              </select>
+            </div>
+            <div className="flex flex-wrap items-end gap-3">
+              <span className="w-full text-sm font-semibold">Bulk change — applies to the {filtered ? `${shown.length} PDFs shown` : `all ${products.length} PDFs`}</span>
+              <label className="space-y-1"><span className={label}>Price ₹</span>
+                <input id="bulk-price" type="number" min={0} className={`${input} w-28`} value={bulk.price} onChange={(e) => setBulk({ ...bulk, price: e.target.value })} /></label>
+              <label className="space-y-1"><span className={label}>Offer price ₹</span>
+                <input id="bulk-offer" type="number" min={0} className={`${input} w-28`} value={bulk.offer} onChange={(e) => setBulk({ ...bulk, offer: e.target.value })} /></label>
+              <button onClick={applyBulkPrice} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90">Apply prices</button>
+              <button onClick={() => applyToShown(() => ({ visible: true }))} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm hover:bg-muted"><Eye className="h-4 w-4" /> Show all</button>
+              <button onClick={() => applyToShown(() => ({ visible: false }))} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm hover:bg-muted"><EyeOff className="h-4 w-4" /> Hide all</button>
+            </div>
+            <p className="text-xs text-muted-foreground">Leave a box empty to keep that price. Use 0 as the offer price to remove the offer. Click “Save &amp; Publish” at the bottom afterwards.</p>
+          </div>
+        )}
         {products.length === 0 && <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No PDFs yet. Click “Add PDF”.</p>}
-        {products.map((p, i) => (
+        {shown.map((p) => { const i = products.indexOf(p); return (
           <div key={p.id} className={`space-y-4 rounded-2xl border border-border bg-card/70 p-5 ${p.visible ? '' : 'opacity-70'}`}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-semibold">{p.title || 'Untitled PDF'}{p.visible ? '' : ' · hidden from website'}</span>
@@ -175,6 +219,8 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
                   <input id={`p-${p.id}-offer`} type="number" min={0} className={input} value={p.offerPrice || ''} onChange={(e) => setP(p.id, { offerPrice: Number(e.target.value) })} /></label>
                 <label className="space-y-1.5"><span className={label}>Pages</span>
                   <input id={`p-${p.id}-pages`} type="number" min={0} className={input} value={p.pages || ''} onChange={(e) => setP(p.id, { pages: Number(e.target.value) })} /></label>
+                <label className="space-y-1.5"><span className={label}>Category (store filter)</span>
+                  <input id={`p-${p.id}-cat`} list="store-categories" className={input} value={p.category || ''} onChange={(e) => setP(p.id, { category: e.target.value })} /></label>
                 <label className="space-y-1.5"><span className={label}>Tags (comma separated)</span>
                   <input id={`p-${p.id}-tags`} className={input} value={p.tags.join(', ')} onChange={(e) => setP(p.id, { tags: e.target.value.split(',').map((t) => t.trim()).filter(Boolean) })} /></label>
                 <label className="space-y-1.5 md:col-span-2"><span className={`${label} inline-flex items-center gap-1.5`}><Link2 className="h-3.5 w-3.5" /> Google Drive download link (optional — used instead of the PDF on the server)</span>
@@ -197,9 +243,10 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
               </div>
             </div>
           </div>
-        ))}
+        ); })}
       </section>
 
+      <datalist id="store-categories">{categories.map((c) => <option key={c} value={c} />)}</datalist>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <div className="flex flex-wrap items-center gap-3">
         <button onClick={() => { setProducts([...products, blankProduct()]); dirty(); }} className="inline-flex items-center gap-2 rounded-full border border-primary/50 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10"><Plus className="h-4 w-4" /> Add PDF</button>

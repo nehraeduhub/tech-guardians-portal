@@ -4,10 +4,11 @@
 (function () {
   var KEY = 'tg_wa_number';
   var COURSES_KEY = 'tg_courses_admin';
+  var LEGAL_KEY = 'tg_legal';
   var DEFAULT = '919929193136';
   var remote = {};
   function sync() {
-    fetch('/api/settings.php?keys=tg_wa_number,tg_courses_admin', { cache: 'no-store' })
+    fetch('/api/settings.php?keys=tg_wa_number,tg_courses_admin,tg_legal', { cache: 'no-store' })
       .then(function (res) { if (!res.ok) throw new Error('settings unavailable'); return res.json(); })
       .then(function (rows) { remote = {}; rows.forEach(function (row) { remote[row.key] = row.value; }); apply(); })
       .catch(function () { /* keep the public defaults */ });
@@ -36,6 +37,7 @@
       }
     }
     applyCourse();
+    applyLegal();
   }
   function applyCourse() {
     var match = location.pathname.match(/\/courses\/([^/]+)\.html$/);
@@ -60,6 +62,13 @@
     } catch (e) {
       // Keep the page defaults when stored settings are unavailable.
     }
+  }
+  // Privacy note edited in Manage → Terms & Privacy (plain text only).
+  function applyLegal() {
+    var legal = remote[LEGAL_KEY];
+    var note = legal && typeof legal.note === 'string' ? legal.note.trim() : '';
+    if (!note) return;
+    document.querySelectorAll('[data-tg-privacy-note] .tg-note-text').forEach(function (el) { el.textContent = note; });
   }
   window.TG_WHATSAPP_NUMBER = current();
   sync();

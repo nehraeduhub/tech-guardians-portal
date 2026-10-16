@@ -76,10 +76,10 @@ summary{cursor:pointer;font-weight:600}
         </form>
 
         <form id="register-form" hidden autocomplete="on">
-          <div class="privacy-note" role="note" style="margin-top:0">
-            <b>🔒 You can use dummy details.</b> We don't need your real personal data — a nickname, an alias email and any 10-digit number are fine.
+          <div class="privacy-note" role="note" style="margin-top:0" data-tg-privacy-note>
+            <b>🔒 You can use dummy details.</b> <span class="tg-note-text">We don't need your real personal data — a nickname, an alias email and any 10-digit number are fine.
             <b>Write down the user ID, email, phone and password you choose</b> and keep them with you: you need them to sign in later, and you must use the <b>same email or phone when you pay</b> so your purchases appear here.
-            We ask for this minimum only, in line with the IT Act, 2000, the IT Rules, 2011 and the DPDP Act, 2023. <a href="/terms#privacy" target="_blank" rel="noopener">Privacy &amp; Terms</a>
+            We ask for this minimum only, in line with the IT Act, 2000, the IT Rules, 2011 and the DPDP Act, 2023.</span> <a href="/terms#privacy" target="_blank" rel="noopener">Privacy &amp; Terms</a>
           </div>
           <label class="field"><span>Full name</span><input id="r-name" autocomplete="name" maxlength="80" required/></label>
           <div class="grid2">
@@ -268,6 +268,7 @@ summary{cursor:pointer;font-weight:600}
   load();
 })();
 </script>
+<script src="/js/tg-contact.js"></script>
 <script src="/js/tg-editor.js" defer></script>
 </body>
 </html>

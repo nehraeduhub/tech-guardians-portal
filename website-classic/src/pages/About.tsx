@@ -7,17 +7,11 @@ import SiteFrame from '@/components/SiteFrame';
 import ScrollReveal from '@/components/ScrollReveal';
 import LazyScene from '@/components/pro/LazyScene';
 import { waLink } from '@/lib/site-settings';
+import { useAboutContent } from '@/lib/about-settings';
 import tgLogo from '@/assets/tg-logo.png';
 import dkPhoto from '@/assets/founder-dk-jha.jpg';
 import rjPhoto from '@/assets/founder-rj-nehra.jpg';
 import teamPhoto from '@/assets/hands-on-practical.jpg';
-
-const stats = [
-  { value: '150+', label: 'Awareness sessions' },
-  { value: '5,000+', label: 'Learners trained' },
-  { value: '200+', label: 'Learning resources' },
-  { value: '24/7', label: 'Support access' },
-];
 
 const services = [
   { icon: Users, title: 'Cyber awareness programmes', text: 'Live sessions for schools, colleges, offices and communities on scams, phishing, social media safety and reporting cyber crime — online or on campus.', link: '/courses/awareness-booking.html' },
@@ -49,7 +43,9 @@ const values = [
   { icon: Award, title: 'Always learning', text: 'Threats change every week; so do our labs, guides and news desk.' },
 ];
 
-const About = () => (
+const About = () => {
+  const c = useAboutContent();
+  return (
   <SiteFrame>
     {/* Hero */}
     <section className="relative overflow-hidden border-b border-border/70 pt-10">
@@ -60,12 +56,10 @@ const About = () => (
           <img src={tgLogo} alt="Tech Guardians" className="h-14 w-14 rounded-xl object-contain" />
           <span className="rl-eyebrow mt-6">About Tech Guardians</span>
           <h1 className="mt-4 text-4xl font-bold leading-tight text-foreground md:text-6xl" style={{ textWrap: 'balance' }}>
-            Building a safer digital India through <span className="cyber-gradient-text">knowledge and action</span>
+            {c.heroTitle} {c.heroHighlight && <span className="cyber-gradient-text">{c.heroHighlight}</span>}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">
-            Tech Guardians is a cybersecurity awareness, practical training and digital forensics organisation. We help citizens, students,
-            professionals and institutions understand today’s threats, build real skills and respond with confidence — guided by one simple idea:
-            <strong className="text-foreground"> Keep Learning and Keep Sharing.</strong>
+            {c.heroText}{c.motto && <strong className="text-foreground"> {c.motto}</strong>}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href={waLink('Hello Tech Guardians, I would like to know more about your work.')} target="_blank" rel="noopener noreferrer" className="cyber-btn-primary"><MessageCircle className="h-4 w-4" /> Talk to us</a>
@@ -74,10 +68,10 @@ const About = () => (
         </ScrollReveal>
         <ScrollReveal>
           <div className="relative overflow-hidden rounded-2xl border border-primary/30 shadow-[0_30px_80px_-30px_hsl(var(--primary)/0.5)]">
-            <img src={teamPhoto} alt="Tech Guardians hands-on training" className="aspect-[4/3] w-full object-cover" />
+            <img src={c.photo || teamPhoto} alt="Tech Guardians hands-on training" className="aspect-[4/3] w-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 to-transparent p-5">
               <p className="font-display text-xs uppercase tracking-[0.25em] text-primary">Hands-on, always</p>
-              <p className="mt-1 text-sm text-foreground">Real labs, real tools and real scenarios in every session.</p>
+              <p className="mt-1 text-sm text-foreground">{c.photoCaption}</p>
             </div>
           </div>
         </ScrollReveal>
@@ -88,7 +82,7 @@ const About = () => (
     <section className="px-4 py-12 md:px-8">
       <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-border md:grid-cols-4">
-          {stats.map((stat) => <div key={stat.label} className="border-border bg-card/60 p-6 text-center even:border-l md:border-l first:border-l-0"><strong className="block font-display text-3xl text-primary md:text-4xl">{stat.value}</strong><span className="mt-2 block text-xs uppercase tracking-widest text-muted-foreground">{stat.label}</span></div>)}
+          {c.stats.map((stat, i) => <div key={i} className="border-border bg-card/60 p-6 text-center even:border-l md:border-l first:border-l-0"><strong className="block font-display text-3xl text-primary md:text-4xl">{stat.value}</strong><span className="mt-2 block text-xs uppercase tracking-widest text-muted-foreground">{stat.label}</span></div>)}
         </div>
       </div>
     </section>
@@ -98,16 +92,14 @@ const About = () => (
       <div className="container mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
         <ScrollReveal>
           <span className="rl-eyebrow">Who we are</span>
-          <h2 className="mt-4 text-3xl font-bold text-foreground">Defenders who teach, and teachers who defend</h2>
+          <h2 className="mt-4 text-3xl font-bold text-foreground">{c.storyTitle}</h2>
           <div className="mt-5 space-y-4 text-sm leading-7 text-muted-foreground">
-            <p>Every day, people across India lose money and peace of mind to scams that are easy to stop once you know how they work — fake “digital arrest” calls, UPI and OTP frauds, sextortion, fake loan apps and phishing links. At the same time, organisations struggle to find people with hands-on security skills.</p>
-            <p>Tech Guardians was started to close both gaps. Our team of cybersecurity practitioners, ethical hackers and forensic professionals brings what it does in real security operations into classrooms, offices and communities — in plain language, with live demonstrations.</p>
-            <p>Today we run awareness drives, practical training programs, free cyber-safety portals and support for cyber crime victims, and we build security tools and solutions for organisations. Everything we create is designed to be used, not just read.</p>
+            {c.story.split(/\n\s*\n/).filter((p) => p.trim()).map((p, i) => <p key={i}>{p.trim()}</p>)}
           </div>
         </ScrollReveal>
         <div className="grid gap-5">
-          <ScrollReveal><div className="glass-card h-full p-7"><Target className="h-8 w-8 text-primary" /><h3 className="mt-4 text-xl font-bold text-foreground">Our mission</h3><p className="mt-3 text-sm leading-7 text-muted-foreground">To make cybersecurity knowledge practical and accessible through awareness programs, real labs, affordable training and dependable support for students, families, professionals, institutions and businesses.</p></div></ScrollReveal>
-          <ScrollReveal><div className="glass-card h-full p-7"><Eye className="h-8 w-8 text-cyber-green" /><h3 className="mt-4 text-xl font-bold text-foreground">Our vision</h3><p className="mt-3 text-sm leading-7 text-muted-foreground">A cyber-resilient India where people can recognise digital risks, secure their online lives and take informed action, supported by a skilled community of ethical defenders.</p></div></ScrollReveal>
+          <ScrollReveal><div className="glass-card h-full p-7"><Target className="h-8 w-8 text-primary" /><h3 className="mt-4 text-xl font-bold text-foreground">Our mission</h3><p className="mt-3 text-sm leading-7 text-muted-foreground">{c.mission}</p></div></ScrollReveal>
+          <ScrollReveal><div className="glass-card h-full p-7"><Eye className="h-8 w-8 text-cyber-green" /><h3 className="mt-4 text-xl font-bold text-foreground">Our vision</h3><p className="mt-3 text-sm leading-7 text-muted-foreground">{c.vision}</p></div></ScrollReveal>
         </div>
       </div>
     </section>
@@ -184,8 +176,8 @@ const About = () => (
     <section className="section-padding pt-0">
       <div className="container mx-auto max-w-5xl rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center md:p-12">
         <Crosshair className="mx-auto h-8 w-8 text-primary"/>
-        <h2 className="mt-5 text-3xl font-bold text-foreground">Let’s make your people and systems safer</h2>
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">Book an awareness session, join a training program, get help after a cyber crime, or talk to us about tools and assessments for your organisation.</p>
+        <h2 className="mt-5 text-3xl font-bold text-foreground">{c.ctaTitle}</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">{c.ctaText}</p>
         <ul className="mx-auto mt-6 flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
           {['Free awareness portals', 'Live, hands-on training', 'Victim support & guidance', 'Tools for organisations'].map((t) => <li key={t} className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-cyber-green" />{t}</li>)}
         </ul>
@@ -196,6 +188,7 @@ const About = () => (
       </div>
     </section>
   </SiteFrame>
-);
+  );
+};
 
 export default About;
