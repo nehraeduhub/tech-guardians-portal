@@ -1,7 +1,7 @@
-// Product status badges (dark theme).
+// Product status badges (readable on light cards).
 export const STATUS_STYLE: Record<string, string> = {
-  Available: 'bg-emerald-500/15 text-emerald-300 ring-emerald-400/40',
-  'Coming soon': 'bg-amber-500/15 text-amber-300 ring-amber-400/40',
-  Beta: 'bg-violet-500/15 text-violet-300 ring-violet-400/40',
-  'On request': 'bg-sky-500/15 text-sky-300 ring-sky-400/40',
+  Available: 'bg-emerald-500/10 text-emerald-700 ring-emerald-500/30',
+  'Coming soon': 'bg-amber-500/10 text-amber-700 ring-amber-500/30',
+  Beta: 'bg-violet-500/10 text-violet-700 ring-violet-500/30',
+  'On request': 'bg-sky-500/10 text-sky-700 ring-sky-500/30',
 };

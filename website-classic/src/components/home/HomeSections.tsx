@@ -39,8 +39,8 @@ export const TrainingProgramsSection = () => {
               <a href={c.page} className="tg-card group flex h-full flex-col overflow-hidden p-0">
                 <div className="relative aspect-[16/9] overflow-hidden">
                   {courseVisuals[i % courseVisuals.length] && <img src={courseVisuals[i % courseVisuals.length]} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-                  <span className="absolute left-3 top-3 rounded-full border border-primary/40 bg-primary/15 px-2.5 py-1 font-display text-[10px] uppercase tracking-[0.2em] text-primary backdrop-blur">Training Program</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+                  <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.18em] text-primary shadow-sm">Training Program</span>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="font-display text-base font-semibold leading-snug text-foreground group-hover:text-primary">{c.title}</h3>

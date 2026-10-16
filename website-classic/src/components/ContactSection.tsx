@@ -14,7 +14,7 @@ const ContactSection = () => {
   };
 
   const inputClass =
-    'w-full bg-background/70 border border-primary/20 rounded-lg px-4 py-3 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all';
+    'w-full bg-background/70 border border-primary/20 rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all';
 
   return (
     <section id="contact" className="section-padding relative">

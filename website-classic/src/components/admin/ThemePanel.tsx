@@ -19,18 +19,18 @@ interface ThemeEngine {
   endPreview(): Promise<void>;
 }
 
-export const THEME_KEY = 'tg_theme';
+export const THEME_KEY = 'tg_theme_v2';
 const engine = () => (window as unknown as { tgTheme?: ThemeEngine }).tgTheme;
 const fontName = (stack: string) => stack.split(',')[0].replace(/['"]/g, '').trim();
 
 /** Pick the website theme. One click restyles every page for every visitor. */
 const ThemePanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onSuccess?: () => void) => Promise<void> }) => {
   const themes = engine()?.themes || [];
-  const [live, setLive] = useState(() => readSetting<string>(THEME_KEY, 'cyber-neon'));
+  const [live, setLive] = useState(() => readSetting<string>(THEME_KEY, 'reason-pro'));
   const [previewing, setPreviewing] = useState<string | null>(null);
 
   useEffect(() => {
-    const refresh = () => setLive(readSetting<string>(THEME_KEY, 'cyber-neon'));
+    const refresh = () => setLive(readSetting<string>(THEME_KEY, 'reason-pro'));
     window.addEventListener('tg-settings-changed', refresh);
     return () => {
       window.removeEventListener('tg-settings-changed', refresh);

@@ -9,11 +9,11 @@ const PortalCard = ({ portal }: { portal: Portal }) => {
   const href = portalHref(portal);
   const external = portalIsExternal(portal) && portal.newTab;
   return (
-    <SmartLink item={{ href, external }} className="group relative flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition-all hover:-translate-y-1 hover:border-[#3b8bff]/60 hover:bg-white/[0.07]">
-      <span className="grid h-12 w-12 place-items-center rounded-xl bg-[#2563eb]/20 text-[#60a5fa] transition-colors group-hover:bg-[#2563eb] group-hover:text-white"><Icon className="h-6 w-6" /></span>
-      <h3 className="mt-4 text-base font-bold text-white">{portal.name}</h3>
-      <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{portal.description}</p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#60a5fa]">Open portal <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
+    <SmartLink item={{ href, external }} className="group relative flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_hsl(var(--foreground)/0.05),0_16px_36px_-24px_hsl(var(--primary)/0.45)] transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_1px_2px_hsl(var(--foreground)/0.05),0_24px_48px_-24px_hsl(var(--primary)/0.55)]">
+      <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><Icon className="h-6 w-6" /></span>
+      <h3 className="mt-4 text-base font-bold text-foreground">{portal.name}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{portal.description}</p>
+      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Open portal <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
     </SmartLink>
   );
 };

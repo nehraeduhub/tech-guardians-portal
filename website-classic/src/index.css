@@ -69,17 +69,19 @@
 }
 
 @layer components {
+  /* Cards follow the theme tokens, so they read correctly on light pages and
+     inside dark .tg-dark bands alike. */
   .glass-card {
     @apply relative rounded-2xl border;
-    background: linear-gradient(180deg, hsl(222 52% 8% / 0.9), hsl(222 60% 5% / 0.9));
-    border-color: hsl(190 100% 50% / 0.18);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 1px 0 hsl(190 100% 50% / 0.08) inset, 0 18px 40px -24px hsl(190 100% 50% / 0.35);
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border-color: hsl(var(--border));
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 18px 40px -26px hsl(var(--primary) / 0.35);
     transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
   }
   .glass-card:hover {
-    border-color: hsl(190 100% 50% / 0.45);
-    box-shadow: 0 0 0 1px hsl(190 100% 50% / 0.2), 0 26px 60px -26px hsl(190 100% 50% / 0.55);
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 26px 56px -26px hsl(var(--primary) / 0.5);
   }
 
   .neon-text { color: hsl(var(--primary)); text-shadow: 0 0 18px hsl(var(--primary) / 0.55); }
@@ -117,9 +119,9 @@
 
   .cyber-btn-primary {
     @apply cyber-btn;
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--cyber-green)));
-    color: #020617;
-    box-shadow: 0 10px 30px -12px hsl(var(--primary) / 0.8);
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 10px 30px -14px hsl(var(--primary) / 0.8);
   }
   .cyber-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 40px -12px hsl(var(--primary) / 0.9); }
   .cyber-btn-primary:active { transform: translateY(0) scale(0.98); }
@@ -219,7 +221,32 @@
   .tg-eyebrow { @apply inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.3em] text-primary; }
   .tg-title { @apply font-display text-3xl md:text-4xl font-bold leading-tight text-foreground; text-wrap: balance; }
   .tg-lead { @apply text-base leading-relaxed text-muted-foreground; }
-  .tg-dark { color: hsl(var(--foreground)); }
+  /* Dark navy band (heroes, CTAs, footer) inside any theme: redefines the
+     tokens so everything inside reads light-on-dark. */
+  .tg-dark {
+    --background: 232 58% 7%;
+    --foreground: 230 40% 97%;
+    --card: 232 45% 11%;
+    --card-foreground: 230 40% 97%;
+    --popover: 232 45% 11%;
+    --popover-foreground: 230 40% 97%;
+    --primary: 252 95% 74%;
+    --primary-foreground: 232 58% 7%;
+    --secondary: 232 40% 16%;
+    --secondary-foreground: 230 40% 92%;
+    --muted: 232 38% 15%;
+    --muted-foreground: 230 22% 76%;
+    --accent: 199 90% 60%;
+    --accent-foreground: 232 58% 7%;
+    --border: 232 32% 24%;
+    --input: 232 32% 22%;
+    --cyber-blue: 199 95% 64%;
+    --cyber-green: 152 72% 55%;
+    --cyber-purple: 258 92% 76%;
+    --cyber-red: 0 90% 68%;
+    --cyber-orange: 33 100% 62%;
+    color: hsl(var(--foreground));
+  }
   .tg-band {
     background:
       radial-gradient(900px 500px at 80% 20%, hsl(190 100% 50% / 0.12), transparent 60%),
@@ -259,14 +286,15 @@
 .eco-face {
   position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden;
   border-radius: 1.25rem;
-  background: linear-gradient(160deg, hsl(222 50% 9%), hsl(222 60% 5%));
-  border: 1px solid hsl(var(--primary) / 0.22);
-  box-shadow: 0 30px 60px -30px hsl(var(--primary) / 0.45), 0 18px 36px -24px rgb(0 0 0 / 0.9), inset 0 1px 0 hsl(0 0% 100% / 0.06);
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 30px 60px -32px hsl(var(--primary) / 0.45), 0 12px 28px -20px hsl(var(--foreground) / 0.35);
   transition: border-color .4s ease, box-shadow .4s ease;
 }
 .eco-card:hover .eco-face {
   border-color: hsl(var(--primary) / 0.6);
-  box-shadow: 0 40px 80px -30px hsl(var(--primary) / 0.65), 0 22px 40px -24px rgb(0 0 0 / 0.95), inset 0 1px 0 hsl(0 0% 100% / 0.1);
+  box-shadow: 0 40px 80px -32px hsl(var(--primary) / 0.6), 0 16px 32px -20px hsl(var(--foreground) / 0.4);
 }
 .eco-glare {
   pointer-events: none; position: absolute; inset: 0; border-radius: 1.25rem; opacity: 0; transition: opacity .4s ease;
@@ -284,22 +312,64 @@
 /* Events: ticket cards with a tear-off date stub. */
 .ticket {
   position: relative; display: grid; grid-template-columns: 6rem 1fr; overflow: hidden;
-  border-radius: 1.25rem; border: 1px solid hsl(var(--cyber-green) / 0.25);
-  background: linear-gradient(110deg, hsl(222 50% 8%), hsl(222 60% 5%) 60%);
-  box-shadow: 0 24px 50px -30px hsl(var(--cyber-green) / 0.45);
+  border-radius: 1.25rem; border: 1px solid hsl(var(--border));
+  background: hsl(var(--card)); color: hsl(var(--card-foreground));
+  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 24px 50px -32px hsl(var(--primary) / 0.45);
   transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s ease, box-shadow .35s ease;
 }
-.ticket:hover { transform: translateY(-4px); border-color: hsl(var(--cyber-green) / 0.6); box-shadow: 0 30px 60px -28px hsl(var(--cyber-green) / 0.6); }
+.ticket:hover { transform: translateY(-4px); border-color: hsl(var(--primary) / 0.45); box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 30px 60px -28px hsl(var(--primary) / 0.55); }
 .ticket-stub {
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem;
-  padding: 1.25rem .5rem; text-align: center; color: hsl(222 60% 6%);
-  background: linear-gradient(160deg, hsl(var(--cyber-green)), hsl(var(--primary)));
-  border-right: 2px dashed hsl(222 60% 5% / 0.55);
+  padding: 1.25rem .5rem; text-align: center; color: hsl(var(--primary-foreground));
+  background: linear-gradient(165deg, hsl(var(--primary)), hsl(var(--cyber-purple)));
+  border-right: 2px dashed hsl(var(--card) / 0.7);
 }
 .ticket-stub::before, .ticket-stub::after {
   content: ''; position: absolute; right: -0.85rem; width: 1.6rem; height: 1.6rem; border-radius: 9999px;
-  background: hsl(var(--background)); border: 1px solid hsl(var(--cyber-green) / 0.25);
+  background: hsl(var(--background)); border: 1px solid hsl(var(--border));
 }
 .ticket-stub::before { top: -0.85rem; }
 .ticket-stub::after { bottom: -0.85rem; }
 @media (min-width: 768px) { .ticket { grid-template-columns: 9rem 1fr 13rem; } }
+
+/* ---------------------------------------------------------------------------
+   Reason Pro theme: clean, professional security-company styling.
+   White content sections, navy (.tg-dark) hero / call-to-action / footer
+   bands, violet accents, readable type sizes and generous spacing.
+--------------------------------------------------------------------------- */
+:root[data-tg-theme="reason-pro"] body { font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+:root[data-tg-theme="reason-pro"] h1,
+:root[data-tg-theme="reason-pro"] h2,
+:root[data-tg-theme="reason-pro"] h3 { letter-spacing: -0.02em; }
+:root[data-tg-theme="reason-pro"] h1, :root[data-tg-theme="reason-pro"] h2 { font-weight: 800; }
+:root[data-tg-theme="reason-pro"] .tg-eyebrow,
+:root[data-tg-theme="reason-pro"] .rl-eyebrow { letter-spacing: 0.16em; font-weight: 700; }
+:root[data-tg-theme="reason-pro"] .tg-lead { font-size: 1.075rem; }
+:root[data-tg-theme="reason-pro"] .neon-text,
+:root[data-tg-theme="reason-pro"] .neon-text-green,
+:root[data-tg-theme="reason-pro"] .neon-text-purple,
+:root[data-tg-theme="reason-pro"] .neon-text-red,
+:root[data-tg-theme="reason-pro"] .neon-text-orange { text-shadow: none !important; }
+:root[data-tg-theme="reason-pro"] .neon-text-green.text-cyber-green,
+:root[data-tg-theme="reason-pro"] .neon-text-purple.text-cyber-purple { color: hsl(var(--primary)) !important; }
+:root[data-tg-theme="reason-pro"] .cyber-gradient-text {
+  background-image: linear-gradient(100deg, hsl(var(--primary)), hsl(var(--cyber-purple)) 60%, hsl(var(--accent)));
+}
+:root[data-tg-theme="reason-pro"] .glass-card,
+:root[data-tg-theme="reason-pro"] .tg-card { border-radius: 1.25rem; }
+:root[data-tg-theme="reason-pro"] .cyber-btn { font-weight: 600; letter-spacing: 0; }
+:root[data-tg-theme="reason-pro"] .cyber-btn-primary { box-shadow: 0 12px 28px -14px hsl(var(--primary) / 0.9); }
+:root[data-tg-theme="reason-pro"] .cyber-btn-primary:hover { filter: brightness(1.08); }
+:root[data-tg-theme="reason-pro"] .cyber-btn-outline { border-color: hsl(var(--primary) / 0.45); background: hsl(var(--card)); }
+:root[data-tg-theme="reason-pro"] .tg-dark .cyber-btn-outline { background: transparent; }
+:root[data-tg-theme="reason-pro"] .grid-pattern { opacity: .5; }
+/* Navy band with violet glow, like a security vendor's hero. */
+:root[data-tg-theme="reason-pro"] .tg-band {
+  background:
+    radial-gradient(900px 520px at 85% 0%, hsl(258 90% 62% / 0.30), transparent 60%),
+    radial-gradient(700px 420px at 0% 100%, hsl(199 90% 55% / 0.14), transparent 60%),
+    hsl(234 62% 8%);
+}
+/* Alternate soft lavender sections for rhythm. */
+:root[data-tg-theme="reason-pro"] main > section.tg-section:nth-of-type(even),
+:root[data-tg-theme="reason-pro"] .tg-alt { background: hsl(250 60% 97.5%); }

@@ -171,7 +171,7 @@ const CyberNewsPortal = () => {
       )}
 
       {/* Masthead */}
-      <header className="tg-band relative overflow-hidden border-b border-primary/20 pb-6 pt-10">
+      <header className="tg-dark tg-band relative overflow-hidden border-b border-primary/20 pb-6 pt-10">
         <div aria-hidden className="pointer-events-none absolute inset-0 grid-pattern opacity-40" />
         <LazyScene variant="globe" className="pointer-events-none absolute -right-24 -top-10 hidden h-[460px] w-[560px] opacity-70 lg:block" />
         <div className="container relative mx-auto max-w-7xl px-4">

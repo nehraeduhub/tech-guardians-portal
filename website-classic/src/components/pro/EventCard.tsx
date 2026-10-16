@@ -3,7 +3,7 @@ import { eventDateParts, eventRegisterHref, type TGEventItem } from '@/lib/catal
 
 const STATUS: Record<string, string> = {
   'Registrations open': 'bg-emerald-500 text-white',
-  Upcoming: 'bg-[#2563eb] text-white',
+  Upcoming: 'bg-primary text-primary-foreground',
   'Few seats left': 'bg-amber-500 text-white',
   'Sold out': 'bg-slate-500 text-white',
   Completed: 'bg-slate-200 text-slate-700',
@@ -16,12 +16,12 @@ const EventCard = ({ event, past = false }: { event: TGEventItem; past?: boolean
   const closed = past || event.status === 'Sold out' || event.status === 'Completed';
   return (
     <article className={`tg-card tg-card-hover flex h-full flex-col overflow-hidden ${past ? 'opacity-80' : ''}`}>
-      <div className="relative aspect-[16/8] overflow-hidden bg-[#0a1a3d]">
+      <div className="relative aspect-[16/8] overflow-hidden bg-muted">
         {event.image && <img src={event.image} alt="" loading="lazy" className="h-full w-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-[#061330]/85 via-[#061330]/20 to-transparent" />
         <div className="absolute left-4 top-4 w-16 overflow-hidden rounded-xl bg-white text-center shadow-lg">
-          <div className="bg-[#2563eb] py-0.5 text-[11px] font-bold tracking-widest text-white">{d.month || 'DATE'}</div>
-          <div className="font-display text-2xl font-extrabold leading-9 text-[#0b1b33]">{d.day}</div>
+          <div className="bg-primary py-0.5 text-[11px] font-bold tracking-widest text-white">{d.month || 'DATE'}</div>
+          <div className="font-display text-2xl font-extrabold leading-9 text-slate-900">{d.day}</div>
           <div className="pb-1 text-[10px] font-semibold uppercase text-slate-500">{d.weekday || 'soon'}</div>
         </div>
         <span className={`absolute right-4 top-4 rounded-full px-2.5 py-1 text-[11px] font-semibold ${STATUS[past ? 'Completed' : event.status] || STATUS.Upcoming}`}>{past ? 'Completed' : event.status}</span>

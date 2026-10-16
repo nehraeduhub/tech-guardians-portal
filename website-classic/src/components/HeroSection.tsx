@@ -6,7 +6,7 @@ import { useHomeContent } from '@/lib/home-content';
 const HeroSection = () => {
   const home = useHomeContent();
   return (
-    <section id="home" className="relative overflow-hidden">
+    <section id="home" className="tg-dark tg-band relative isolate overflow-hidden">
       {/* Soft brand gradient wash */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-40 -right-40 w-[720px] h-[720px] rounded-full blur-3xl opacity-60"
@@ -36,7 +36,7 @@ const HeroSection = () => {
               <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'var(--tg-hero-gradient, linear-gradient(100deg, hsl(190 100% 62%) 0%, hsl(158 100% 55%) 45%, hsl(280 90% 72%) 100%))' }}>
                 {home.heroTitle}
               </span>
-              <br className="hidden sm:block" />
+              {' '}<br className="hidden sm:block" />
               <span className="italic" style={{ color: 'var(--tg-hero-accent, hsl(35 100% 60%))' }}>{home.heroTitleAccent}</span>
             </motion.h1>
 

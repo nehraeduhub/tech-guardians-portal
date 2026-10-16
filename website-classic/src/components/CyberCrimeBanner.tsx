@@ -13,7 +13,7 @@ const CyberCrimeBanner = () => (
   <section id="report-cyber-crime" className="relative px-4 py-16 md:px-8">
     <div className="container mx-auto max-w-6xl">
       <ScrollReveal>
-        <div className="relative overflow-hidden rounded-3xl border border-red-500/40 bg-gradient-to-br from-red-950/60 via-[hsl(222_60%_6%)] to-[hsl(222_60%_5%)] p-6 shadow-[0_30px_80px_-40px_rgba(239,68,68,.7)] md:p-10">
+        <div className="tg-dark relative overflow-hidden rounded-3xl border border-red-500/40 bg-gradient-to-br from-red-950/60 via-[hsl(222_60%_6%)] to-[hsl(222_60%_5%)] p-6 shadow-[0_30px_80px_-40px_rgba(239,68,68,.7)] md:p-10">
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-red-500/20 blur-3xl" aria-hidden />
           <div className="relative flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-start gap-4">

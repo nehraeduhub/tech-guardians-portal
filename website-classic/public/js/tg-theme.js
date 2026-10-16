@@ -1,16 +1,38 @@
 /* Tech Guardians — site themes.
    Loaded in the <head> of every page (React app and static pages).
-   The admin picks a theme in Manage → Themes; it is stored in the `tg_theme`
-   setting and every open page switches within 15 seconds.
+   The admin picks a theme in Manage → Themes; it is stored in the `tg_theme_v2`
+   setting (the older `tg_theme` choice is no longer read, so every site starts on
+   the Reason Pro default) and every open page switches within 15 seconds.
    Each theme sets colours, fonts, card style and an animated 3D background. */
 (function () {
   if (window.tgTheme) return;
 
-  var CACHE = 'tg_theme_cache';
-  var DEFAULT_ID = 'cyber-neon';
+  var CACHE = 'tg_theme_cache_v2';
+  var DEFAULT_ID = 'reason-pro';
 
   // Shorthand: React tokens are HSL triplets ("h s% l%"), static pages use hex.
   var THEMES = [
+    {
+      id: 'reason-pro',
+      name: 'Reason Pro',
+      tagline: 'Clean, professional security-company look: white pages, violet accents, navy hero and footer bands.',
+      swatch: ['#f7f7fb', '#5b3df5', '#0b1030', '#0ea5e9'],
+      fontUrl: 'family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500',
+      fonts: { head: "'Plus Jakarta Sans', 'Inter', sans-serif", body: "'Inter', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" },
+      light: true, pro: true,
+      react: {
+        background: '240 33% 98%', foreground: '232 52% 12%', card: '0 0% 100%', popover: '0 0% 100%',
+        primary: '250 90% 60%', primaryFg: '0 0% 100%', secondary: '250 70% 96%', secondaryFg: '250 65% 42%',
+        muted: '240 30% 96%', mutedFg: '230 16% 36%', accent: '199 89% 42%', accentFg: '0 0% 100%',
+        border: '240 20% 89%', input: '240 20% 87%', ring: '250 90% 60%',
+        blue: '221 83% 48%', green: '160 84% 28%', purple: '262 75% 55%', orange: '25 95% 40%', red: '0 72% 48%',
+        topbar: '234 60% 8%', topbarFg: '240 30% 88%', radius: '1rem',
+      },
+      css: { bg: '#f7f7fb', bg2: '#eeedf8', surface: '#ffffff', surface2: '#f6f5fd', surface3: '#ecebf9', text: '#0e1330', muted: '#4b5470', border: 'rgba(14,19,48,.11)', primary: '#5b3df5', primary2: '#7c5cff', secondary: '#0e9f6e', accent: '#dc4a0f', gold: '#b45309' },
+      pageBg: 'radial-gradient(1100px 520px at 80% -8%, rgba(91,61,245,.08), transparent 60%), #f7f7fb',
+      heroGradient: 'linear-gradient(100deg, #7c5cff 0%, #a78bfa 45%, #38bdf8 100%)', heroAccent: '#38bdf8',
+      fx: null, tilt: false,
+    },
     {
       id: 'cyber-neon',
       name: 'Cyber Neon',
@@ -184,7 +206,8 @@
       // Light theme: soft layered shadows instead of glow, darker neon text.
       out.push(sel + ' .neon-text,' + sel + ' .neon-text-green,' + sel + ' .neon-text-purple,' + sel + ' .neon-text-red,' + sel + ' .neon-text-orange{text-shadow:none !important}');
       out.push(sel + ' .glass-card,' + sel + ':not([data-tg-static]) .rounded-2xl.border,' + sel + ':not([data-tg-static]) .rounded-xl.border{box-shadow:0 1px 2px rgba(15,23,42,.06), 0 12px 32px -16px rgba(15,23,42,.25) !important}');
-      out.push(sel + ':not([data-tg-static]) .text-white{color:hsl(var(--foreground)) !important}');
+      // Reason Pro styles its components directly, so white text on photos and navy bands stays white.
+      if (!t.pro) out.push(sel + ':not([data-tg-static]) .text-white{color:hsl(var(--foreground)) !important}');
       // Static pages: their headers and a few panels use fixed dark colours.
       var ls = sel + '[data-tg-static] ';
       out.push(ls + 'nav,' + ls + '.topnav,' + ls + '.header{background:rgba(255,255,255,.9) !important;border-bottom:1px solid ' + c.border + ' !important;box-shadow:0 6px 24px -14px rgba(15,23,42,.25) !important}');
@@ -197,6 +220,13 @@
       out.push(ls + '.portal-search{background:#fff !important;color:' + c.text + ' !important;border-color:' + c.border + ' !important}');
       out.push(ls + '.hub-disclaimer{background:#fff7e0 !important;color:#5e4b17 !important;border-color:#e2bd54 !important}');
       out.push(sel + ':not([data-tg-static]) .bg-primary .text-white,' + sel + ':not([data-tg-static]) [class*="bg-gradient"] .text-white,' + sel + ':not([data-tg-static]) .bg-destructive.text-white{color:#fff !important}');
+    }
+    if (t.pro) {
+      // Static pages: solid primary buttons with white text (their default gradient uses dark text).
+      var ps = sel + '[data-tg-static] ';
+      out.push(ps + '.btn-pri,' + ps + '.btn.on,' + ps + '.avatar{background:' + c.primary + ' !important;color:#fff !important;box-shadow:0 12px 26px -14px rgba(' + prgb + ',.9) !important}');
+      out.push(ps + '.btn-pri:hover{filter:brightness(1.08)}');
+      out.push(ps + 'h1,' + ps + 'h2{letter-spacing:-0.02em}');
     }
     // 3D: cards lift towards the viewer on hover.
     if (t.tilt && !reduceMotion) {
@@ -354,13 +384,13 @@
   var previewId = null;
   function load() {
     if (previewId) return Promise.resolve();
-    return fetch('/api/settings.php?keys=tg_theme', { credentials: 'same-origin', cache: 'no-store' })
+    return fetch('/api/settings.php?keys=tg_theme_v2', { credentials: 'same-origin', cache: 'no-store' })
       .then(function (r) {
         if (r.status === 451) { r.json().then(showUnlicensed).catch(function () { showUnlicensed({}); }); return []; }
         return r.ok ? r.json() : [];
       })
       .then(function (rows) {
-        var row = (rows || []).filter(function (x) { return x.key === 'tg_theme'; })[0];
+        var row = (rows || []).filter(function (x) { return x.key === 'tg_theme_v2'; })[0];
         apply(row && typeof row.value === 'string' ? row.value : DEFAULT_ID);
       })
       .catch(function () {});

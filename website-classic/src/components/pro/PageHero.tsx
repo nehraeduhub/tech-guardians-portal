@@ -14,7 +14,7 @@ const PageHero = ({ eyebrow, title, accent, lead, actions, children, variant = '
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10">
         {eyebrow && <p className="tg-eyebrow text-[hsl(var(--cyber-blue))]">{eyebrow}</p>}
         <h1 className="mt-4 text-4xl font-extrabold leading-[1.08] text-foreground md:text-5xl lg:text-[3.4rem]" style={{ textWrap: 'balance' }}>
-          {title}{accent && <><br /><span className="bg-gradient-to-r from-[#3b8bff] to-[#22d3ee] bg-clip-text text-transparent">{accent}</span></>}
+          {title}{accent && <><br /><span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] bg-clip-text text-transparent">{accent}</span></>}
         </h1>
         {lead && <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">{lead}</p>}
         {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}

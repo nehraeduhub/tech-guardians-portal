@@ -21,7 +21,7 @@ const Countdown = ({ date }: { date: string }) => {
       {[[days, 'Days'], [hours, 'Hours']].map(([v, l]) => (
         <div key={l} className="w-20 rounded-xl border border-white/15 bg-white/5 py-2 text-center">
           <div className="font-display text-3xl font-extrabold text-white">{v}</div>
-          <div className="text-[11px] uppercase tracking-widest text-slate-400">{l}</div>
+          <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{l}</div>
         </div>
       ))}
     </div>
@@ -32,20 +32,20 @@ const Featured = ({ e }: { e: TGEventItem }) => {
   const d = eventDateParts(e);
   return (
     <section className="tg-container -mt-px py-12">
-      <div className="tg-dark grid overflow-hidden rounded-3xl border border-white/10 bg-[#071633] lg:grid-cols-2">
+      <div className="tg-dark tg-band grid overflow-hidden rounded-3xl border border-white/10 lg:grid-cols-2">
         <div className="relative min-h-[260px]">
           {e.image && <img src={e.image} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#071633] lg:block" />
-          <span className="absolute left-5 top-5 rounded-full bg-[#2563eb] px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">Next event</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[hsl(234_62%_8%)] lg:block" />
+          <span className="absolute left-5 top-5 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground">Next event</span>
         </div>
         <div className="p-7 md:p-10">
-          <p className="text-sm font-semibold text-[#60a5fa]">{e.type} · {e.mode}</p>
+          <p className="text-sm font-semibold text-primary">{e.type} · {e.mode}</p>
           <h2 className="mt-2 text-2xl font-extrabold text-white md:text-3xl" style={{ textWrap: 'balance' }}>{e.title}</h2>
-          {e.description && <p className="mt-3 text-slate-300">{e.description}</p>}
-          <ul className="mt-5 grid gap-2 text-sm text-slate-200">
-            <li className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[#60a5fa]" />{d.full}</li>
-            {e.time && <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-[#60a5fa]" />{e.time}</li>}
-            {e.venue && <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#60a5fa]" />{e.venue}</li>}
+          {e.description && <p className="mt-3 text-muted-foreground">{e.description}</p>}
+          <ul className="mt-5 grid gap-2 text-sm text-foreground/90">
+            <li className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />{d.full}</li>
+            {e.time && <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{e.time}</li>}
+            {e.venue && <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />{e.venue}</li>}
           </ul>
           <div className="mt-6 flex flex-wrap items-center gap-5">
             <Countdown date={e.date} />

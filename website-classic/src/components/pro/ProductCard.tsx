@@ -11,7 +11,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   return (
     <Link to={`/products/${product.id}`} className="tg-card group flex h-full flex-col p-6">
       <div className="flex items-start justify-between gap-3">
-        <span className="tg-icon-tile !h-14 !w-14 bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] !text-white shadow-[0_12px_24px_-12px_rgba(37,99,235,.8)]"><Icon className="h-7 w-7" /></span>
+        <span className="tg-icon-tile !h-14 !w-14 bg-gradient-to-br from-primary to-[hsl(var(--cyber-purple))] !text-white shadow-[0_12px_24px_-12px_hsl(var(--primary)/0.8)]"><Icon className="h-7 w-7" /></span>
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset ${STATUS_STYLE[product.status] || STATUS_STYLE['On request']}`}>{product.status}</span>
       </div>
       <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-primary">{product.category}</p>

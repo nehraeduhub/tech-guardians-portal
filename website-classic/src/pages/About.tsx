@@ -48,7 +48,7 @@ const About = () => {
   return (
   <SiteFrame>
     {/* Hero */}
-    <section className="relative overflow-hidden border-b border-border/70 pt-10">
+    <section className="tg-dark tg-band relative overflow-hidden border-b border-border/70 pt-10">
       <div className="absolute inset-0 grid-pattern opacity-40" aria-hidden="true" />
       <LazyScene variant="rings" className="pointer-events-none absolute -right-16 top-0 hidden h-[520px] w-[560px] opacity-60 lg:block" />
       <div className="container relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-20 md:px-8 lg:grid-cols-[1.1fr_0.9fr]">

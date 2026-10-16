@@ -104,9 +104,9 @@ export const ProductDetail = () => {
             </section>
           )}
           {p.trainingIncluded && (
-            <section className="tg-dark flex flex-col gap-4 rounded-2xl bg-gradient-to-br from-[#0b2a6b] to-[#061330] p-6 sm:flex-row sm:items-center">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#2563eb] text-white"><GraduationCap className="h-6 w-6" /></span>
-              <div className="flex-1"><h2 className="text-lg font-bold text-white">Product training included</h2><p className="text-sm text-slate-300">We train your team to install, use and report with {p.name}.</p></div>
+            <section className="tg-dark tg-band flex flex-col gap-4 rounded-2xl p-6 sm:flex-row sm:items-center">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground"><GraduationCap className="h-6 w-6" /></span>
+              <div className="flex-1"><h2 className="text-lg font-bold text-white">Product training included</h2><p className="text-sm text-muted-foreground">We train your team to install, use and report with {p.name}.</p></div>
             </section>
           )}
         </div>
