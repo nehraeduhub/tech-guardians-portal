@@ -4,6 +4,38 @@
 // private Google Drive links, so it is only ever sent to the admin.
 require_once __DIR__ . '/lib.php';
 
+/** Version of the shipped book catalogue; a saved store from an older version gets the new books. */
+const TG_STORE_CATALOG_VERSION = 2;
+/** Folder with the sellable PDF files (blocked from direct web access). */
+define('TG_BOOKS_DIR', __DIR__ . '/books');
+
+function tg_store_books(): array
+{
+    $books = json_decode((string)@file_get_contents(__DIR__ . '/store-books.json'), true);
+    return is_array($books) ? $books : [];
+}
+
+/** Path of a book's PDF stored on this server, or '' when there is none. */
+function tg_book_file(string $id): string
+{
+    if (!preg_match('/^[a-z0-9-]{1,80}$/', $id)) return '';
+    $path = TG_BOOKS_DIR . '/' . $id . '.pdf';
+    return is_file($path) ? $path : '';
+}
+
+/** Send a book's PDF to the browser as a download. */
+function tg_send_book(string $path, string $title): void
+{
+    $name = preg_replace('/[^A-Za-z0-9 _.&-]+/', '', $title) ?: 'Tech-Guardians-Handbook';
+    header('Content-Type: application/pdf');
+    header('Content-Length: ' . filesize($path));
+    header('Content-Disposition: attachment; filename="' . $name . ' - Tech Guardians.pdf"');
+    header('Cache-Control: private, no-store');
+    header('X-Content-Type-Options: nosniff');
+    readfile($path);
+    exit;
+}
+
 function tg_store_defaults(): array
 {
     return [
@@ -20,38 +52,8 @@ function tg_store_defaults(): array
             'sheetUrl' => 'https://script.google.com/macros/s/AKfycby4vVoo20WGdp7hLuxvLP7_NrpFzuMFHC6tkFsLyzMexS44vte8_4nYVEMWAE_xrE7r/exec',
             'sheetSync' => true,
         ],
-        'products' => [
-            [
-                'id' => 'windows-linux-hardening',
-                'title' => 'Windows & Linux System Hardening',
-                'subtitle' => 'Step-by-step vulnerability detection & remediation',
-                'description' => "A practical hardening playbook by RJ Nehra. Every chapter shows how to detect the weakness, why it matters, the exact commands to fix it, and how to verify the fix.\n\nPart I covers Windows 10/11 and Server 2019/2022: firewall, SMBv1, Defender, BitLocker, UAC, RDP, PowerShell logging, audit policy, LAPS, TLS hardening, patching and Credential Guard.\nPart II covers Ubuntu, RHEL and Rocky Linux.\n\nMapped to CIS Benchmarks, NIST 800-53, DISA STIG and ISO 27001.",
-                'pages' => 34,
-                'format' => 'PDF',
-                'price' => 999,
-                'offerPrice' => 499,
-                'cover' => '/images/store/hardening-cover.jpg',
-                'previews' => ['/images/store/hardening-preview-1.jpg', '/images/store/hardening-preview-2.jpg', '/images/store/hardening-preview-3.jpg'],
-                'tags' => ['Windows', 'Linux', 'CIS', 'NIST'],
-                'driveLink' => '',
-                'visible' => true,
-            ],
-            [
-                'id' => 'networking-handbook',
-                'title' => 'Complete Networking Handbook',
-                'subtitle' => 'From cables to cloud — Cyber Fouji Series',
-                'description' => "Everything you need to understand networks, written for students and new security professionals.\n\nCovers networking fundamentals, the OSI and TCP/IP models, IPv4/IPv6 addressing and subnetting, TCP vs UDP, common ports and protocols, DNS, DHCP, routing, switching and VLANs, and network security — with tables and diagrams you can revise from.",
-                'pages' => 19,
-                'format' => 'PDF',
-                'price' => 499,
-                'offerPrice' => 199,
-                'cover' => '/images/store/networking-cover.jpg',
-                'previews' => ['/images/store/networking-preview-1.jpg', '/images/store/networking-preview-2.jpg', '/images/store/networking-preview-3.jpg'],
-                'tags' => ['Networking', 'OSI', 'Subnetting'],
-                'driveLink' => '',
-                'visible' => true,
-            ],
-        ],
+        // The Tech Guardians Cyber Security Handbook series (api/store-books.json).
+        'products' => tg_store_books(),
     ];
 }
 
@@ -61,7 +63,9 @@ function tg_store(): array
     $d = tg_store_defaults();
     if (!is_array($saved)) return $d;
     $saved['settings'] = array_merge($d['settings'], is_array($saved['settings'] ?? null) ? $saved['settings'] : []);
-    if (!isset($saved['products']) || !is_array($saved['products'])) $saved['products'] = $d['products'];
+    if (!isset($saved['products']) || !is_array($saved['products']) || (int)($saved['catalogVersion'] ?? 1) < TG_STORE_CATALOG_VERSION) {
+        $saved['products'] = $d['products'];
+    }
     return $saved;
 }
 
@@ -79,6 +83,7 @@ function tg_public_product(array $p): array
         'description' => $p['description'] ?? '', 'pages' => (int)($p['pages'] ?? 0), 'format' => $p['format'] ?? 'PDF',
         'price' => (float)($p['price'] ?? 0), 'offerPrice' => (float)($p['offerPrice'] ?? 0),
         'cover' => $p['cover'] ?? '', 'previews' => array_values($p['previews'] ?? []), 'tags' => array_values($p['tags'] ?? []),
+        'category' => (string)($p['category'] ?? ''), 'series' => (int)($p['series'] ?? 0),
     ];
 }
 

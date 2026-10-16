@@ -1,0 +1,991 @@
+[
+ {
+  "id": "cybersecurity-fundamentals",
+  "title": "Cybersecurity Fundamentals",
+  "subtitle": "Start from zero, build the mindset",
+  "description": "Every expert started right here. A complete, from-zero-to-mastery handbook on cybersecurity fundamentals: core concepts, clearly explained, build a real security mindset, and your first step to mastery. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Core concepts, clearly explained\n• Build a real security mindset\n• Your first step to mastery\n\nPart 1 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 53,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/cybersecurity-fundamentals-cover.png",
+  "previews": [
+   "/images/store/books/cybersecurity-fundamentals-feature.png",
+   "/images/store/books/cybersecurity-fundamentals-promo.png"
+  ],
+  "tags": [
+   "Security Foundations",
+   "Handbook"
+  ],
+  "category": "Security Foundations",
+  "series": 1,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "cia-triad",
+  "title": "The CIA Triad",
+  "subtitle": "Confidentiality · Integrity · Availability",
+  "description": "The three letters behind every control. A complete, from-zero-to-mastery handbook on the cia triad: the foundation of all security, real-world, worked examples, and apply the model everywhere. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The foundation of all security\n• Real-world, worked examples\n• Apply the model everywhere\n\nPart 2 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 50,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/cia-triad-cover.png",
+  "previews": [
+   "/images/store/books/cia-triad-feature.png",
+   "/images/store/books/cia-triad-promo.png"
+  ],
+  "tags": [
+   "Security Foundations",
+   "Handbook"
+  ],
+  "category": "Security Foundations",
+  "series": 2,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "threats-vulnerabilities-risks",
+  "title": "Threats, Vulnerabilities & Risks",
+  "subtitle": "Think like a defender",
+  "description": "Know exactly what you're defending against. A complete, from-zero-to-mastery handbook on threats, vulnerabilities & risks: tell threat from vuln from risk, assess and prioritise clearly, and risk-based decision making. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Tell threat from vuln from risk\n• Assess and prioritise clearly\n• Risk-based decision making\n\nPart 3 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 43,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/threats-vulnerabilities-risks-cover.png",
+  "previews": [
+   "/images/store/books/threats-vulnerabilities-risks-feature.png",
+   "/images/store/books/threats-vulnerabilities-risks-promo.png"
+  ],
+  "tags": [
+   "Security Foundations",
+   "Handbook"
+  ],
+  "category": "Security Foundations",
+  "series": 3,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "security-architecture",
+  "title": "Security Architecture",
+  "subtitle": "Design security in from the start",
+  "description": "Security by design, not by accident. A complete, from-zero-to-mastery handbook on security architecture: principles of secure design, layered, defensible architecture, and build it right the first time. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Principles of secure design\n• Layered, defensible architecture\n• Build it right the first time\n\nPart 4 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 39,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/security-architecture-cover.png",
+  "previews": [
+   "/images/store/books/security-architecture-feature.png",
+   "/images/store/books/security-architecture-promo.png"
+  ],
+  "tags": [
+   "Security Foundations",
+   "Handbook"
+  ],
+  "category": "Security Foundations",
+  "series": 4,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "defense-in-depth",
+  "title": "Defense in Depth",
+  "subtitle": "Layered security that actually holds",
+  "description": "One layer fails, the next one holds. A complete, from-zero-to-mastery handbook on defense in depth: layers that cover each other, no single point of failure, and practical, real-world layering. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Layers that cover each other\n• No single point of failure\n• Practical, real-world layering\n\nPart 5 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 38,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/defense-in-depth-cover.png",
+  "previews": [
+   "/images/store/books/defense-in-depth-feature.png",
+   "/images/store/books/defense-in-depth-promo.png"
+  ],
+  "tags": [
+   "Security Foundations",
+   "Handbook"
+  ],
+  "category": "Security Foundations",
+  "series": 5,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "zero-trust",
+  "title": "Zero Trust",
+  "subtitle": "Never trust, always verify",
+  "description": "Trust nothing. Verify everything. A complete, from-zero-to-mastery handbook on zero trust: the zero trust model explained, identity and micro-segmentation, and implement it in realistic stages. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The Zero Trust model explained\n• Identity and micro-segmentation\n• Implement it in realistic stages\n\nPart 6 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 39,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/zero-trust-cover.png",
+  "previews": [
+   "/images/store/books/zero-trust-feature.png",
+   "/images/store/books/zero-trust-promo.png"
+  ],
+  "tags": [
+   "Security Foundations",
+   "Handbook"
+  ],
+  "category": "Security Foundations",
+  "series": 6,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "tcp-ip-networking",
+  "title": "TCP/IP Networking",
+  "subtitle": "The protocols that run the internet",
+  "description": "Understand the net to defend it. A complete, from-zero-to-mastery handbook on tcp/ip networking: the stack, layer by layer, how packets really flow, and security at every layer. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The stack, layer by layer\n• How packets really flow\n• Security at every layer\n\nPart 7 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/tcp-ip-networking-cover.png",
+  "previews": [
+   "/images/store/books/tcp-ip-networking-feature.png",
+   "/images/store/books/tcp-ip-networking-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 7,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "routing-switching-security",
+  "title": "Routing & Switching Security",
+  "subtitle": "Harden the network fabric",
+  "description": "Secure the roads of your network. A complete, from-zero-to-mastery handbook on routing & switching security: secure routing protocols, switch and port hardening, and stop layer-2 attacks. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Secure routing protocols\n• Switch and port hardening\n• Stop layer-2 attacks\n\nPart 8 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 30,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/routing-switching-security-cover.png",
+  "previews": [
+   "/images/store/books/routing-switching-security-feature.png",
+   "/images/store/books/routing-switching-security-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 8,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "vlan-vrf",
+  "title": "VLAN & VRF",
+  "subtitle": "Isolate at layer 2 and layer 3",
+  "description": "Separate to secure. A complete, from-zero-to-mastery handbook on vlan & vrf: vlan segmentation done right, vrf path separation, and stop vlan hopping. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• VLAN segmentation done right\n• VRF path separation\n• Stop VLAN hopping\n\nPart 9 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 31,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/vlan-vrf-cover.png",
+  "previews": [
+   "/images/store/books/vlan-vrf-feature.png",
+   "/images/store/books/vlan-vrf-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 9,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "network-segmentation",
+  "title": "Network Segmentation",
+  "subtitle": "Zones, VLANs and micro-seg",
+  "description": "Contain the breach by design. A complete, from-zero-to-mastery handbook on network segmentation: segment by trust level, kill lateral movement, and micro-segmentation in practice. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Segment by trust level\n• Kill lateral movement\n• Micro-segmentation in practice\n\nPart 10 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 38,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/network-segmentation-cover.png",
+  "previews": [
+   "/images/store/books/network-segmentation-feature.png",
+   "/images/store/books/network-segmentation-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 10,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "mpls-security",
+  "title": "MPLS Security",
+  "subtitle": "Secure the carrier core",
+  "description": "Secure the backbone. A complete, from-zero-to-mastery handbook on mpls security: how mpls actually works, vpn path separation, and hardening the core. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• How MPLS actually works\n• VPN path separation\n• Hardening the core\n\nPart 11 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/mpls-security-cover.png",
+  "previews": [
+   "/images/store/books/mpls-security-feature.png",
+   "/images/store/books/mpls-security-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 11,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "firewall-security",
+  "title": "Firewall Security",
+  "subtitle": "Rules, zones and default-deny",
+  "description": "The first wall every attacker hits. A complete, from-zero-to-mastery handbook on firewall security: build a default-deny policy, zones and segmentation, and rule hygiene that scales. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Build a default-deny policy\n• Zones and segmentation\n• Rule hygiene that scales\n\nPart 12 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/firewall-security-cover.png",
+  "previews": [
+   "/images/store/books/firewall-security-feature.png",
+   "/images/store/books/firewall-security-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 12,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "load-balancer-adc-security",
+  "title": "Load Balancer & ADC Security",
+  "subtitle": "Secure delivery at scale",
+  "description": "Secure the traffic cop. A complete, from-zero-to-mastery handbook on load balancer & adc security: harden the adc, ssl/tls offload safely, and protect the front door. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Harden the ADC\n• SSL/TLS offload safely\n• Protect the front door\n\nPart 13 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/load-balancer-adc-security-cover.png",
+  "previews": [
+   "/images/store/books/load-balancer-adc-security-feature.png",
+   "/images/store/books/load-balancer-adc-security-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 13,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "waf",
+  "title": "Web Application Firewall",
+  "subtitle": "Stop web attacks cold",
+  "description": "Guard the web app's front door. A complete, from-zero-to-mastery handbook on web application firewall: block the owasp top 10, tune rules without breakage, and virtual patching. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Block the OWASP Top 10\n• Tune rules without breakage\n• Virtual patching\n\nPart 14 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/waf-cover.png",
+  "previews": [
+   "/images/store/books/waf-feature.png",
+   "/images/store/books/waf-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 14,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "web-server-hosting",
+  "title": "Web Server Setup & Hosting",
+  "subtitle": "From a website to a live server",
+  "description": "Launch it — safely. A complete, from-zero-to-mastery handbook on web server setup & hosting: iis, xampp, cloudflare, ngrok, build and host a real site, and secure the server end to end. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• IIS, XAMPP, Cloudflare, ngrok\n• Build and host a real site\n• Secure the server end to end\n\nPart 15 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 35,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/web-server-hosting-cover.png",
+  "previews": [
+   "/images/store/books/web-server-hosting-feature.png",
+   "/images/store/books/web-server-hosting-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 15,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "ids-ips",
+  "title": "IDS / IPS",
+  "subtitle": "Detect and prevent intrusions",
+  "description": "See the intrusion as it happens. A complete, from-zero-to-mastery handbook on ids / ips: signature vs anomaly detection, tune for signal, not noise, and deploy it the right way. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Signature vs anomaly detection\n• Tune for signal, not noise\n• Deploy it the right way\n\nPart 16 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/ids-ips-cover.png",
+  "previews": [
+   "/images/store/books/ids-ips-feature.png",
+   "/images/store/books/ids-ips-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 16,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "network-monitoring",
+  "title": "Network Monitoring",
+  "subtitle": "See every packet that matters",
+  "description": "You can't defend what you can't see. A complete, from-zero-to-mastery handbook on network monitoring: flow and packet visibility, baseline and anomaly detection, and spot the intruder early. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Flow and packet visibility\n• Baseline and anomaly detection\n• Spot the intruder early\n\nPart 17 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/network-monitoring-cover.png",
+  "previews": [
+   "/images/store/books/network-monitoring-feature.png",
+   "/images/store/books/network-monitoring-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 17,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "wireshark",
+  "title": "Wireshark Mastery",
+  "subtitle": "Read the packets like a pro",
+  "description": "See exactly what's on the wire. A complete, from-zero-to-mastery handbook on wireshark mastery: capture and filter with skill, follow the stream, and spot the attack on the wire. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Capture and filter with skill\n• Follow the stream\n• Spot the attack on the wire\n\nPart 18 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/wireshark-cover.png",
+  "previews": [
+   "/images/store/books/wireshark-feature.png",
+   "/images/store/books/wireshark-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 18,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "nmap",
+  "title": "Nmap Mastery",
+  "subtitle": "Scan, discover, map",
+  "description": "Know the network like an attacker. A complete, from-zero-to-mastery handbook on nmap mastery: host and port discovery, service and os detection, and nse scripting power. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Host and port discovery\n• Service and OS detection\n• NSE scripting power\n\nPart 19 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 34,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/nmap-cover.png",
+  "previews": [
+   "/images/store/books/nmap-feature.png",
+   "/images/store/books/nmap-promo.png"
+  ],
+  "tags": [
+   "Network Security",
+   "Handbook"
+  ],
+  "category": "Network Security",
+  "series": 19,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "soc-architecture",
+  "title": "SOC Architecture",
+  "subtitle": "Build the operations centre",
+  "description": "Build the room that defends the business. A complete, from-zero-to-mastery handbook on soc architecture: people, process and technology, tiered analysis that scales, and design for real throughput. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• People, process and technology\n• Tiered analysis that scales\n• Design for real throughput\n\nPart 20 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/soc-architecture-cover.png",
+  "previews": [
+   "/images/store/books/soc-architecture-feature.png",
+   "/images/store/books/soc-architecture-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 20,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "siem",
+  "title": "SIEM",
+  "subtitle": "Collect, correlate, detect, respond",
+  "description": "Your single pane of truth. A complete, from-zero-to-mastery handbook on siem: collect and correlate at scale, build detections that fire right, and innspark-ready workflows. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Collect and correlate at scale\n• Build detections that fire right\n• Innspark-ready workflows\n\nPart 21 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 31,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/siem-cover.png",
+  "previews": [
+   "/images/store/books/siem-feature.png",
+   "/images/store/books/siem-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 21,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "log-and-alert-management",
+  "title": "Log & Alert Management",
+  "subtitle": "Signal over noise",
+  "description": "Fewer alerts. Better alerts. A complete, from-zero-to-mastery handbook on log & alert management: collect the logs that matter, tune high-signal alerts, and beat alert fatigue. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Collect the logs that matter\n• Tune high-signal alerts\n• Beat alert fatigue\n\nPart 22 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 28,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/log-and-alert-management-cover.png",
+  "previews": [
+   "/images/store/books/log-and-alert-management-feature.png",
+   "/images/store/books/log-and-alert-management-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 22,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "incident-response",
+  "title": "Incident Response",
+  "subtitle": "Detect, contain, recover",
+  "description": "When it happens, be ready. A complete, from-zero-to-mastery handbook on incident response: the ir lifecycle, step by step, contain without losing evidence, and learn and harden after. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The IR lifecycle, step by step\n• Contain without losing evidence\n• Learn and harden after\n\nPart 23 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 31,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/incident-response-cover.png",
+  "previews": [
+   "/images/store/books/incident-response-feature.png",
+   "/images/store/books/incident-response-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 23,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "threat-hunting",
+  "title": "Threat Hunting",
+  "subtitle": "Find what the alerts miss",
+  "description": "Go find the intruder. A complete, from-zero-to-mastery handbook on threat hunting: hunt with real hypotheses, hunt persistence and c2, and turn hunts into detections. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Hunt with real hypotheses\n• Hunt persistence and C2\n• Turn hunts into detections\n\nPart 24 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 27,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/threat-hunting-cover.png",
+  "previews": [
+   "/images/store/books/threat-hunting-feature.png",
+   "/images/store/books/threat-hunting-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 24,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "soar-security-automation",
+  "title": "SOAR & Security Automation",
+  "subtitle": "Automate the response",
+  "description": "Respond at machine speed. A complete, from-zero-to-mastery handbook on soar & security automation: playbooks that actually work, automate triage and enrichment, and scale your soc. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Playbooks that actually work\n• Automate triage and enrichment\n• Scale your SOC\n\nPart 25 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 31,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/soar-security-automation-cover.png",
+  "previews": [
+   "/images/store/books/soar-security-automation-feature.png",
+   "/images/store/books/soar-security-automation-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 25,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "soc-tools-splunk-elk-wazuh-sigma",
+  "title": "SOC Tools: Splunk · ELK · Wazuh · Sigma",
+  "subtitle": "The detection stack",
+  "description": "Master the detection stack. A complete, from-zero-to-mastery handbook on soc tools: search and dashboards, open-source siem power, and portable sigma detections. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Search and dashboards\n• Open-source SIEM power\n• Portable Sigma detections\n\nPart 26 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 28,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/soc-tools-splunk-elk-wazuh-sigma-cover.png",
+  "previews": [
+   "/images/store/books/soc-tools-splunk-elk-wazuh-sigma-feature.png",
+   "/images/store/books/soc-tools-splunk-elk-wazuh-sigma-promo.png"
+  ],
+  "tags": [
+   "SOC & Detection",
+   "Handbook"
+  ],
+  "category": "SOC & Detection",
+  "series": 26,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "windows-security",
+  "title": "Windows Security",
+  "subtitle": "SIDs, tokens, ACLs and UAC",
+  "description": "Understand Windows to defend it. A complete, from-zero-to-mastery handbook on windows security: the windows security model, tokens and privileges, and stop privilege abuse. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The Windows security model\n• Tokens and privileges\n• Stop privilege abuse\n\nPart 27 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 30,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/windows-security-cover.png",
+  "previews": [
+   "/images/store/books/windows-security-feature.png",
+   "/images/store/books/windows-security-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 27,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "windows-hardening",
+  "title": "Windows Hardening",
+  "subtitle": "Lock down Windows 10/11 & AD",
+  "description": "A hardened Windows is a quiet one. A complete, from-zero-to-mastery handbook on windows hardening: baselines and controls, audit your real posture, and close the gaps that matter. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Baselines and controls\n• Audit your real posture\n• Close the gaps that matter\n\nPart 28 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 29,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/windows-hardening-cover.png",
+  "previews": [
+   "/images/store/books/windows-hardening-feature.png",
+   "/images/store/books/windows-hardening-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 28,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "active-directory-security",
+  "title": "Active Directory Security",
+  "subtitle": "Kerberos, krbtgt and tiering",
+  "description": "Own your domain before an attacker does. A complete, from-zero-to-mastery handbook on active directory security: master kerberos and delegation, stop credential theft & lateral movement, and tiered admin and hardening. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Master Kerberos and delegation\n• Stop credential theft & lateral movement\n• Tiered admin and hardening\n\nPart 29 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 31,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/active-directory-security-cover.png",
+  "previews": [
+   "/images/store/books/active-directory-security-feature.png",
+   "/images/store/books/active-directory-security-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 29,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "group-policy-security",
+  "title": "Group Policy Security",
+  "subtitle": "Harden Windows at scale",
+  "description": "Policy is power — use it well. A complete, from-zero-to-mastery handbook on group policy security: gpo security settings that count, enforce baselines fleet-wide, and avoid the classic misconfigs. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• GPO security settings that count\n• Enforce baselines fleet-wide\n• Avoid the classic misconfigs\n\nPart 30 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 28,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/group-policy-security-cover.png",
+  "previews": [
+   "/images/store/books/group-policy-security-feature.png",
+   "/images/store/books/group-policy-security-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 30,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "edr",
+  "title": "Endpoint Detection & Response",
+  "subtitle": "Catch what antivirus misses",
+  "description": "See the attacker on the endpoint. A complete, from-zero-to-mastery handbook on endpoint detection & response: how edr really works, detect and respond on endpoints, and hunt on the host. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• How EDR really works\n• Detect and respond on endpoints\n• Hunt on the host\n\nPart 31 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 29,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/edr-cover.png",
+  "previews": [
+   "/images/store/books/edr-feature.png",
+   "/images/store/books/edr-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 31,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "powershell-security",
+  "title": "PowerShell Security",
+  "subtitle": "Attack and defend the shell",
+  "description": "Turn the attacker's tool against them. A complete, from-zero-to-mastery handbook on powershell security: how attackers abuse powershell, logging and constrained mode, and detect malicious scripts. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• How attackers abuse PowerShell\n• Logging and constrained mode\n• Detect malicious scripts\n\nPart 32 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 29,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/powershell-security-cover.png",
+  "previews": [
+   "/images/store/books/powershell-security-feature.png",
+   "/images/store/books/powershell-security-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 32,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "sysinternals",
+  "title": "Sysinternals",
+  "subtitle": "The Windows internals toolkit",
+  "description": "See what Windows hides. A complete, from-zero-to-mastery handbook on sysinternals: process explorer & autoruns, hunt malware live, and fast host triage. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Process Explorer & Autoruns\n• Hunt malware live\n• Fast host triage\n\nPart 33 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 28,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/sysinternals-cover.png",
+  "previews": [
+   "/images/store/books/sysinternals-feature.png",
+   "/images/store/books/sysinternals-promo.png"
+  ],
+  "tags": [
+   "Windows & Endpoint",
+   "Handbook"
+  ],
+  "category": "Windows & Endpoint",
+  "series": 33,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "forensics-fundamentals",
+  "title": "Digital Forensics Fundamentals",
+  "subtitle": "Handling and evidence",
+  "description": "Do it right or lose the case. A complete, from-zero-to-mastery handbook on digital forensics fundamentals: chain of custody done right, preserve and hash evidence, and produce defensible findings. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Chain of custody done right\n• Preserve and hash evidence\n• Produce defensible findings\n\nPart 34 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 31,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/forensics-fundamentals-cover.png",
+  "previews": [
+   "/images/store/books/forensics-fundamentals-feature.png",
+   "/images/store/books/forensics-fundamentals-promo.png"
+  ],
+  "tags": [
+   "Digital Forensics",
+   "Handbook"
+  ],
+  "category": "Digital Forensics",
+  "series": 34,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "forensic-domains",
+  "title": "Forensic Domains",
+  "subtitle": "Disk · memory · Windows · network · browser",
+  "description": "Every artefact tells a story. A complete, from-zero-to-mastery handbook on forensic domains: five domains of evidence, where the truth really hides, and cross-domain investigation. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Five domains of evidence\n• Where the truth really hides\n• Cross-domain investigation\n\nPart 35 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 30,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/forensic-domains-cover.png",
+  "previews": [
+   "/images/store/books/forensic-domains-feature.png",
+   "/images/store/books/forensic-domains-promo.png"
+  ],
+  "tags": [
+   "Digital Forensics",
+   "Handbook"
+  ],
+  "category": "Digital Forensics",
+  "series": 35,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "forensic-tools",
+  "title": "Forensic Tools",
+  "subtitle": "FTK Imager · KAPE · Autopsy · Volatility",
+  "description": "The toolkit that cracks the case. A complete, from-zero-to-mastery handbook on forensic tools: four free professional tools, acquire, triage, analyse, and build a real workflow. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Four free professional tools\n• Acquire, triage, analyse\n• Build a real workflow\n\nPart 36 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 30,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/forensic-tools-cover.png",
+  "previews": [
+   "/images/store/books/forensic-tools-feature.png",
+   "/images/store/books/forensic-tools-promo.png"
+  ],
+  "tags": [
+   "Digital Forensics",
+   "Handbook"
+  ],
+  "category": "Digital Forensics",
+  "series": 36,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "linux-hardening",
+  "title": "Linux Security: Hardening",
+  "subtitle": "Permissions, SSH, firewall, MAC",
+  "description": "Make your server a hard target. A complete, from-zero-to-mastery handbook on linux security: the linux security model, harden ssh and services, and selinux / apparmor. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The Linux security model\n• Harden SSH and services\n• SELinux / AppArmor\n\nPart 37 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 33,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/linux-hardening-cover.png",
+  "previews": [
+   "/images/store/books/linux-hardening-feature.png",
+   "/images/store/books/linux-hardening-promo.png"
+  ],
+  "tags": [
+   "Linux Security",
+   "Handbook"
+  ],
+  "category": "Linux Security",
+  "series": 37,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "linux-monitoring",
+  "title": "Linux Security: Monitoring",
+  "subtitle": "Logs, auditd, hunting and IR",
+  "description": "See the attacker on Linux. A complete, from-zero-to-mastery handbook on linux security: central logging and auditd, hunt intrusions on linux, and respond and recover. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Central logging and auditd\n• Hunt intrusions on Linux\n• Respond and recover\n\nPart 38 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 33,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/linux-monitoring-cover.png",
+  "previews": [
+   "/images/store/books/linux-monitoring-feature.png",
+   "/images/store/books/linux-monitoring-promo.png"
+  ],
+  "tags": [
+   "Linux Security",
+   "Handbook"
+  ],
+  "category": "Linux Security",
+  "series": 38,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "cti-foundations",
+  "title": "Cyber Threat Intelligence: Foundations",
+  "subtitle": "Lifecycle, ATT&CK and adversaries",
+  "description": "Turn raw data into decisions. A complete, from-zero-to-mastery handbook on cyber threat intelligence: the intelligence lifecycle, mitre att&ck & pyramid of pain, and profile real threat actors. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• The intelligence lifecycle\n• MITRE ATT&CK & Pyramid of Pain\n• Profile real threat actors\n\nPart 39 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 33,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/cti-foundations-cover.png",
+  "previews": [
+   "/images/store/books/cti-foundations-feature.png",
+   "/images/store/books/cti-foundations-promo.png"
+  ],
+  "tags": [
+   "Threat Intelligence",
+   "Handbook"
+  ],
+  "category": "Threat Intelligence",
+  "series": 39,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "cti-operations",
+  "title": "Cyber Threat Intelligence: Operations",
+  "subtitle": "OSINT, STIX/TAXII, MISP and SOC",
+  "description": "From a shared indicator to a blocked attack. A complete, from-zero-to-mastery handbook on cyber threat intelligence: safe osint and collection, stix/taxii and misp sharing, and operationalise intel in the soc. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Safe OSINT and collection\n• STIX/TAXII and MISP sharing\n• Operationalise intel in the SOC\n\nPart 40 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/cti-operations-cover.png",
+  "previews": [
+   "/images/store/books/cti-operations-feature.png",
+   "/images/store/books/cti-operations-promo.png"
+  ],
+  "tags": [
+   "Threat Intelligence",
+   "Handbook"
+  ],
+  "category": "Threat Intelligence",
+  "series": 40,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "virtualization-security",
+  "title": "Virtualization Security",
+  "subtitle": "Hypervisors, VM escape, hardening",
+  "description": "Compromise the host, lose every VM. A complete, from-zero-to-mastery handbook on virtualization security: protect the host/guest boundary, harden esxi, hyper-v and kvm, and secure the management plane. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Protect the host/guest boundary\n• Harden ESXi, Hyper-V and KVM\n• Secure the management plane\n\nPart 41 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 33,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/virtualization-security-cover.png",
+  "previews": [
+   "/images/store/books/virtualization-security-feature.png",
+   "/images/store/books/virtualization-security-promo.png"
+  ],
+  "tags": [
+   "Cloud & Infrastructure",
+   "Handbook"
+  ],
+  "category": "Cloud & Infrastructure",
+  "series": 41,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "container-security",
+  "title": "Container Security",
+  "subtitle": "Docker, images, Kubernetes, secrets",
+  "description": "Secure the thin boundary. A complete, from-zero-to-mastery handbook on container security: harden the runtime (non-root), secure images & supply chain, and lock down kubernetes. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Harden the runtime (non-root)\n• Secure images & supply chain\n• Lock down Kubernetes\n\nPart 42 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 32,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/container-security-cover.png",
+  "previews": [
+   "/images/store/books/container-security-feature.png",
+   "/images/store/books/container-security-promo.png"
+  ],
+  "tags": [
+   "Cloud & Infrastructure",
+   "Handbook"
+  ],
+  "category": "Cloud & Infrastructure",
+  "series": 42,
+  "driveLink": "",
+  "visible": true
+ },
+ {
+  "id": "data-centre-security",
+  "title": "Data Centre Security",
+  "subtitle": "Physical, power, network and DR",
+  "description": "Secure the vault that holds it all. A complete, from-zero-to-mastery handbook on data centre security: layered physical defence, power, cooling and resilience, and 3-2-1 immutable backups. Prepared by Rajesh Nehra, Master in Cyber Security.\n\nWhat you get:\n• Layered physical defence\n• Power, cooling and resilience\n• 3-2-1 immutable backups\n\nPart 43 of the Tech Guardians Cyber Security Handbook series (43 titles) — From Zero to Mastery.",
+  "pages": 33,
+  "format": "PDF",
+  "price": 399,
+  "offerPrice": 199,
+  "cover": "/images/store/books/data-centre-security-cover.png",
+  "previews": [
+   "/images/store/books/data-centre-security-feature.png",
+   "/images/store/books/data-centre-security-promo.png"
+  ],
+  "tags": [
+   "Cloud & Infrastructure",
+   "Handbook"
+  ],
+  "category": "Cloud & Infrastructure",
+  "series": 43,
+  "driveLink": "",
+  "visible": true
+ }
+]

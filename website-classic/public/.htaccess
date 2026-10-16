@@ -15,7 +15,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # Never serve hidden files, backups, logs, source maps or developer files.
 RewriteRule (^|/)\.(?!well-known/) - [F,L]
 RewriteRule \.(bak|backup|old|orig|sql|sqlite|log|sh|ini|env|map|md|lock|ts|tsx)$ - [F,L,NC]
-RewriteRule ^api/data(/|$) - [F,L]
+RewriteRule ^api/(data|books)(/|$) - [F,L]
 
 # Single-page app: unknown paths load the React app.
 RewriteCond %{REQUEST_FILENAME} !-f

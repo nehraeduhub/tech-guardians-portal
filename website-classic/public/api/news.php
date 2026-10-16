@@ -19,6 +19,17 @@ $SOURCES = [
         ['https://www.cisa.gov/cybersecurity-advisories/all.xml', 'CISA', null, 8],
         ['https://www.cert-in.org.in/RSS/latestnews.xml', 'CERT-In', null, 8],
         ['https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=8&startIndex=0', 'NVD', 'nvd', 8],
+        ['https://therecord.media/feed', 'The Record', null, 8],
+        ['https://www.infosecurity-magazine.com/rss/news/', 'Infosecurity Magazine', null, 8],
+        ['https://cyberscoop.com/feed/', 'CyberScoop', null, 8],
+        ['https://www.helpnetsecurity.com/feed/', 'Help Net Security', null, 8],
+        ['https://securityaffairs.com/feed', 'Security Affairs', null, 8],
+        ['https://hackread.com/feed/', 'HackRead', null, 8],
+        ['https://grahamcluley.com/feed/', 'Graham Cluley', null, 6],
+        ['https://www.malwarebytes.com/blog/feed/index.xml', 'Malwarebytes Labs', null, 6],
+        ['https://www.welivesecurity.com/en/rss/feed/', 'WeLiveSecurity (ESET)', null, 6],
+        ['https://feeds.feedburner.com/eset/blog', 'ESET Blog', null, 4],
+        ['https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml', 'NCSC UK', null, 6],
     ],
     'india' => [
         ['https://news.google.com/rss/search?q=india+cyber+crime+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Cyber Crime', 12],
@@ -35,6 +46,19 @@ $SOURCES = [
         ['https://inc42.com/tag/cybersecurity/feed/', 'Inc42', 'Cybersecurity', 12],
         ['https://www.medianama.com/feed/', 'MediaNama', 'Policy & Privacy', 12],
         ['https://www.cert-in.org.in/RSS/latestnews.xml', 'CERT-In', 'Advisory', 12],
+        ['https://news.google.com/rss/search?q=india+%22digital+arrest%22+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Digital Arrest', 10],
+        ['https://news.google.com/rss/search?q=india+sextortion+cyber+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Sextortion', 10],
+        ['https://news.google.com/rss/search?q=cyber+police+arrested+fraud+india+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Arrests', 10],
+        ['https://news.google.com/rss/search?q=india+sim+swap+OR+otp+fraud+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'OTP / SIM Fraud', 10],
+        ['https://news.google.com/rss/search?q=india+investment+OR+trading+OR+crypto+scam+cyber+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Investment Scam', 10],
+        ['https://news.google.com/rss/search?q=india+deepfake+fraud+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Deepfake', 10],
+        ['https://news.google.com/rss/search?q=india+cyber+attack+OR+hacked+website+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Cyber Attack', 10],
+        ['https://news.google.com/rss/search?q=india+loan+app+OR+job+scam+online+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Loan / Job Scam', 10],
+        ['https://news.google.com/rss/search?q=i4c+OR+%22cyber+crime+portal%22+OR+1930+helpline+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Govt Action', 10],
+        ['https://www.the420.in/feed/', 'The420.in', 'Cyber Crime', 12],
+        ['https://thecyberexpress.com/feed/', 'The Cyber Express', 'Cybersecurity', 10],
+        ['https://www.thehindu.com/news/national/feeder/default.rss', 'The Hindu', 'India', 8],
+        ['https://feeds.feedburner.com/ndtvnews-india-news', 'NDTV', 'India', 8],
     ],
 ];
 
@@ -88,7 +112,15 @@ function tg_parse_rss(string $xml, string $source, ?string $category, int $limit
         $desc = tg_match('/<description>([\s\S]*?)<\/description>/i', $block)
             ?: tg_match('/<summary[^>]*>([\s\S]*?)<\/summary>/i', $block)
             ?: tg_match('/<content[^>]*>([\s\S]*?)<\/content>/i', $block);
-        $item = ['title' => $title, 'url' => $link, 'source' => $source, 'date' => $date,
+        // General news feeds: keep only cyber-crime and security stories.
+        if (in_array($category, ['India', 'Technology'], true)
+            && !preg_match('/cyber|fraud|scam|hack|phish|ransom|breach|malware|otp|upi|digital arrest|deepfake|sextort|data leak|cert-in|spyware|darknet|dark web/i', $title . ' ' . $desc_hint = tg_decode(tg_match('/<description>([\s\S]*?)<\/description>/i', $block)))) continue;
+        // Google News: show the real publisher instead of "Google News".
+        $publisher = tg_decode(tg_match('/<source[^>]*>([\s\S]*?)<\/source>/i', $block));
+        if ($publisher !== '' && strpos($source, 'Google News') === 0) {
+            $title = preg_replace('/\s+-\s+' . preg_quote($publisher, '/') . '$/u', '', $title);
+        }
+        $item = ['title' => $title, 'url' => $link, 'source' => $publisher !== '' && strpos($source, 'Google News') === 0 ? $publisher : $source, 'date' => $date,
                  'summary' => mb_substr(tg_decode($desc), 0, $category === null ? 320 : 600)];
         if ($category !== null) {
             $item['category'] = $category;
@@ -174,7 +206,7 @@ for ($i = 0; $i < $max; $i++) {
 }
 usort($merged, fn($a, $b) => (strtotime($b['date'] ?? '') ?: 0) <=> (strtotime($a['date'] ?? '') ?: 0));
 
-$items = $merged ? array_slice($merged, 0, $feed === 'india' ? 80 : 40) : $FALLBACK[$feed];
+$items = $merged ? array_slice($merged, 0, $feed === 'india' ? 160 : 90) : $FALLBACK[$feed];
 $fetchedAt = gmdate('c');
 if ($merged) tg_update_json($cacheFile, fn() => ['saved' => time(), 'fetched_at' => $fetchedAt, 'items' => $items], null);
 

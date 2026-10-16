@@ -1,0 +1,2 @@
+# The paid PDF books. Never served directly; downloads go through payments.php / users.php.
+Require all denied

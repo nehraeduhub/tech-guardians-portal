@@ -126,7 +126,7 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
       <section className="space-y-4">
         <div>
           <h2 className="font-display text-lg font-semibold">PDFs for sale</h2>
-          <p className="text-sm text-muted-foreground">Visitors see the cover, preview pages and price. The Google Drive link stays private and only opens for buyers whose payment is approved. In Drive, set the file to “Anyone with the link can view”.</p>
+          <p className="text-sm text-muted-foreground">Visitors see the cover, preview pages and price. Buyers download only after their payment is approved: either the PDF uploaded to <code>api/books/&lt;id&gt;.pdf</code> on the server (marked “PDF on server ✓”), or a private Google Drive link if you enter one (“Anyone with the link can view”).</p>
         </div>
         {products.length === 0 && <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No PDFs yet. Click “Add PDF”.</p>}
         {products.map((p, i) => (
@@ -134,7 +134,8 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-semibold">{p.title || 'Untitled PDF'}{p.visible ? '' : ' · hidden from website'}</span>
               <div className="flex flex-wrap gap-2">
-                {!p.driveLink && <span className="rounded-full bg-destructive/15 px-3 py-1 text-xs font-semibold text-destructive">No download link yet</span>}
+                {p.hasFile ? <span className="rounded-full bg-cyber-green/15 px-3 py-1 text-xs font-semibold text-cyber-green">PDF on server ✓</span>
+                  : !p.driveLink && <span className="rounded-full bg-destructive/15 px-3 py-1 text-xs font-semibold text-destructive">No download file or link yet</span>}
                 <button onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up" className="rounded-lg border border-border p-2 hover:bg-muted disabled:opacity-40"><ArrowUp className="h-4 w-4" /></button>
                 <button onClick={() => move(i, 1)} disabled={i === products.length - 1} aria-label="Move down" className="rounded-lg border border-border p-2 hover:bg-muted disabled:opacity-40"><ArrowDown className="h-4 w-4" /></button>
                 <button onClick={() => setP(p.id, { visible: !p.visible })} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs hover:bg-muted">
@@ -176,7 +177,7 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
                   <input id={`p-${p.id}-pages`} type="number" min={0} className={input} value={p.pages || ''} onChange={(e) => setP(p.id, { pages: Number(e.target.value) })} /></label>
                 <label className="space-y-1.5"><span className={label}>Tags (comma separated)</span>
                   <input id={`p-${p.id}-tags`} className={input} value={p.tags.join(', ')} onChange={(e) => setP(p.id, { tags: e.target.value.split(',').map((t) => t.trim()).filter(Boolean) })} /></label>
-                <label className="space-y-1.5 md:col-span-2"><span className={`${label} inline-flex items-center gap-1.5`}><Link2 className="h-3.5 w-3.5" /> Google Drive download link (private)</span>
+                <label className="space-y-1.5 md:col-span-2"><span className={`${label} inline-flex items-center gap-1.5`}><Link2 className="h-3.5 w-3.5" /> Google Drive download link (optional — used instead of the PDF on the server)</span>
                   <input id={`p-${p.id}-drive`} className={input} placeholder="https://drive.google.com/file/d/…/view" value={p.driveLink || ''} onChange={(e) => setP(p.id, { driveLink: e.target.value.trim() })} /></label>
               </div>
             </div>

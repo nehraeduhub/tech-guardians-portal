@@ -29,3 +29,4 @@ public/api/data/*.json
 public/api/data/payment-shots/
 public/uploads/*
 !public/uploads/.htaccess
+public/api/books/*.pdf

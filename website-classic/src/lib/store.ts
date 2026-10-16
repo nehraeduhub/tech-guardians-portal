@@ -14,6 +14,10 @@ export interface StoreProduct {
   cover: string;
   previews: string[];
   tags: string[];
+  category?: string;
+  series?: number;
+  /** Admin only: the PDF file is on the server (api/books). */
+  hasFile?: boolean;
   /** Admin only: private Google Drive link sent to buyers after payment. */
   driveLink?: string;
   visible?: boolean;

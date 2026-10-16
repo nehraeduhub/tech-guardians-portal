@@ -72,12 +72,18 @@ summary{cursor:pointer;font-weight:600}
           <div class="err" id="l-err" role="alert"></div>
           <div class="btn-row"><button class="btn btn-pri" id="l-btn">Sign in</button></div>
           <p class="small" style="margin-top:14px">Forgot your password? <a id="forgot" href="#" target="_blank" rel="noopener">Message us on WhatsApp</a> and we will reset it.</p>
+          <p class="small" style="margin-top:6px"><a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a> · <a href="/terms#privacy" target="_blank" rel="noopener">Privacy</a></p>
         </form>
 
         <form id="register-form" hidden autocomplete="on">
+          <div class="privacy-note" role="note" style="margin-top:0">
+            <b>🔒 You can use dummy details.</b> We don't need your real personal data — a nickname, an alias email and any 10-digit number are fine.
+            <b>Write down the user ID, email, phone and password you choose</b> and keep them with you: you need them to sign in later, and you must use the <b>same email or phone when you pay</b> so your purchases appear here.
+            We ask for this minimum only, in line with the IT Act, 2000, the IT Rules, 2011 and the DPDP Act, 2023. <a href="/terms#privacy" target="_blank" rel="noopener">Privacy &amp; Terms</a>
+          </div>
           <label class="field"><span>Full name</span><input id="r-name" autocomplete="name" maxlength="80" required/></label>
           <div class="grid2">
-            <label class="field"><span>Email</span><input id="r-email" type="email" autocomplete="email" required/><span class="hint">Use the email you paid with.</span></label>
+            <label class="field"><span>Email</span><input id="r-email" type="email" autocomplete="email" required/><span class="hint">Real or dummy — use the same one at checkout.</span></label>
             <label class="field"><span>Mobile</span><input id="r-phone" type="tel" autocomplete="tel" required/></label>
           </div>
           <label class="field"><span>Choose a user ID</span><input id="r-user" autocomplete="username" pattern="[A-Za-z0-9][A-Za-z0-9._\-]{3,29}" maxlength="30" required/><span class="hint">4–30 letters or digits, e.g. rahul.sharma</span></label>
@@ -85,6 +91,7 @@ summary{cursor:pointer;font-weight:600}
             <label class="field"><span>Password</span><input id="r-pass" type="password" autocomplete="new-password" minlength="8" required/><span class="hint">8+ characters, letters and numbers.</span></label>
             <label class="field"><span>Repeat password</span><input id="r-pass2" type="password" autocomplete="new-password" minlength="8" required/></label>
           </div>
+          <label class="check" style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:13px;color:var(--muted)"><input type="checkbox" id="r-agree" style="margin-top:3px"/><span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a> and I have saved my login details for future use.</span></label>
           <div class="err" id="r-err" role="alert"></div>
           <div class="btn-row"><button class="btn btn-pri" id="r-btn">Send request</button></div>
           <p class="small" style="margin-top:14px">Your account opens after Tech Guardians approves it. Courses and books you paid for with this email or mobile appear automatically.</p>
@@ -234,8 +241,9 @@ summary{cursor:pointer;font-weight:600}
   $('register-form').onsubmit = function (e) {
     e.preventDefault(); showErr('r-err', '');
     if ($('r-pass').value !== $('r-pass2').value) { showErr('r-err', 'The two passwords do not match.'); return; }
+    if (!$('r-agree').checked) { showErr('r-err', 'Please accept the Terms & Conditions and confirm you have saved your login details.'); return; }
     busy($('r-btn'), true, 'Send request');
-    var body = { name: $('r-name').value, email: $('r-email').value, phone: $('r-phone').value, username: $('r-user').value, password: $('r-pass').value };
+    var body = { agree: true, name: $('r-name').value, email: $('r-email').value, phone: $('r-phone').value, username: $('r-user').value, password: $('r-pass').value };
     api('register', body).then(function () {
       $('register-form').hidden = true; $('r-done').hidden = false;
       $('r-wa').href = waLink('Hi Tech Guardians, I requested a student account. User ID: ' + body.username.toLowerCase() + ', name: ' + body.name + '.');

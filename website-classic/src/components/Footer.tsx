@@ -88,7 +88,12 @@ const Footer = () => {
 
         <div className="border-t border-border pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">© 2026 Tech Guardians. All rights reserved.</p>
-          <p className="text-xs text-muted-foreground">Keep Learning and Keep Sharing</p>
+          <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            <a href="/terms" className="hover:text-primary">Terms &amp; Conditions</a>
+            <a href="/terms#privacy" className="hover:text-primary">Privacy</a>
+            <a href="/terms#refunds" className="hover:text-primary">Refund Policy</a>
+            <span>Keep Learning and Keep Sharing</span>
+          </p>
         </div>
       </div>
     </footer>

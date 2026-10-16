@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import LazyScene from '@/components/pro/LazyScene';
 import { useQuery } from '@tanstack/react-query';
 import {
   AlertTriangle, ArrowRight, Clock, ExternalLink, Flame, Globe2, LayoutGrid, List, Loader2, Newspaper,
@@ -19,13 +20,18 @@ interface NewsItem {
   severity?: string;
 }
 
-type Desk = 'india' | 'global' | 'advisories';
+type Desk = 'all' | 'india' | 'scams' | 'global' | 'advisories';
 const DESKS: { id: Desk; label: string; hint: string; icon: typeof Newspaper }[] = [
+  { id: 'all', label: 'All News', hint: 'Every cyber crime, threat and advisory headline from all our sources', icon: Newspaper },
   { id: 'india', label: 'India Cyber Crime', hint: 'Fraud, scams, breaches and arrests reported across India', icon: Siren },
+  { id: 'scams', label: 'Scam Watch', hint: 'Digital arrest, UPI, OTP, sextortion, investment, loan and job scams reported in India', icon: AlertTriangle },
   { id: 'global', label: 'Global Threats', hint: 'Attacks, malware and breaches from the world’s security press', icon: Globe2 },
   { id: 'advisories', label: 'Advisories & CVEs', hint: 'Official alerts from CERT-In, CISA and new vulnerabilities from NVD', icon: ShieldAlert },
 ];
-const ADVISORY_SOURCES = ['CERT-In', 'CISA', 'NVD', 'SANS ISC'];
+const ADVISORY_SOURCES = ['CERT-In', 'CISA', 'NVD', 'SANS ISC', 'NCSC UK'];
+const SCAM_CATEGORIES = ['Cyber Fraud', 'UPI / Online Scam', 'Digital Arrest', 'Sextortion', 'OTP / SIM Fraud', 'Investment Scam', 'Deepfake', 'Loan / Job Scam'];
+const SCAM_WORDS = /scam|fraud|digital arrest|sextort|otp|upi|loan app|fake call|duped|cheated|kyc/i;
+const byDate = (a: NewsItem, b: NewsItem) => (new Date(b.date || 0).getTime() || 0) - (new Date(a.date || 0).getTime() || 0);
 
 // Literal class names so Tailwind keeps them.
 const LEVEL: Record<string, { box: string; text: string; dot: string }> = {
@@ -85,7 +91,7 @@ const Meta = ({ item }: { item: NewsItem }) => (
 const Tag = ({ text }: { text?: string }) => (text ? <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary">{text}</span> : null);
 
 const CyberNewsPortal = () => {
-  const [desk, setDesk] = useState<Desk>('india');
+  const [desk, setDesk] = useState<Desk>('all');
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('All');
   const [source, setSource] = useState('');
@@ -95,13 +101,24 @@ const CyberNewsPortal = () => {
 
   const india = useQuery({ queryKey: ['news', 'india'], queryFn: () => loadFeed('india'), refetchInterval: 300000, staleTime: 60000 });
   const global = useQuery({ queryKey: ['news', 'global'], queryFn: () => loadFeed('global'), refetchInterval: 300000, staleTime: 60000 });
-  const active = desk === 'india' ? india : global;
+  const active = desk === 'global' || desk === 'advisories' ? global : india;
 
   const deskItems = useMemo(() => {
-    if (desk === 'india') return india.data?.items ?? [];
+    const ind = india.data?.items ?? [];
     const all = global.data?.items ?? [];
-    return desk === 'advisories' ? all.filter((i) => ADVISORY_SOURCES.includes(i.source)) : all.filter((i) => i.source !== 'NVD');
+    if (desk === 'india') return ind;
+    if (desk === 'scams') return ind.filter((i) => SCAM_CATEGORIES.includes(i.category || '') || SCAM_WORDS.test(i.title));
+    if (desk === 'advisories') return all.filter((i) => ADVISORY_SOURCES.includes(i.source));
+    if (desk === 'global') return all.filter((i) => i.source !== 'NVD');
+    const seen = new Set<string>();
+    return [...ind, ...all.filter((i) => i.source !== 'NVD')].sort(byDate)
+      .filter((i) => { const k = i.title.toLowerCase().slice(0, 80); if (seen.has(k)) return false; seen.add(k); return true; });
   }, [desk, india.data, global.data]);
+  const catCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    deskItems.forEach((i) => i.category && m.set(i.category, (m.get(i.category) || 0) + 1));
+    return m;
+  }, [deskItems]);
 
   const categories = useMemo(() => ['All', ...Array.from(new Set(deskItems.map((i) => i.category).filter(Boolean) as string[]))], [deskItems]);
   const sources = useMemo(() => {
@@ -154,23 +171,27 @@ const CyberNewsPortal = () => {
       )}
 
       {/* Masthead */}
-      <header className="border-b border-border/60 pb-6 pt-8">
-        <div className="container mx-auto max-w-7xl px-4">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Tech Guardians · News Desk</p>
-              <h1 className="mt-2 font-display text-3xl font-bold leading-tight md:text-5xl" style={{ textWrap: 'balance' }}>Cyber News Portal</h1>
-              <p className="mt-2 text-sm text-muted-foreground">{today} · India’s cyber crime, threat and advisory headlines in one place</p>
-            </div>
-            <dl className="grid grid-cols-3 gap-2 text-center">
-              {[['Stories', String(deskItems.length || '—')], ['Sources', String(sources.length || '—')], ['Updated', updated || '—']].map(([k, v]) => (
-                <div key={k} className="rounded-lg border border-border bg-card/70 px-4 py-2">
-                  <dt className="text-[10px] uppercase tracking-widest text-muted-foreground">{k}</dt>
-                  <dd className="font-display text-lg font-bold tabular-nums">{v}</dd>
-                </div>
-              ))}
-            </dl>
+      <header className="tg-band relative overflow-hidden border-b border-primary/20 pb-6 pt-10">
+        <div aria-hidden className="pointer-events-none absolute inset-0 grid-pattern opacity-40" />
+        <LazyScene variant="globe" className="pointer-events-none absolute -right-24 -top-10 hidden h-[460px] w-[560px] opacity-70 lg:block" />
+        <div className="container relative mx-auto max-w-7xl px-4">
+          <div className="max-w-3xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 font-display text-[10px] uppercase tracking-[0.28em] text-red-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" /> Tech Guardians · Live News Desk
+            </p>
+            <h1 className="mt-4 font-display text-4xl font-bold leading-[1.05] md:text-6xl" style={{ textWrap: 'balance' }}>
+              Cyber Crime <span className="cyber-gradient-text">News Portal</span>
+            </h1>
+            <p className="mt-3 text-sm text-muted-foreground md:text-base">{today} · Cyber crime, scams, threats and official advisories collected from 45+ trusted news sources and searches across India and the world, refreshed every 5 minutes.</p>
           </div>
+          <dl className="mt-7 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+            {[['Stories', String(deskItems.length || '—')], ['Sources', String(sources.length || '—')], ['Categories', String(catCounts.size || '—')], ['Updated', updated || '—']].map(([k, v]) => (
+              <div key={k} className="glass-card px-4 py-3">
+                <dt className="text-[10px] uppercase tracking-widest text-muted-foreground">{k}</dt>
+                <dd className="font-display text-2xl font-bold tabular-nums text-primary">{v}</dd>
+              </div>
+            ))}
+          </dl>
 
           <nav className="mt-6 flex gap-1 overflow-x-auto border-b border-border" aria-label="News desks">
             {DESKS.map((d) => (
@@ -184,8 +205,8 @@ const CyberNewsPortal = () => {
           <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
             <label className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${DESKS.find((d) => d.id === desk)?.label.toLowerCase()} — e.g. UPI, ransomware, Jaipur`}
-                className="w-full rounded-lg border border-border bg-muted/30 py-2.5 pl-10 pr-3 text-sm focus:border-primary focus:outline-none" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${DESKS.find((d) => d.id === desk)?.label.toLowerCase()} — e.g. UPI, ransomware, digital arrest`}
+                className="w-full rounded-lg border border-border bg-background/70 py-2.5 pl-10 pr-3 text-sm focus:border-primary focus:outline-none" />
             </label>
             <div className="flex gap-2">
               <div className="flex rounded-lg border border-border p-0.5" role="group" aria-label="Layout">
@@ -201,7 +222,7 @@ const CyberNewsPortal = () => {
           {categories.length > 2 && (
             <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
               {categories.map((c) => (
-                <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${cat === c ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground hover:text-foreground'}`}>{c}</button>
+                <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${cat === c ? 'bg-primary text-primary-foreground' : 'border border-border bg-background/60 text-muted-foreground hover:text-foreground'}`}>{c}{c !== 'All' && catCounts.get(c) ? <span className="ml-1.5 opacity-70">{catCounts.get(c)}</span> : null}</button>
               ))}
             </div>
           )}

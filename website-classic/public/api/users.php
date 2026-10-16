@@ -196,13 +196,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         foreach (tg_store()['products'] as $p) {
             if (!in_array($p['id'], $pdfIds, true)) continue;
             $myPdfs[] = ['id' => $p['id'], 'title' => $p['title'] ?? '', 'cover' => $p['cover'] ?? '', 'pages' => (int)($p['pages'] ?? 0),
-                'link' => (string)($p['driveLink'] ?? '')];
+                'link' => !empty($p['driveLink']) ? (string)$p['driveLink'] : (tg_book_file((string)$p['id']) !== '' ? '/api/users.php?action=book&id=' . rawurlencode((string)$p['id']) : '')];
         }
         tg_json([
             'user' => ['username' => $u['username'], 'name' => $u['name'], 'email' => $u['email'], 'since' => substr((string)($u['approved_at'] ?: $u['created_at']), 0, 10)],
             'courses' => $myCourses, 'pdfs' => $myPdfs, 'pending' => $bought['pending'],
             'settings' => tg_public_settings(),
         ]);
+    }
+
+    if ($action === 'book') {
+        // A signed-in student downloads a book they own (bought or given by the admin).
+        $u = tg_current_user();
+        if (!$u) { header('Location: /account.html'); exit; }
+        $id = (string)($_GET['id'] ?? '');
+        $owned = in_array($id, array_merge($u['pdfs'] ?? [], tg_user_purchases($u, tg_course_catalogue())['pdfs']), true);
+        $path = $owned ? tg_book_file($id) : '';
+        if ($path === '') tg_error('This book is not in your account.', 403);
+        $p = tg_store_product($id);
+        tg_send_book($path, (string)($p['title'] ?? $id));
     }
 
     if ($action === 'list') {
@@ -229,6 +241,7 @@ if (in_array($action, ['register', 'login', 'password'], true) && !tg_accounts_o
 }
 
 if ($action === 'register') {
+    if (empty($body['agree'])) tg_error('Please accept the Terms & Conditions.');
     tg_rate_limit('register', 5, 3600);
     $profile = tg_check_profile($body, true);
     tg_add_user($profile, (string)$body['password'], 'pending');

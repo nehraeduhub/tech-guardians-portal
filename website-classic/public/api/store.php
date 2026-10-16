@@ -11,7 +11,9 @@ $action = $_GET['action'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($action === 'admin') {
         tg_require_admin();
-        tg_json(tg_store());
+        $store = tg_store();
+        foreach ($store['products'] as &$p) $p['hasFile'] = tg_book_file((string)($p['id'] ?? '')) !== '';
+        tg_json($store);
     }
     $store = tg_store();
     if (isset($_GET['id'])) {
@@ -67,10 +69,12 @@ foreach (is_array($body['products'] ?? null) ? $body['products'] : [] as $p) {
         'cover' => $url($p['cover'] ?? ''),
         'previews' => array_values(array_filter(array_map($url, array_slice(is_array($p['previews'] ?? null) ? $p['previews'] : [], 0, 12)))),
         'tags' => array_values(array_filter(array_map(fn($t) => $str($t, 30), array_slice(is_array($p['tags'] ?? null) ? $p['tags'] : [], 0, 8)))),
+        'category' => $str($p['category'] ?? '', 60),
+        'series' => max(0, (int)($p['series'] ?? 0)),
         'driveLink' => $drive,
         'visible' => !empty($p['visible']),
     ];
 }
 
-tg_update_json('store.json', fn() => ['settings' => $settings, 'products' => $products], null);
+tg_update_json('store.json', fn() => ['settings' => $settings, 'products' => $products, 'catalogVersion' => TG_STORE_CATALOG_VERSION], null);
 tg_json(['ok' => true]);

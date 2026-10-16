@@ -38,7 +38,15 @@ const Steps = () => (
 export const PdfStore = () => {
   const [products, setProducts] = useState<StoreProduct[] | null>(null);
   const [error, setError] = useState('');
+  const [q, setQ] = useState('');
+  const [cat, setCat] = useState('All');
   useEffect(() => { loadStore().then((d) => setProducts(d.products)).catch(() => setError('The store could not be loaded. Please refresh the page.')); }, []);
+  const cats = useMemo(() => ['All', ...Array.from(new Set((products || []).map((p) => p.category || '').filter(Boolean)))], [products]);
+  const shown = useMemo(() => {
+    const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return (products || []).filter((p) => (cat === 'All' || p.category === cat)
+      && words.every((w) => `${p.title} ${p.subtitle} ${p.description} ${p.tags.join(' ')}`.toLowerCase().includes(w)));
+  }, [products, q, cat]);
 
   return (
     <SiteFrame mainClassName="pt-24">
@@ -46,26 +54,43 @@ export const PdfStore = () => {
         <div className="container mx-auto max-w-6xl space-y-10">
           <header className="max-w-2xl space-y-3">
             <span className="text-xs font-display uppercase tracking-[0.3em] text-primary">Tech Guardians PDF Store</span>
-            <h1 className="font-display text-3xl font-bold md:text-5xl" style={{ textWrap: 'balance' }}>Practical cyber security guides you can keep</h1>
-            <p className="text-muted-foreground">Field-tested handbooks written by our trainers. Look inside before you buy, pay by UPI, and download instantly once your payment is confirmed.</p>
+            <h1 className="font-display text-3xl font-bold md:text-5xl" style={{ textWrap: 'balance' }}>Cyber Security Handbook Series</h1>
+            <p className="text-muted-foreground">{products ? `${products.length} handbooks` : 'Handbooks'} from zero to mastery by Rajesh Nehra, Master in Cyber Security — foundations, networks, SOC, Windows, forensics, Linux, threat intelligence and cloud. Look inside before you buy, pay by UPI, and download as soon as your payment is confirmed.</p>
           </header>
+
+          {products && products.length > 6 && (
+            <div className="space-y-3">
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search handbooks — e.g. SIEM, firewall, Active Directory, forensics" aria-label="Search handbooks"
+                className="w-full rounded-full border border-border bg-muted/40 px-5 py-3 text-sm focus:border-primary focus:outline-none" />
+              <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Categories">
+                {cats.map((c) => (
+                  <button key={c} onClick={() => setCat(c)} aria-pressed={cat === c}
+                    className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${cat === c ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground hover:text-foreground'}`}>
+                    {c}{c !== 'All' && <span className="ml-1 opacity-70">{products.filter((p) => p.category === c).length}</span>}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">Showing {shown.length} of {products.length}</p>
+            </div>
+          )}
 
           {error && <p role="alert" className="text-destructive">{error}</p>}
           {!products && !error && <p className="text-muted-foreground">Loading PDFs…</p>}
           {products && products.length === 0 && <p className="rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">New PDFs are coming soon.</p>}
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products?.map((p) => (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {shown.map((p) => (
               <article key={p.id} className="glass-card flex flex-col overflow-hidden">
-                <Link to={`/pdf-store/${p.id}`} className="group relative block aspect-[4/5] overflow-hidden bg-muted/40">
+                <Link to={`/pdf-store/${p.id}`} className="group relative block aspect-[5/7] overflow-hidden bg-muted/40">
                   {p.cover ? <img src={p.cover} alt={`${p.title} cover`} className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                     : <div className="grid h-full place-items-center"><FileText className="h-14 w-14 text-muted-foreground" /></div>}
-                  {p.previews.length > 0 && <span className="absolute bottom-3 left-3 rounded-full bg-background/85 px-3 py-1 text-xs font-semibold backdrop-blur">👁 {p.previews.length} preview pages</span>}
+                  {p.series ? <span className="absolute left-3 top-3 rounded-full bg-background/85 px-2.5 py-1 font-display text-[10px] font-bold text-primary backdrop-blur">#{String(p.series).padStart(2, '0')}</span> : null}
+                  {p.previews.length > 0 && <span className="absolute bottom-3 left-3 rounded-full bg-background/85 px-3 py-1 text-xs font-semibold backdrop-blur">👁 Look inside</span>}
                 </Link>
                 <div className="flex flex-1 flex-col gap-3 p-5">
                   <div className="flex flex-wrap gap-1.5">
                     {p.pages > 0 && <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">{p.pages} pages</span>}
-                    {p.tags.slice(0, 3).map((t) => <span key={t} className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">{t}</span>)}
+                    {p.tags.slice(0, 2).map((t) => <span key={t} className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">{t}</span>)}
                   </div>
                   <h2 className="font-display text-lg font-semibold leading-snug"><Link to={`/pdf-store/${p.id}`} className="hover:text-primary">{p.title}</Link></h2>
                   {p.subtitle && <p className="text-sm text-muted-foreground">{p.subtitle}</p>}
@@ -152,6 +177,7 @@ export const PdfProduct = () => {
                   <div className="space-y-4 rounded-2xl border border-border bg-card/70 p-5">
                     <Price p={product} large />
                     <a href={checkoutUrl(product)} className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground hover:opacity-90"><ShoppingCart className="h-5 w-5" /> Buy now · {rupees(salePrice(product))}</a>
+                    <p className="mt-3 text-center text-xs text-muted-foreground">Dummy name, email and phone are fine — keep them safe for future login. By buying you agree to our <a href="/terms" className="text-primary underline">Terms</a> and <a href="/terms#refunds" className="text-primary underline">Refund Policy</a>.</p>
                     <p className="flex items-center gap-2 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" /> Pay by UPI. Your private download link opens on your order page once the payment is confirmed.</p>
                   </div>
                   <div className="space-y-2">

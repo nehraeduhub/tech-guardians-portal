@@ -50,6 +50,11 @@
           </div>
           <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" placeholder="ravi@example.com" required/>
             <small class="hint">We send updates here and use it to find your order.</small></label>
+          <div class="privacy-note" role="note">
+            <b>🔒 Your privacy:</b> you don't need to give real personal details. You may use a nickname, an alias email and any 10-digit number.
+            <b>Keep a note of what you enter</b> and use the same details when you create your student account — that is how your purchase is linked to you for future login and support.
+            We collect only what is needed, in line with the IT Act, 2000 and the DPDP Act, 2023. <a href="/terms#privacy" target="_blank" rel="noopener">Read more</a>
+          </div>
           <div class="err" id="err1" role="alert"></div>
           <div class="btn-row"><button class="btn btn-pri" type="submit">Continue to payment →</button></div>
         </form>
@@ -88,6 +93,7 @@
             <span class="drop" id="drop"><span class="ico" id="drop-ico">🧾</span><span id="drop-text">Tap to upload the payment success screenshot</span>
             <input id="shot" type="file" accept="image/*" hidden/></span></label>
           <label class="check"><input type="checkbox" id="agree"/><span>I confirm I have paid the amount above and the details are correct.</span></label>
+          <label class="check"><input type="checkbox" id="agree-terms"/><span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/terms#refunds" target="_blank" rel="noopener">Refund Policy</a>, and I will keep my order details safe for future login.</span></label>
           <div class="err" id="err3" role="alert"></div>
           <div class="btn-row">
             <button class="btn btn-ghost" type="button" data-back="2">← Back</button>
@@ -236,7 +242,7 @@
     if (!state.amount) return fail('err1', 'Please choose what you are paying for.');
     show('step2');
   });
-  ['utr', 'agree'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err3'); }); });
+  ['utr', 'agree', 'agree-terms'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err3'); }); });
   ['name', 'email', 'phone'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err1'); }); });
   $('paid').addEventListener('click', function () { show('step3'); $('utr').focus(); });
   Array.prototype.forEach.call(document.querySelectorAll('[data-back]'), function (b) {
@@ -271,6 +277,7 @@
     var utr = $('utr').value.replace(/\s/g, '');
     if (!/^[A-Za-z0-9]{6,30}$/.test(utr)) return fail('err3', 'Please enter the transaction ID (UTR) exactly as shown in your UPI app.');
     if (!$('agree').checked) return fail('err3', 'Please tick the box to confirm you have paid.');
+    if (!$('agree-terms').checked) return fail('err3', 'Please accept the Terms & Conditions and Refund Policy.');
     var btn = $('submit'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
     fetch('/api/payments.php', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',

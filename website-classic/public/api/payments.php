@@ -36,11 +36,14 @@ function tg_find_order(string $id, string $token): ?array
     return null;
 }
 
+/** Where an approved PDF order downloads from: the Drive link, else the book file on this server. */
 function tg_order_download_link(array $order): string
 {
     if (($order['type'] ?? '') !== 'pdf' || ($order['status'] ?? '') !== 'approved') return '';
     $p = tg_store_product((string)($order['productId'] ?? ''));
-    return $p ? (string)($p['driveLink'] ?? '') : '';
+    if (!$p) return '';
+    if (!empty($p['driveLink'])) return (string)$p['driveLink'];
+    return tg_book_file((string)$p['id']) !== '' ? 'file' : '';
 }
 
 /* ---------- Google Sheet sync ---------- */
@@ -147,6 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 foreach ($all as &$r) if ($r['id'] === $order['id']) { $r['downloads'] = (int)($r['downloads'] ?? 0) + 1; $r['last_download'] = gmdate('c'); }
                 return $all;
             });
+            if ($link === 'file') tg_send_book(tg_book_file((string)$order['productId']), (string)($order['course'] ?? ''));
             header('Cache-Control: no-store');
             header('Location: ' . $link, true, 302);
             exit;
