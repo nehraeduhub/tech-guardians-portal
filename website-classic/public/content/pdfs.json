@@ -1,0 +1,23 @@
+[
+  {
+    "id": "cyber-awareness-starter",
+    "title": "Cyber Awareness Starter Guide",
+    "category": "Awareness",
+    "description": "Demo PDF covering passwords, phishing, and safe browsing.",
+    "file_url": "/pdfs/cyber-awareness-starter.pdf"
+  },
+  {
+    "id": "phishing-defense-guide",
+    "title": "Phishing Defense Guide",
+    "category": "Awareness",
+    "description": "How to spot and report phishing attempts.",
+    "file_url": "/pdfs/phishing-defense-guide.pdf"
+  },
+  {
+    "id": "network-security-basics",
+    "title": "Network Security Basics",
+    "category": "Networking",
+    "description": "Foundational networking and security concepts for beginners.",
+    "file_url": "/pdfs/network-security-basics.pdf"
+  }
+]

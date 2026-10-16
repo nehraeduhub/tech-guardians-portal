@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /manage
+Disallow: /login
+Disallow: /admin
+Disallow: /api/
+Disallow: /order.html
+Disallow: /courses/payment.html
+Disallow: /account.html

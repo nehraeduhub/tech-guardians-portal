@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/js/tg-theme.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Secure Checkout — Tech Guardians</title>
+<meta name="description" content="Pay for Tech Guardians courses and PDFs securely by UPI."/>
+<meta name="robots" content="noindex"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<link rel="stylesheet" href="/css/tg-checkout.css"/>
+</head>
+<body>
+<nav class="topnav" aria-label="Checkout">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/tg-logo.png" alt=""/><span>Tech Guardians<small>Secure checkout</small></span></a>
+    <div class="nav-links">
+      <a class="hide-sm" href="/pdf-store">PDF Store</a>
+      <a href="/" onclick="if(history.length>1){history.back();return false}">← Back</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="wrap">
+    <header class="page-head">
+      <h1 id="page-title">Complete your purchase</h1>
+      <p>Three quick steps: your details, pay by UPI, then confirm with the transaction ID.</p>
+      <div class="trust"><span>🔒 Encrypted connection</span><span>🏦 Pay with any UPI app</span><span>✅ Verified by our team</span><span>💬 WhatsApp support</span></div>
+    </header>
+
+    <div class="layout">
+      <section class="card" aria-live="polite">
+        <ol class="steps" id="steps">
+          <li class="on"><b>1</b><span>Your details</span></li>
+          <li><b>2</b><span>Pay by UPI</span></li>
+          <li><b>3</b><span>Confirm payment</span></li>
+        </ol>
+
+        <!-- Step 1 -->
+        <form id="step1" novalidate>
+          <h2>Your details</h2>
+          <div id="course-pick" hidden>
+            <label class="field"><span>Course</span><select id="course-select"></select></label>
+          </div>
+          <div class="grid2">
+            <label class="field"><span>Full name</span><input id="name" autocomplete="name" placeholder="Ravi Sharma" required/></label>
+            <label class="field"><span>Phone (WhatsApp)</span><input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="98765 43210" required/></label>
+          </div>
+          <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" placeholder="ravi@example.com" required/>
+            <small class="hint">We send updates here and use it to find your order.</small></label>
+          <div class="err" id="err1" role="alert"></div>
+          <div class="btn-row"><button class="btn btn-pri" type="submit">Continue to payment →</button></div>
+        </form>
+
+        <!-- Step 2 -->
+        <div id="step2" hidden>
+          <h2>Pay by UPI</h2>
+          <div class="pay-box">
+            <div class="qr"><img id="qr" alt="UPI QR code for payment" src="/images/payment-qr.jpg"/></div>
+            <div>
+              <div class="payee">Amount to pay</div>
+              <div class="amount" id="pay-amount">₹0</div>
+              <div class="payee">Paying to <strong id="payee"></strong></div>
+              <div class="upi" id="upi-row" hidden><span>UPI ID: <strong id="upi-id"></strong></span><button type="button" id="copy-upi">Copy</button></div>
+              <a class="btn btn-ghost" id="upi-app" href="#" style="margin-top:12px;width:100%" hidden>📱 Pay with a UPI app on this phone</a>
+              <div class="apps"><span>Google Pay</span><span>PhonePe</span><span>Paytm</span><span>BHIM</span><span>Any bank app</span></div>
+            </div>
+          </div>
+          <ol class="howto">
+            <li>Open any UPI app and scan the QR code (or pay to the UPI ID).</li>
+            <li>Pay exactly <strong id="pay-amount-2">₹0</strong>.</li>
+            <li>After paying, note the 12-digit <strong>UTR / transaction ID</strong> shown in your app.</li>
+          </ol>
+          <div class="btn-row">
+            <button class="btn btn-ghost" type="button" data-back="1">← Back</button>
+            <button class="btn btn-pri" type="button" id="paid">I have paid →</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <form id="step3" hidden novalidate>
+          <h2>Confirm your payment</h2>
+          <label class="field"><span>UPI transaction ID (UTR)</span><input id="utr" inputmode="text" autocomplete="off" placeholder="e.g. 412345678901" required/>
+            <small class="hint">Find it in your UPI app under the payment details. Usually 12 digits.</small></label>
+          <label class="field"><span>Payment screenshot (recommended)</span>
+            <span class="drop" id="drop"><span class="ico" id="drop-ico">🧾</span><span id="drop-text">Tap to upload the payment success screenshot</span>
+            <input id="shot" type="file" accept="image/*" hidden/></span></label>
+          <label class="check"><input type="checkbox" id="agree"/><span>I confirm I have paid the amount above and the details are correct.</span></label>
+          <div class="err" id="err3" role="alert"></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" type="button" data-back="2">← Back</button>
+            <button class="btn btn-pri" type="submit" id="submit">Submit payment</button>
+          </div>
+        </form>
+
+        <!-- Done -->
+        <div id="done" hidden>
+          <div class="success-ico">✓</div>
+          <h2 id="done-title">Payment submitted</h2>
+          <p id="done-text" style="color:var(--muted)"></p>
+          <div id="done-status"></div>
+          <div class="btn-row" id="done-actions"></div>
+          <div class="linkbox"><input id="order-link" readonly aria-label="Your order link"/><button class="btn btn-ghost" type="button" id="copy-link">Copy</button></div>
+          <p style="font-size:13px;color:var(--muted);margin-top:14px">See all your courses and books in one place: <a id="acct-link" href="/account.html#register">create a student account</a> with the same email (or <a href="/account.html">sign in</a>).</p>
+          <p style="color:var(--muted);font-size:13px">Save this link. It is your receipt and download page. It is also saved in this browser under “My purchases”.</p>
+        </div>
+      </section>
+
+      <aside class="card summary" aria-label="Order summary">
+        <div class="sum-item">
+          <div id="sum-media"><div class="ph">🎓</div></div>
+          <div><div class="sum-type" id="sum-type">Course</div><div class="sum-title" id="sum-title">Tech Guardians Course</div><div id="sum-sub" style="color:var(--muted);font-size:13px"></div></div>
+        </div>
+        <div class="sum-rows">
+          <div id="row-price" hidden><span>Price</span><s id="sum-price"></s></div>
+          <div id="row-discount" hidden><span>Discount</span><span id="sum-discount" style="color:var(--green)"></span></div>
+          <div class="total"><span>Total</span><span id="sum-total">₹0</span></div>
+        </div>
+        <ul class="perks" id="perks"></ul>
+        <div class="help">Need help? <a id="help-wa" href="#" target="_blank" rel="noopener">WhatsApp us</a> · <span id="help-email"></span></div>
+        <div class="help" id="my-orders-box" hidden><strong style="color:var(--text)">My purchases</strong><ul class="orders" id="my-orders"></ul></div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var COURSES = {
+    'Web Server and Hosting': 799, 'Learn Sophos Firewall': 499, 'Learn Active Directory': 799,
+    'Build Your First AI Agent': 499, 'Ethical Hacking: Password Cracking': 799,
+    'Learn Social Media and Ethical Hacking': 499, 'Awareness Session (Online)': 999
+  };
+  var MY = 'tg_my_orders';
+  var params = new URLSearchParams(location.search);
+  var state = { type: 'course', product: null, title: '', amount: 0, settings: {}, shot: '' };
+  var $ = function (id) { return document.getElementById(id); };
+  var rupees = function (n) { return '₹' + Number(n).toLocaleString('en-IN'); };
+
+  function show(step) {
+    ['step1', 'step2', 'step3', 'done'].forEach(function (id, i) { $(id).hidden = id !== step; });
+    var n = { step1: 1, step2: 2, step3: 3, done: 4 }[step];
+    Array.prototype.forEach.call($('steps').children, function (li, i) {
+      li.className = i + 1 < n ? 'done' : i + 1 === n ? 'on' : '';
+    });
+    $('steps').hidden = step === 'done';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function fail(box, msg) { $(box).textContent = msg; $(box).classList.add('show'); }
+  function clear(box) { $(box).classList.remove('show'); }
+
+  function renderSummary() {
+    var p = state.product;
+    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : 'Course enrollment';
+    $('sum-title').textContent = state.title || 'Choose a course';
+    $('sum-sub').textContent = p ? (p.pages ? p.pages + ' pages · ' : '') + (p.format || 'PDF') : '';
+    $('sum-media').innerHTML = p && p.cover ? '<img src="' + p.cover + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : '🎓') + '</div>';
+    var hasOffer = p && p.offerPrice > 0 && p.price > p.offerPrice;
+    $('row-price').hidden = !hasOffer; $('row-discount').hidden = !hasOffer;
+    if (hasOffer) { $('sum-price').textContent = rupees(p.price); $('sum-discount').textContent = '− ' + rupees(p.price - p.offerPrice); }
+    $('sum-total').textContent = rupees(state.amount);
+    ['pay-amount', 'pay-amount-2'].forEach(function (id) { $(id).textContent = rupees(state.amount); });
+    $('perks').innerHTML = (state.type === 'pdf'
+      ? ['📥 Download link on your order page', '♾️ Re-download any time from the same link', '🧾 Your order link is your receipt']
+      : ['🎓 Course access shared on WhatsApp and email', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
+    ).map(function (t) { return '<li>' + t + '</li>'; }).join('');
+    document.title = (state.title ? state.title + ' — ' : '') + 'Secure Checkout — Tech Guardians';
+  }
+
+  function renderPayment() {
+    var s = state.settings;
+    if (s.qrImage) $('qr').src = s.qrImage;
+    $('payee').textContent = s.payeeName || 'Tech Guardians';
+    if (s.upiId) {
+      $('upi-row').hidden = false; $('upi-id').textContent = s.upiId;
+      var mobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (mobile) {
+        $('upi-app').hidden = false;
+        $('upi-app').href = 'upi://pay?pa=' + encodeURIComponent(s.upiId) + '&pn=' + encodeURIComponent(s.payeeName || 'Tech Guardians') +
+          '&am=' + encodeURIComponent(state.amount) + '&cu=INR&tn=' + encodeURIComponent(('TG ' + state.title).slice(0, 40));
+      }
+    }
+    var wa = (s.whatsapp || '919929193136').replace(/\D/g, '');
+    $('help-wa').href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent('Hi, I need help with my Tech Guardians payment for "' + state.title + '".');
+    $('help-email').textContent = s.email || '';
+  }
+
+  function myOrders() { try { return JSON.parse(localStorage.getItem(MY) || '[]'); } catch (e) { return []; } }
+  function renderMyOrders() {
+    var list = myOrders();
+    $('my-orders-box').hidden = !list.length;
+    $('my-orders').innerHTML = list.slice(0, 8).map(function (o) {
+      var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+      return '<li><span>' + esc(o.title) + '</span><a href="/order.html?id=' + esc(o.id) + '&token=' + esc(o.token) + '">Open →</a></li>';
+    }).join('');
+  }
+
+  function setupCourse() {
+    var name = params.get('course') || '';
+    var amount = Number(String(params.get('amount') || '').replace(/[^\d.]/g, ''));
+    if (!name || !amount) {
+      $('course-pick').hidden = false;
+      $('course-select').innerHTML = Object.keys(COURSES).map(function (c) { return '<option value="' + c + '">' + c + ' — ' + rupees(COURSES[c]) + '</option>'; }).join('');
+      if (name && COURSES[name]) $('course-select').value = name;
+      var pick = function () { state.title = $('course-select').value; state.amount = COURSES[state.title]; renderSummary(); renderPayment(); };
+      $('course-select').addEventListener('change', pick); pick();
+    } else {
+      state.title = name; state.amount = amount;
+    }
+  }
+
+  function init() {
+    var productId = params.get('product');
+    var job = productId
+      ? fetch('/api/store.php?id=' + encodeURIComponent(productId)).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error); return d; }); })
+          .then(function (d) {
+            state.type = 'pdf'; state.product = d.product; state.title = d.product.title; state.settings = d.settings;
+            state.amount = d.product.offerPrice > 0 ? d.product.offerPrice : d.product.price;
+            $('page-title').textContent = 'Buy “' + d.product.title + '”';
+          })
+      : fetch('/api/store.php').then(function (r) { return r.json(); }).then(function (d) { state.settings = d.settings || {}; setupCourse(); });
+    job.catch(function (e) {
+      if (productId) { fail('err1', (e && e.message) || 'This PDF is not available.'); $('step1').querySelector('button[type=submit]').disabled = true; }
+      else setupCourse();
+    }).then(function () { renderSummary(); renderPayment(); renderMyOrders(); });
+  }
+
+  $('step1').addEventListener('submit', function (e) {
+    e.preventDefault(); clear('err1');
+    var name = $('name').value.trim(), email = $('email').value.trim(), phone = $('phone').value.replace(/\D/g, '');
+    if (name.length < 2) return fail('err1', 'Please enter your full name.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail('err1', 'Please enter a valid email address.');
+    if (phone.length < 10) return fail('err1', 'Please enter a 10-digit phone number.');
+    if (!state.amount) return fail('err1', 'Please choose what you are paying for.');
+    show('step2');
+  });
+  ['utr', 'agree'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err3'); }); });
+  ['name', 'email', 'phone'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err1'); }); });
+  $('paid').addEventListener('click', function () { show('step3'); $('utr').focus(); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-back]'), function (b) {
+    b.addEventListener('click', function () { show('step' + b.getAttribute('data-back')); });
+  });
+  $('copy-upi').addEventListener('click', function () {
+    var b = this; navigator.clipboard && navigator.clipboard.writeText(state.settings.upiId).then(function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); }).catch(function () {});
+  });
+
+  $('drop').addEventListener('click', function () { $('shot').click(); });
+  $('shot').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, 1280 / img.width, 1600 / img.height), c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        state.shot = c.toDataURL('image/jpeg', 0.72);
+        $('drop-ico').outerHTML = '<img id="drop-ico" src="' + state.shot + '" alt=""/>';
+        $('drop-text').textContent = f.name + ' — tap to change';
+      };
+      img.onerror = function () { fail('err3', 'That file is not an image. Please upload a screenshot.'); };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  });
+
+  $('step3').addEventListener('submit', function (e) {
+    e.preventDefault(); clear('err3');
+    var utr = $('utr').value.replace(/\s/g, '');
+    if (!/^[A-Za-z0-9]{6,30}$/.test(utr)) return fail('err3', 'Please enter the transaction ID (UTR) exactly as shown in your UPI app.');
+    if (!$('agree').checked) return fail('err3', 'Please tick the box to confirm you have paid.');
+    var btn = $('submit'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
+    fetch('/api/payments.php', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+      body: JSON.stringify({
+        type: state.type, productId: state.product ? state.product.id : undefined,
+        course: state.title, amount: rupees(state.amount),
+        name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.replace(/\D/g, ''),
+        utr: utr, date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), shot: state.shot || undefined
+      })
+    }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Submission failed.'); return d; }); })
+      .then(function (d) { finish(d); })
+      .catch(function (err) { fail('err3', (err && err.message) || 'Could not submit. Please try again.'); btn.disabled = false; btn.textContent = 'Submit payment'; });
+  });
+
+  function finish(d) {
+    var list = myOrders(); list.unshift({ id: d.id, token: d.token, title: state.title, at: Date.now() });
+    try { localStorage.setItem(MY, JSON.stringify(list.slice(0, 30))); } catch (e) {}
+    var url = location.origin + d.orderUrl;
+    $('order-link').value = url;
+    var approved = d.status === 'approved';
+    $('done-title').textContent = approved && state.type === 'pdf' ? 'Payment received — your PDF is ready' : 'Payment submitted — thank you, ' + $('name').value.trim().split(' ')[0] + '!';
+    $('done-text').textContent = state.type === 'pdf'
+      ? (approved ? 'Download it now. You can download again later from your order link.' : 'We are verifying your payment, usually within a few hours. Your order page unlocks the download as soon as it is approved.')
+      : 'We will verify your payment within 2–4 hours and share course access on WhatsApp and email.';
+    $('done-status').innerHTML = '<span class="status ' + d.status + '">' + (approved ? '✓ Approved' : '⏳ Verifying payment') + '</span>';
+    var wa = (state.settings.whatsapp || '919929193136').replace(/\D/g, '');
+    var msg = 'Hi Tech Guardians, I have paid for "' + state.title + '" (' + rupees(state.amount) + '). UTR: ' + $('utr').value.trim() + '. Order ID: ' + d.id;
+    $('done-actions').innerHTML =
+      (approved && state.type === 'pdf' ? '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + d.id + '&token=' + d.token + '">⬇ Download PDF</a>' : '<a class="btn btn-pri" href="' + d.orderUrl + '">Open my order page</a>') +
+      '<a class="btn btn-ghost" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">💬 WhatsApp us</a>';
+    $('acct-link').href = '/account.html?' + new URLSearchParams({ name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.trim() }).toString() + '#register';
+    show('done'); renderMyOrders();
+  }
+  $('copy-link').addEventListener('click', function () {
+    var b = this; var v = $('order-link').value;
+    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function () { b.textContent = 'Copied'; }).catch(function () { $('order-link').select(); });
+  });
+
+  init();
+})();
+</script>
+<script src="/js/tg-contact.js"></script>
+<script src="/js/tg-editor.js" defer></script>
+</body>
+</html>

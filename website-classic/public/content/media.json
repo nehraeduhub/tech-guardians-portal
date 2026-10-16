@@ -1,0 +1,5 @@
+[
+  { "id": "m1", "title": "Awareness Session — Demo", "type": "image", "url": "/media/event-1.svg" },
+  { "id": "m2", "title": "Workshop Highlights — Demo", "type": "image", "url": "/media/event-2.svg" },
+  { "id": "m3", "title": "Cyber Shield Visual", "type": "image", "url": "/images/cyber-shield.svg" }
+]

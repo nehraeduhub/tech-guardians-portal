@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/js/tg-theme.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Account — Tech Guardians</title>
+<meta name="robots" content="noindex"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<link rel="stylesheet" href="/css/tg-checkout.css"/>
+<style>
+.auth{max-width:440px;margin:0 auto}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:999px;border:1px solid var(--border);background:var(--surface);margin-bottom:18px}
+.tabs button{padding:10px;border-radius:999px;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;cursor:pointer}
+.tabs button.on{background:var(--cyan);color:#001018}
+.ok{margin-top:12px;padding:12px 14px;border-radius:10px;border:1px solid rgba(0,255,156,.4);background:rgba(0,255,156,.08);color:var(--green);font-size:14px}
+.small{font-size:12.5px;color:var(--muted)}
+.hello{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.hello .who{display:flex;align-items:center;gap:12px}
+.avatar{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--green));color:#001018;font-weight:800;font-size:19px;flex-shrink:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.stats div{padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--bg);text-align:center}
+.stats b{display:block;font-family:var(--head);font-size:22px;color:var(--green)}
+.stats span{font-size:12px;color:var(--muted)}
+.sec{margin-top:20px}
+.sec h2{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px}
+.item{display:flex;gap:12px;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--bg)}
+.item img,.item .ph{width:62px;height:82px;border-radius:8px;object-fit:cover;object-position:top;flex-shrink:0;border:1px solid var(--border)}
+.item .ph{display:grid;place-items:center;background:var(--surface3);font-size:26px}
+.item h3{font-size:15px;line-height:1.3}
+.item p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.links a,.links span{white-space:nowrap;padding:6px 11px;border-radius:999px;font-size:12.5px;font-weight:600;text-decoration:none;border:1px solid var(--border);color:var(--text)}
+.links a.go{background:var(--cyan);border-color:var(--cyan);color:#001018}
+.links span{color:var(--muted)}
+.empty{padding:16px;border-radius:12px;border:1px dashed var(--border);color:var(--muted);font-size:13.5px}
+details{margin-top:20px}
+summary{cursor:pointer;font-weight:600}
+.btn-sm{padding:8px 14px;font-size:13px}
+@media (max-width:560px){.stats{grid-template-columns:1fr 1fr 1fr}.stats b{font-size:18px}}
+</style>
+</head>
+<body>
+<nav class="topnav" aria-label="Account">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/tg-logo.png" alt=""/><span>Tech Guardians<small>My Account</small></span></a>
+    <div class="nav-links"><a href="/pdf-store" class="hide-sm">PDF Store</a><a href="/">Home</a></div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="wrap" style="max-width:900px">
+    <div id="loading" class="card auth" style="display:flex;align-items:center;gap:10px;color:var(--muted)"><span class="spinner"></span> Loading…</div>
+
+    <!-- Sign in / request account -->
+    <section id="auth" class="auth" hidden>
+      <div class="page-head" style="text-align:center">
+        <h1>Student Account</h1>
+        <p>Open your courses and PDF books in one place.</p>
+      </div>
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" id="tab-login" class="on" role="tab">Sign in</button>
+          <button type="button" id="tab-register" role="tab">Request account</button>
+        </div>
+
+        <form id="login-form" autocomplete="on">
+          <label class="field"><span>User ID or email</span><input id="l-user" autocomplete="username" required/></label>
+          <label class="field"><span>Password</span><input id="l-pass" type="password" autocomplete="current-password" required/></label>
+          <div class="err" id="l-err" role="alert"></div>
+          <div class="btn-row"><button class="btn btn-pri" id="l-btn">Sign in</button></div>
+          <p class="small" style="margin-top:14px">Forgot your password? <a id="forgot" href="#" target="_blank" rel="noopener">Message us on WhatsApp</a> and we will reset it.</p>
+        </form>
+
+        <form id="register-form" hidden autocomplete="on">
+          <label class="field"><span>Full name</span><input id="r-name" autocomplete="name" maxlength="80" required/></label>
+          <div class="grid2">
+            <label class="field"><span>Email</span><input id="r-email" type="email" autocomplete="email" required/><span class="hint">Use the email you paid with.</span></label>
+            <label class="field"><span>Mobile</span><input id="r-phone" type="tel" autocomplete="tel" required/></label>
+          </div>
+          <label class="field"><span>Choose a user ID</span><input id="r-user" autocomplete="username" pattern="[A-Za-z0-9][A-Za-z0-9._\-]{3,29}" maxlength="30" required/><span class="hint">4–30 letters or digits, e.g. rahul.sharma</span></label>
+          <div class="grid2">
+            <label class="field"><span>Password</span><input id="r-pass" type="password" autocomplete="new-password" minlength="8" required/><span class="hint">8+ characters, letters and numbers.</span></label>
+            <label class="field"><span>Repeat password</span><input id="r-pass2" type="password" autocomplete="new-password" minlength="8" required/></label>
+          </div>
+          <div class="err" id="r-err" role="alert"></div>
+          <div class="btn-row"><button class="btn btn-pri" id="r-btn">Send request</button></div>
+          <p class="small" style="margin-top:14px">Your account opens after Tech Guardians approves it. Courses and books you paid for with this email or mobile appear automatically.</p>
+        </form>
+
+        <div id="r-done" hidden>
+          <div class="success-ico">✓</div>
+          <h2>Request sent</h2>
+          <p style="color:var(--muted)">We will check your details and approve your account, usually within a few hours. Then sign in with your user ID and password.</p>
+          <div class="btn-row"><button class="btn btn-ghost" id="back-login" type="button">Back to sign in</button><a class="btn btn-pri" id="r-wa" target="_blank" rel="noopener" href="#">💬 Tell us on WhatsApp</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dash" hidden>
+      <div class="card">
+        <div class="hello">
+          <div class="who"><div class="avatar" id="d-avatar"></div><div><h1 id="d-name" style="font-size:22px"></h1><div class="small"><span id="d-user" style="font-family:var(--mono)"></span> · Member since <span id="d-since"></span></div></div></div>
+          <button class="btn btn-ghost btn-sm" id="logout" type="button">Sign out</button>
+        </div>
+        <div class="stats"><div><b id="n-courses">0</b><span>Courses</span></div><div><b id="n-pdfs">0</b><span>PDF books</span></div><div><b id="n-pending">0</b><span>Being verified</span></div></div>
+      </div>
+
+      <div class="card sec">
+        <h2>🎓 My courses</h2>
+        <div class="items" id="courses"></div>
+      </div>
+
+      <div class="card sec">
+        <h2>📘 My PDF books</h2>
+        <div class="items" id="pdfs"></div>
+      </div>
+
+      <div class="card sec" id="pending-card" hidden>
+        <h2>⏳ Payments being verified</h2>
+        <ul class="orders" id="pending"></ul>
+      </div>
+
+      <div class="card sec">
+        <div class="small">Need another course or book? <a href="/pdf-store">Browse the PDF Store</a> · <a href="/#courses">See courses</a> · <a id="d-wa" target="_blank" rel="noopener" href="#">WhatsApp support</a></div>
+        <details>
+          <summary>Change password</summary>
+          <form id="pw-form" style="max-width:420px">
+            <label class="field"><span>Current password</span><input id="p-cur" type="password" autocomplete="current-password" required/></label>
+            <label class="field"><span>New password</span><input id="p-new" type="password" autocomplete="new-password" minlength="8" required/></label>
+            <div class="err" id="p-err" role="alert"></div>
+            <div class="ok" id="p-ok" hidden>Password changed.</div>
+            <div class="btn-row"><button class="btn btn-ghost btn-sm" id="p-btn">Save new password</button></div>
+          </form>
+        </details>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var safeUrl = function (u) { u = String(u || ''); return /^(https?:\/\/|\/)/i.test(u) ? u : ''; };
+  var wa = '919929193136';
+  var waLink = function (text) { return 'https://wa.me/' + wa + '?text=' + encodeURIComponent(text); };
+
+  function api(path, body) {
+    var opts = body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {};
+    opts.credentials = 'same-origin'; opts.cache = 'no-store';
+    return fetch('/api/users.php?action=' + path, opts).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.'); return d; });
+    });
+  }
+  function showErr(id, msg) { $(id).textContent = msg; $(id).classList.toggle('show', !!msg); }
+  function busy(btn, on, label) { btn.disabled = on; if (label) btn.textContent = on ? 'Please wait…' : label; }
+
+  function setTab(reg) {
+    $('tab-login').classList.toggle('on', !reg); $('tab-register').classList.toggle('on', reg);
+    $('login-form').hidden = reg; $('register-form').hidden = !reg; $('r-done').hidden = true;
+  }
+  $('tab-login').onclick = function () { setTab(false); };
+  $('tab-register').onclick = function () { setTab(true); };
+  $('back-login').onclick = function () { setTab(false); };
+
+  function showAuth() {
+    $('loading').hidden = true; $('dash').hidden = true; $('auth').hidden = false;
+    $('forgot').href = waLink('Hi Tech Guardians, I forgot my account password. My user ID is: ');
+    if (location.hash === '#register') setTab(true);
+    var q = new URLSearchParams(location.search);
+    if (q.get('email')) $('r-email').value = q.get('email');
+    if (q.get('name')) $('r-name').value = q.get('name');
+    if (q.get('phone')) $('r-phone').value = q.get('phone');
+  }
+
+  function item(icon, img, title, sub, links) {
+    return '<div class="item">' + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy"/>' : '<div class="ph">' + icon + '</div>') +
+      '<div style="min-width:0"><h3>' + esc(title) + '</h3>' + (sub ? '<p>' + esc(sub) + '</p>' : '') + '<div class="links">' + links + '</div></div></div>';
+  }
+  function a(href, label, go, ext) {
+    href = safeUrl(href);
+    return href ? '<a' + (go ? ' class="go"' : '') + ' href="' + esc(href) + '"' + (ext || /^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + label + '</a>' : '';
+  }
+
+  function showDash(d) {
+    $('loading').hidden = true; $('auth').hidden = true; $('dash').hidden = false;
+    var u = d.user;
+    $('d-avatar').textContent = (u.name || u.username).charAt(0).toUpperCase();
+    $('d-name').textContent = 'Hi, ' + (u.name || u.username).split(' ')[0];
+    $('d-user').textContent = '@' + u.username;
+    $('d-since').textContent = u.since || '';
+    $('n-courses').textContent = d.courses.length; $('n-pdfs').textContent = d.pdfs.length; $('n-pending').textContent = d.pending.length;
+    $('d-wa').href = waLink('Hi Tech Guardians, I need help with my account (@' + u.username + ').');
+
+    $('courses').innerHTML = d.courses.length ? d.courses.map(function (c) {
+      return item('🎓', '', c.title, c.note, a(c.link, '▶ Open course material', true, true) + a(c.page, 'Course page', false) +
+        (c.link ? '' : '<span>Access details on WhatsApp</span>'));
+    }).join('') : '<div class="empty">No courses yet. Courses you paid for with <b>' + esc(u.email) + '</b> appear here once your payment is approved.</div>';
+
+    $('pdfs').innerHTML = d.pdfs.length ? d.pdfs.map(function (p) {
+      return item('📘', p.cover, p.title, p.pages ? p.pages + ' pages · PDF' : 'PDF',
+        p.link ? a(p.link, '⬇ Open in Google Drive', true, true) : '<span>Link being prepared</span>');
+    }).join('') : '<div class="empty">No PDF books yet. <a href="/pdf-store">Visit the PDF Store</a>.</div>';
+
+    $('pending-card').hidden = !d.pending.length;
+    $('pending').innerHTML = d.pending.map(function (p) {
+      return '<li><span>' + esc(p.title || 'Payment') + (p.amount ? ' · ' + esc(p.amount) : '') + '</span><span class="status ' + (p.status === 'rejected' ? 'rejected' : 'pending') + '">' + (p.status === 'rejected' ? 'Not verified' : 'Verifying') + '</span></li>';
+    }).join('');
+  }
+
+  function load() {
+    api('me').then(function (d) {
+      if (d.settings && d.settings.whatsapp) wa = String(d.settings.whatsapp).replace(/\D/g, '') || wa;
+      if (d.closed) { $('loading').innerHTML = 'Student accounts are closed at the moment. Please contact Tech Guardians on <a href="' + waLink('Hi Tech Guardians, I need access to my courses.') + '" target="_blank" rel="noopener">WhatsApp</a>.'; return; }
+      if (d.user) showDash(d); else showAuth();
+    }).catch(function (e) {
+      $('loading').innerHTML = esc(e.message);
+    });
+  }
+
+  $('login-form').onsubmit = function (e) {
+    e.preventDefault(); showErr('l-err', '');
+    busy($('l-btn'), true, 'Sign in');
+    api('login', { username: $('l-user').value, password: $('l-pass').value })
+      .then(function () { $('l-pass').value = ''; load(); })
+      .catch(function (err) { showErr('l-err', err.message); })
+      .then(function () { busy($('l-btn'), false, 'Sign in'); });
+  };
+
+  $('register-form').onsubmit = function (e) {
+    e.preventDefault(); showErr('r-err', '');
+    if ($('r-pass').value !== $('r-pass2').value) { showErr('r-err', 'The two passwords do not match.'); return; }
+    busy($('r-btn'), true, 'Send request');
+    var body = { name: $('r-name').value, email: $('r-email').value, phone: $('r-phone').value, username: $('r-user').value, password: $('r-pass').value };
+    api('register', body).then(function () {
+      $('register-form').hidden = true; $('r-done').hidden = false;
+      $('r-wa').href = waLink('Hi Tech Guardians, I requested a student account. User ID: ' + body.username.toLowerCase() + ', name: ' + body.name + '.');
+      $('l-user').value = body.username.toLowerCase();
+      $('r-pass').value = $('r-pass2').value = '';
+    }).catch(function (err) { showErr('r-err', err.message); })
+      .then(function () { busy($('r-btn'), false, 'Send request'); });
+  };
+
+  $('logout').onclick = function () { api('logout', {}).then(showAuth, showAuth); };
+
+  $('pw-form').onsubmit = function (e) {
+    e.preventDefault(); showErr('p-err', ''); $('p-ok').hidden = true;
+    busy($('p-btn'), true, 'Save new password');
+    api('password', { current: $('p-cur').value, next: $('p-new').value })
+      .then(function () { $('p-cur').value = $('p-new').value = ''; $('p-ok').hidden = false; })
+      .catch(function (err) { showErr('p-err', err.message); })
+      .then(function () { busy($('p-btn'), false, 'Save new password'); });
+  };
+
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && !$('dash').hidden) load(); });
+  load();
+})();
+</script>
+<script src="/js/tg-editor.js" defer></script>
+</body>
+</html>

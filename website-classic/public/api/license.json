@@ -1,0 +1,14 @@
+{
+    "licenses": [
+        {
+            "licensee": "Tech Guardians",
+            "domains": [
+                "techguardians.in",
+                "*.techguardians.in"
+            ],
+            "issued": "2026-10-03",
+            "expires": "",
+            "sig": "2pE/uVsSPdvQQ1r39vYs0seGLOrlh7iiBD/jQUrEiHIgTkzmXfxAJNk0HcB2buwOvs5x2N8WiABsjxxk3Y9NDg=="
+        }
+    ]
+}
