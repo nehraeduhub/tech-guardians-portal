@@ -38,6 +38,8 @@
     --glass-border: 190 100% 50%;
 
     --topbar: 222 70% 3%;
+    /* Navy used by hero, call-to-action and footer bands (Manage → Themes → Colours). */
+    --tg-navy: 234 62% 8%;
     --topbar-foreground: 190 60% 80%;
   }
 }
@@ -224,7 +226,7 @@
   /* Dark navy band (heroes, CTAs, footer) inside any theme: redefines the
      tokens so everything inside reads light-on-dark. */
   .tg-dark {
-    --background: 232 58% 7%;
+    --background: var(--tg-navy);
     --foreground: 230 40% 97%;
     --card: 232 45% 11%;
     --card-foreground: 230 40% 97%;
@@ -311,7 +313,7 @@
 
 /* Events: ticket cards with a tear-off date stub. */
 .ticket {
-  position: relative; display: grid; grid-template-columns: 6rem 1fr; overflow: hidden;
+  position: relative; display: grid; grid-template-columns: 5.5rem 1fr; overflow: hidden;
   border-radius: 1.25rem; border: 1px solid hsl(var(--border));
   background: hsl(var(--card)); color: hsl(var(--card-foreground));
   box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 24px 50px -32px hsl(var(--primary) / 0.45);
@@ -320,17 +322,17 @@
 .ticket:hover { transform: translateY(-4px); border-color: hsl(var(--primary) / 0.45); box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 30px 60px -28px hsl(var(--primary) / 0.55); }
 .ticket-stub {
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem;
-  padding: 1.25rem .5rem; text-align: center; color: hsl(var(--primary-foreground));
+  padding: 1rem .4rem; text-align: center; color: hsl(var(--primary-foreground));
   background: linear-gradient(165deg, hsl(var(--primary)), hsl(var(--cyber-purple)));
   border-right: 2px dashed hsl(var(--card) / 0.7);
 }
 .ticket-stub::before, .ticket-stub::after {
-  content: ''; position: absolute; right: -0.85rem; width: 1.6rem; height: 1.6rem; border-radius: 9999px;
+  content: ''; position: absolute; right: -0.65rem; width: 1.2rem; height: 1.2rem; border-radius: 9999px;
   background: hsl(var(--background)); border: 1px solid hsl(var(--border));
 }
-.ticket-stub::before { top: -0.85rem; }
-.ticket-stub::after { bottom: -0.85rem; }
-@media (min-width: 768px) { .ticket { grid-template-columns: 9rem 1fr 13rem; } }
+.ticket-stub::before { top: -0.65rem; }
+.ticket-stub::after { bottom: -0.65rem; }
+@media (min-width: 768px) { .ticket { grid-template-columns: 5.5rem 1fr; } }
 
 /* ---------------------------------------------------------------------------
    Reason Pro theme: clean, professional security-company styling.
@@ -366,9 +368,9 @@
 /* Navy band with violet glow, like a security vendor's hero. */
 :root[data-tg-theme="reason-pro"] .tg-band {
   background:
-    radial-gradient(900px 520px at 85% 0%, hsl(258 90% 62% / 0.30), transparent 60%),
-    radial-gradient(700px 420px at 0% 100%, hsl(199 90% 55% / 0.14), transparent 60%),
-    hsl(234 62% 8%);
+    radial-gradient(900px 520px at 85% 0%, hsl(var(--tg-glow, 258 90% 62%) / 0.30), transparent 60%),
+    radial-gradient(700px 420px at 0% 100%, hsl(var(--tg-glow2, 199 90% 55%) / 0.14), transparent 60%),
+    hsl(var(--tg-navy));
 }
 /* Alternate soft lavender sections for rhythm. */
 :root[data-tg-theme="reason-pro"] main > section.tg-section:nth-of-type(even),

@@ -35,7 +35,7 @@ const Featured = ({ e }: { e: TGEventItem }) => {
       <div className="tg-dark tg-band grid overflow-hidden rounded-3xl border border-white/10 lg:grid-cols-2">
         <div className="relative min-h-[260px]">
           {e.image && <img src={e.image} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[hsl(234_62%_8%)] lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[hsl(var(--tg-navy))] lg:block" />
           <span className="absolute left-5 top-5 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground">Next event</span>
         </div>
         <div className="p-7 md:p-10">

@@ -8,6 +8,7 @@ import {
   DEFAULT_ABOUT_CONTENT, loadAboutContent, loadAboutVisibility, saveAboutContent, saveAboutVisibility,
   type AboutContent,
 } from '@/lib/about-settings';
+import { cleanBotName, loadChat, saveChat, type ChatSettings } from '@/lib/chat-settings';
 
 // Admin panels for the Terms & Privacy page, the About page and the
 // Cyber Crime News Portal sources.
@@ -294,6 +295,44 @@ export const NewsSourcesAdmin = ({ onPublish }: { onPublish: Publish }) => {
 
       {error && builtIn && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <SaveBar saved={saved} onSave={save} />
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------ Chat button */
+
+export const ChatAdmin = ({ onPublish }: { onPublish: Publish }) => {
+  const [chat, setChat] = useState<ChatSettings>(loadChat);
+  const [saved, setSaved] = useState(false);
+  const set = (patch: Partial<ChatSettings>) => { setChat({ ...chat, ...patch }); setSaved(false); };
+  const bot = cleanBotName(chat.telegramBot);
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="font-display text-lg font-semibold">Chat button &amp; Telegram bot</h2>
+        <p className="text-sm text-muted-foreground">The round chat button at the bottom-right of every page. Visitors pick WhatsApp or your Telegram bot. WhatsApp uses the number in the “WhatsApp Number” tab.</p>
+      </div>
+      <section className={card}>
+        <label className="flex items-center justify-between gap-4 text-sm font-semibold">Show the chat button on the website
+          <input type="checkbox" className="h-5 w-5 accent-primary" checked={chat.enabled} onChange={(e) => set({ enabled: e.target.checked })} /></label>
+        <label className="block space-y-1.5"><span className={label}>Greeting shown when the chat opens</span>
+          <textarea id="chat-greeting" rows={2} className={input} value={chat.greeting} onChange={(e) => set({ greeting: e.target.value })} /></label>
+      </section>
+      <section className={card}>
+        <label className="flex items-center justify-between gap-4 text-sm font-semibold">WhatsApp chat
+          <input type="checkbox" className="h-5 w-5 accent-primary" checked={chat.whatsapp} onChange={(e) => set({ whatsapp: e.target.checked })} /></label>
+        <label className="block space-y-1.5"><span className={label}>Message typed for the visitor when WhatsApp opens</span>
+          <input id="chat-wa-text" className={input} value={chat.whatsappText} onChange={(e) => set({ whatsappText: e.target.value })} /></label>
+      </section>
+      <section className={card}>
+        <label className="flex items-center justify-between gap-4 text-sm font-semibold">Telegram bot
+          <input type="checkbox" className="h-5 w-5 accent-primary" checked={chat.telegram} onChange={(e) => set({ telegram: e.target.checked })} /></label>
+        <label className="block space-y-1.5"><span className={label}>Bot username (from @BotFather), e.g. TechGuardiansBot</span>
+          <input id="chat-tg-bot" className={input} placeholder="TechGuardiansBot" value={chat.telegramBot} onChange={(e) => set({ telegramBot: e.target.value })} /></label>
+        {bot ? <a href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline">Test t.me/{bot} <ExternalLink className="h-3.5 w-3.5" /></a>
+          : <p className="text-xs text-muted-foreground">Leave empty to show WhatsApp only. To create a bot: open Telegram, message <b>@BotFather</b>, send <code>/newbot</code>, choose a name and a username ending in “bot”, then paste that username here. The bot’s replies are set up in Telegram (or a bot service); this button opens a chat with it.</p>}
+      </section>
+      <SaveBar saved={saved} onSave={() => void onPublish(saveChat(chat), () => setSaved(true))} />
     </div>
   );
 };

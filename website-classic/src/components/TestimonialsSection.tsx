@@ -1,7 +1,6 @@
-import { waLink } from '@/lib/site-settings';
 import ScrollReveal from './ScrollReveal';
 import GlassCard from './GlassCard';
-import { Star, MessageCircle } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 const testimonials = [
   { name: 'Priya Mehta', role: 'B.Tech Student, Mumbai', text: 'The practical hacking sessions were incredible. I learned more in one weekend than months of theory.', rating: 5 },
@@ -47,16 +46,6 @@ const TestimonialsSection = () => (
         ))}
       </div>
 
-      {/* WhatsApp floating button */}
-      <a
-        href={waLink()}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-cyber-green flex items-center justify-center shadow-lg shadow-cyber-green/30 hover:shadow-cyber-green/50 transition-shadow hover:scale-105 active:scale-95"
-        aria-label="Chat on WhatsApp"
-      >
-        <MessageCircle className="w-6 h-6 text-background" />
-      </a>
     </div>
   </section>
 );

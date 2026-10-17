@@ -5,7 +5,7 @@ import ScrollReveal from '@/components/ScrollReveal';
 import SectionHeading from '@/components/pro/SectionHeading';
 import SmartLink from '@/components/pro/SmartLink';
 import ProductCard from '@/components/pro/ProductCard';
-import EcoCard from '@/components/pro/EcoCard';
+import EcoCarousel from '@/components/pro/EcoCarousel';
 import EventTicket from '@/components/pro/EventTicket';
 import PortalCard from '@/components/pro/PortalCard';
 import PriceTag from '@/components/pro/PriceTag';
@@ -64,16 +64,10 @@ export const EcosystemSection = () => {
   const rows = (useList(HOME_ECOSYSTEM) ?? HOME_ECOSYSTEM.seed ?? []).filter((r) => r.visible && r.title);
   if (!rows.length) return null;
   return (
-    <section id="ecosystem" className="tg-section relative">
+    <section id="ecosystem" className="tg-section relative overflow-hidden">
       <div className="tg-container">
         <SectionHeading eyebrow="Learn • Practice • Protect" title={<>Explore the <span className="neon-text text-primary">Tech Guardians</span> ecosystem</>} lead="Training, products, resources and awareness to help you stay secure in the digital world." />
-        <div className={`grid gap-7 md:grid-cols-2 ${rows.length >= 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`}>
-          {rows.map((r, i) => (
-            <ScrollReveal key={r.id} delay={i * 0.06} className="h-full">
-              <EcoCard index={i} card={{ eyebrow: str(r.eyebrow), title: str(r.title), text: str(r.text), image: str(r.image), buttonText: str(r.buttonText), buttonLink: str(r.buttonLink) }} />
-            </ScrollReveal>
-          ))}
-        </div>
+        <EcoCarousel items={rows.map((r) => ({ id: r.id, eyebrow: str(r.eyebrow), title: str(r.title), text: str(r.text), image: str(r.image), buttonText: str(r.buttonText), buttonLink: str(r.buttonLink) }))} />
       </div>
     </section>
   );
@@ -108,8 +102,8 @@ export const EventsSection = () => {
       <div className="tg-container">
         <SectionHeading eyebrow="Events & Workshops" title={<>Join our next <span className="neon-text-green text-cyber-green">live session</span></>}
           lead="Live classes, webinars, bootcamps and awareness drives — online and on campus." />
-        <div className="mx-auto grid max-w-5xl gap-6">
-          {upcoming.slice(0, 3).map((e, i) => <ScrollReveal key={e.id} delay={i * 0.06}><EventTicket event={e} /></ScrollReveal>)}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {upcoming.slice(0, 3).map((e, i) => <ScrollReveal key={e.id} delay={i * 0.06} className="h-full"><EventTicket event={e} /></ScrollReveal>)}
         </div>
         <div className="mt-10 text-center"><Link to="/events" className="cyber-btn-outline">All events <ArrowRight className="h-4 w-4" /></Link></div>
       </div>

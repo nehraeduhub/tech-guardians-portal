@@ -1,53 +1,46 @@
-import { ArrowRight, Clock, MapPin, Mic, Users } from 'lucide-react';
+import { ArrowRight, Clock, MapPin } from 'lucide-react';
 import { eventDateParts, eventRegisterHref, type TGEventItem } from '@/lib/catalog';
 
 const STATUS: Record<string, string> = {
-  'Registrations open': 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700',
-  Upcoming: 'border-sky-500/40 bg-sky-500/10 text-sky-700',
-  'Few seats left': 'border-amber-500/40 bg-amber-500/10 text-amber-700',
-  'Sold out': 'border-border bg-muted text-muted-foreground',
-  Completed: 'border-border bg-muted text-muted-foreground',
+  'Registrations open': 'bg-emerald-500/10 text-emerald-700',
+  Upcoming: 'bg-sky-500/10 text-sky-700',
+  'Few seats left': 'bg-amber-500/10 text-amber-700',
+  'Sold out': 'bg-muted text-muted-foreground',
+  Completed: 'bg-muted text-muted-foreground',
 };
 
-/** Homepage event as an admission ticket: date stub, details, and a picture panel on wide screens. */
+/** Homepage event as a compact ticket: date stub and the key details, no photo. */
 const EventTicket = ({ event }: { event: TGEventItem }) => {
   const d = eventDateParts(event);
   const closed = event.status === 'Sold out' || event.status === 'Completed';
   const href = eventRegisterHref(event);
   return (
-    <article className="ticket group">
+    <article className="ticket group h-full">
       <div className="ticket-stub">
-        <span className="font-display text-xs font-bold uppercase tracking-[0.25em]">{d.month || 'Date'}</span>
-        <span className="font-display text-5xl font-extrabold leading-none">{d.day || 'TBA'}</span>
-        <span className="text-[11px] font-semibold uppercase tracking-widest opacity-80">{d.weekday || 'soon'}</span>
-        <span className="mt-3 rounded-full bg-white/95 px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-wider text-primary">{event.price || 'Free'}</span>
+        <span className="font-display text-[11px] font-bold uppercase tracking-[0.22em]">{d.month || 'Date'}</span>
+        <span className="font-display text-4xl font-extrabold leading-none">{d.day || 'TBA'}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest opacity-80">{d.weekday || 'soon'}</span>
       </div>
-      <div className="flex min-w-0 flex-col p-5 md:p-6">
-        <div className="flex flex-wrap items-center gap-2 text-[11px]">
-          <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-0.5 font-display uppercase tracking-widest text-primary">{event.type}</span>
-          <span className="rounded-full border border-border px-2.5 py-0.5 uppercase tracking-widest text-muted-foreground">{event.mode}</span>
-          <span className={`rounded-full border px-2.5 py-0.5 font-semibold ${STATUS[event.status] || STATUS.Upcoming}`}>{event.status}</span>
+      <div className="flex min-w-0 flex-col p-4">
+        <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+          <span className="text-primary">{event.type}</span>
+          <span className="text-muted-foreground">· {event.mode}</span>
+          <span className={`ml-auto rounded-full px-2 py-0.5 normal-case tracking-normal ${STATUS[event.status] || STATUS.Upcoming}`}>{event.status}</span>
         </div>
-        <h3 className="mt-3 font-display text-lg font-bold leading-snug text-foreground md:text-xl">{event.title}</h3>
-        {event.description && <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{event.description}</p>}
-        <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
-          {event.time && <li className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" />{event.time}</li>}
-          {event.venue && <li className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" />{event.venue}</li>}
-          {event.speaker && <li className="inline-flex items-center gap-1.5"><Mic className="h-3.5 w-3.5 text-primary" />{event.speaker}</li>}
-          {event.seats && <li className="inline-flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" />{event.seats} seats</li>}
+        <h3 className="mt-2 line-clamp-2 font-display text-base font-bold leading-snug text-foreground">{event.title}</h3>
+        <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+          {event.time && <li className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" />{event.time}</li>}
+          {event.venue && <li className="flex items-center gap-1.5 truncate"><MapPin className="h-3.5 w-3.5 shrink-0 text-primary" /><span className="truncate">{event.venue}</span></li>}
         </ul>
-        <div className="mt-5">
-          {closed ? <span className="text-sm font-semibold text-muted-foreground">Registrations closed</span> : (
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <span className="font-display text-sm font-extrabold text-foreground">{event.price || 'Free'}</span>
+          {closed ? <span className="text-xs font-semibold text-muted-foreground">Closed</span> : (
             <a href={href} target={event.registerLink.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground shadow-[0_10px_30px_-12px_hsl(var(--primary))] transition-transform hover:-translate-y-0.5">
-              Reserve your seat <ArrowRight className="h-4 w-4" />
+              className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground transition-transform hover:-translate-y-0.5">
+              Register <ArrowRight className="h-3.5 w-3.5" />
             </a>
           )}
         </div>
-      </div>
-      <div className="relative hidden overflow-hidden md:block">
-        {event.image && <img src={event.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />}
-        <div className="absolute inset-0 bg-gradient-to-r from-card via-transparent to-transparent" />
       </div>
     </article>
   );

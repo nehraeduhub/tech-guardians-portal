@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type LucideIcon, Globe2, Package, Rss, Scale, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, Globe2, Package, Rss, Scale, ScanSearch, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
@@ -12,9 +12,10 @@ import PaymentsPanel from '@/components/admin/PaymentsPanel';
 import StudentsPanel from '@/components/admin/StudentsPanel';
 import StoreAdminPanel from '@/components/admin/StoreAdminPanel';
 import ListEditor from '@/components/admin/ListEditor';
-import { CUSTOM_SECTIONS, HOME_ECOSYSTEM, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
+import { CUSTOM_SECTIONS, HERO_SLIDES, HOME_ECOSYSTEM, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
 import { EventsAdmin, PortalsAdmin, ProductsAdmin } from '@/components/admin/CatalogPanels';
-import { AboutAdmin, LegalAdmin, NewsSourcesAdmin } from '@/components/admin/ContentPanels';
+import { AboutAdmin, ChatAdmin, LegalAdmin, NewsSourcesAdmin } from '@/components/admin/ContentPanels';
+import ForensicToolsAdmin from '@/components/admin/ForensicToolsAdmin';
 import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
@@ -65,12 +66,13 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
-type ManageTab = 'themes' | 'layout' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'range'
-  | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'video' | 'about' | 'legal' | 'password';
+type ManageTab = 'themes' | 'layout' | 'heroslides' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'forensic' | 'range'
+  | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'chat' | 'video' | 'about' | 'legal' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
   layout: { label: 'Sections & Pages', icon: LayoutList },
+  heroslides: { label: 'Homepage Carousel', icon: ImageIcon },
   home: { label: 'Homepage Text', icon: Home },
   ecosystem: { label: 'Ecosystem Cards', icon: LayoutList },
   products: { label: 'Products & Solutions', icon: Package },
@@ -85,12 +87,14 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   videos: { label: 'YouTube Videos', icon: Youtube },
   newsdesk: { label: 'News Desk Alerts', icon: Newspaper },
   newssources: { label: 'News Portal Sources', icon: Rss },
+  forensic: { label: 'Forensic Hub Tools', icon: ScanSearch },
   range: { label: 'Cyber Range Labs', icon: Crosshair },
   payments: { label: 'Payment History', icon: Wallet },
   students: { label: 'Students', icon: Users },
   store: { label: 'PDF Store & Payments', icon: ShoppingBag },
   trainers: { label: 'Trainings At', icon: Users },
   contact: { label: 'WhatsApp Number', icon: MessageCircle },
+  chat: { label: 'Chat & Telegram Bot', icon: MessageCircle },
   video: { label: 'Featured Training', icon: Video },
   about: { label: 'About Us Page', icon: Eye },
   legal: { label: 'Terms & Privacy', icon: Scale },
@@ -293,6 +297,8 @@ const Manage = () => {
             <ThemePanel onPublish={publish} />
           ) : tab === 'layout' ? (
             <LayoutPanel onPublish={publish} />
+          ) : tab === 'heroslides' ? (
+            <ListEditor def={HERO_SLIDES} onPublish={publish} />
           ) : tab === 'custom' ? (
             <ListEditor def={CUSTOM_SECTIONS} onPublish={publish} />
           ) : tab === 'pdfs' ? (
@@ -313,6 +319,8 @@ const Manage = () => {
             <AboutAdmin onPublish={publish} />
           ) : tab === 'legal' ? (
             <LegalAdmin onPublish={publish} />
+          ) : tab === 'forensic' ? (
+            <ForensicToolsAdmin onPublish={publish} />
           ) : tab === 'newssources' ? (
             <NewsSourcesAdmin onPublish={publish} />
           ) : tab === 'offerings' ? (
@@ -626,6 +634,8 @@ const Manage = () => {
                 {trainersSaved && <span className="self-center text-xs text-cyber-green">Saved — homepage section updated.</span>}
               </div>
             </div>
+          ) : tab === 'chat' ? (
+            <ChatAdmin onPublish={publish} />
           ) : tab === 'contact' ? (
             <div className="rounded-2xl border border-border bg-card/70 p-6 md:p-8 max-w-xl">
               <h2 className="font-display text-lg font-semibold text-foreground mb-2">Site-wide WhatsApp number</h2>

@@ -1,11 +1,17 @@
-import { waLink } from "@/lib/site-settings";
 import { useState } from 'react';
-import ScrollReveal from './ScrollReveal';
-import { Send, MessageCircle, ShieldCheck, Clock, Globe } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown, Clock, Globe, Mail, MessageCircle, Send, ShieldCheck } from 'lucide-react';
+import { waLink } from '@/lib/site-settings';
+import { telegramLink, useChat } from '@/lib/chat-settings';
 
+const EMAIL = 'ittechguardians@gmail.com';
+
+/** "Talk to Tech Guardians": compact contact card; the message form opens on demand. */
 const ContactSection = () => {
+  const chat = useChat();
+  const tg = telegramLink(chat);
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
-  const contactLink = waLink();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -13,77 +19,53 @@ const ContactSection = () => {
     setForm({ name: '', email: '', phone: '', message: '' });
   };
 
-  const inputClass =
-    'w-full bg-background/70 border border-primary/20 rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all';
+  const inputClass = 'w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60';
 
   return (
-    <section id="contact" className="section-padding relative">
-      <div className="container mx-auto max-w-6xl">
-        <ScrollReveal>
-          <div className="text-center mb-12">
-            <span className="text-xs font-display tracking-[0.3em] uppercase text-primary mb-4 block">Secure Channel</span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold">
-              Talk to <span className="neon-text text-primary">Tech Guardians</span>
-            </h2>
-            <p className="text-sm text-muted-foreground mt-3">Keep Learning and Keep Sharing — we usually reply within a few hours.</p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid lg:grid-cols-5 gap-6 items-start">
-          <ScrollReveal delay={0.1} className="lg:col-span-2">
-            <div className="flex flex-col gap-4">
-              {[
-                { icon: ShieldCheck, title: 'Verified Experts', desc: 'Certified trainers in security, forensics and awareness.' },
-                { icon: Clock, title: 'Fast Response', desc: 'Priority handling for active cyber-fraud incidents.' },
-                { icon: Globe, title: 'Online & On-site', desc: 'Sessions and support anywhere across India.' },
-              ].map((i) => (
-                <div key={i.title} className="glass-card p-5 flex gap-4">
-                  <i.icon className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-semibold text-foreground">{i.title}</div>
-                    <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{i.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.15} className="lg:col-span-3">
+    <section id="contact" className="relative px-4 py-14 md:px-8">
+      <div className="container mx-auto max-w-5xl">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_1px_2px_hsl(var(--foreground)/0.05),0_24px_50px_-32px_hsl(var(--primary)/0.45)]">
+          <div className="grid gap-6 p-6 md:grid-cols-[1.2fr_1fr] md:items-center md:p-8">
             <div>
-              <div className="rounded-2xl border border-primary/25 bg-card/70 backdrop-blur overflow-hidden shadow-[0_0_70px_-30px_hsl(var(--primary))]">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-primary/20 bg-primary/5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-destructive/70" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-cyber-orange/70" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-cyber-green/70" />
-                  <span className="ml-3 text-[11px] font-mono tracking-widest uppercase text-primary/80">secure-contact.sh</span>
-                </div>
-                <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <input type="text" placeholder="Your Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required maxLength={100} className={inputClass} />
-                    <input type="email" placeholder="Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required maxLength={255} className={inputClass} />
-                  </div>
-                  <input type="tel" placeholder="Phone Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} maxLength={20} className={inputClass} />
-                  <textarea placeholder="Describe your requirement or incident" rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required maxLength={1000} className={`${inputClass} resize-none`} />
-                  <button type="submit" className="cyber-btn-primary w-full flex items-center justify-center gap-2">
-                    <Send className="w-4 h-4" />
-                    Send Securely via WhatsApp
-                  </button>
-                </form>
-              </div>
+              <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-primary">Contact us</p>
+              <h2 className="mt-2 text-2xl font-extrabold text-foreground md:text-3xl">Talk to <span className="text-primary">Tech Guardians</span></h2>
+              <p className="mt-2 text-sm text-muted-foreground">Training, awareness sessions, products or help after a cyber crime — we usually reply within a few hours.</p>
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                <li className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Verified experts</li>
+                <li className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" /> Fast response</li>
+                <li className="flex items-center gap-1.5"><Globe className="h-4 w-4 text-primary" /> Online &amp; on-site</li>
+              </ul>
             </div>
-          </ScrollReveal>
+            <div className="grid gap-2.5 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+              <a href={waLink('Hello Tech Guardians, I would like to talk to you.')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white hover:brightness-105"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
+              {tg
+                ? <a href={tg} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#229ED9] px-4 py-2.5 text-sm font-bold text-white hover:brightness-105"><Send className="h-4 w-4" /> Telegram</a>
+                : <a href={`mailto:${EMAIL}`} className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary"><Mail className="h-4 w-4" /> Email us</a>}
+              <button
+                type="button"
+                onClick={() => setOpen((o) => !o)}
+                aria-expanded={open}
+                aria-controls="contact-form"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/5 sm:col-span-2 md:col-span-1 lg:col-span-2"
+              >
+                {open ? 'Hide the form' : 'Send us a message'} <ChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+          </div>
+          <AnimatePresence initial={false}>
+            {open && (
+              <motion.div id="contact-form" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                <form onSubmit={handleSubmit} className="grid gap-3 border-t border-border bg-muted/30 p-6 sm:grid-cols-2 md:p-8">
+                  <input type="text" aria-label="Your name" placeholder="Your name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required maxLength={100} className={inputClass} />
+                  <input type="email" aria-label="Email address" placeholder="Email address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required maxLength={255} className={inputClass} />
+                  <input type="tel" aria-label="Phone number" placeholder="Phone number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} maxLength={20} className={`${inputClass} sm:col-span-2`} />
+                  <textarea aria-label="Message" placeholder="Describe your requirement or incident" rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required maxLength={1000} className={`${inputClass} resize-none sm:col-span-2`} />
+                  <button type="submit" className="cyber-btn-primary sm:col-span-2"><Send className="h-4 w-4" /> Send via WhatsApp</button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {/* WhatsApp floating button */}
-        <a
-          href={contactLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-cyber-green flex items-center justify-center shadow-lg shadow-cyber-green/30 hover:shadow-cyber-green/50 transition-shadow hover:scale-105 active:scale-95"
-          aria-label="Chat on WhatsApp"
-        >
-          <MessageCircle className="w-6 h-6 text-background" />
-        </a>
       </div>
     </section>
   );

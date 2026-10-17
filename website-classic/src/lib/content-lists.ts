@@ -150,7 +150,30 @@ export const HOME_ECOSYSTEM: ListDef = {
   ]),
 };
 
-export const MANAGED_LISTS = [CUSTOM_SECTIONS, PDF_LIST, MEDIA_LIST, VIDEO_LIST, NEWS_ALERTS, RANGE_SCENARIOS, HOME_ECOSYSTEM];
+export const HERO_SLIDES: ListDef = {
+  key: 'tg_hero_slides',
+  title: 'Homepage carousel',
+  description: 'The photo slides that scroll behind the headline at the top of the homepage. Each slide has its own text and button. Wide photos (at least 1600 px) look best.',
+  itemLabel: 'slide',
+  fields: [
+    { key: 'eyebrow', label: 'Small label above the headline' },
+    { key: 'title', label: 'Headline' },
+    { key: 'accent', label: 'Highlighted end of the headline (colour)' },
+    { key: 'text', label: 'Text', type: 'textarea' },
+    { key: 'image', label: 'Background photo', type: 'image' },
+    { key: 'buttonText', label: 'Button text' },
+    { key: 'buttonLink', label: 'Button link', type: 'url', placeholder: '/training or https://…' },
+  ],
+  seed: seed([
+    { eyebrow: 'Keep Learning and Keep Sharing', title: 'Secure Your Digital Life', accent: 'with Tech Guardians', text: 'Tech Guardians is an all-in-one cybersecurity, awareness, and forensics platform that keeps scams, fraud, and modern digital threats at bay — for people, families, and businesses.', image: '/images/site/home-training.jpg', buttonText: 'Explore Training Programs', buttonLink: '/training' },
+    { eyebrow: 'Cyber Awareness', title: 'A safer digital world', accent: 'for everyone', text: 'Awareness sessions with real scam case studies and live demos for schools, colleges, offices and communities — online or on campus.', image: '/images/site/home-awareness.jpg', buttonText: 'Book a Session', buttonLink: '/courses/awareness-booking.html' },
+    { eyebrow: 'Products & Solutions', title: 'Security tools built for', accent: 'real-world defence', text: 'VAPT tool, Windows audit & hardening, secure website and app development — with hands-on product training for your team.', image: '/images/site/product-vapt.jpg', buttonText: 'Explore Products', buttonLink: '/products' },
+    { eyebrow: 'PDF Store', title: 'Cyber Security', accent: 'Handbook Series', text: '43 handbooks from zero to mastery — networks, SOC, Windows, forensics, Linux, threat intelligence and cloud. Look inside before you buy.', image: '/images/site/home-resources.jpg', buttonText: 'Browse the Handbooks', buttonLink: '/pdf-store' },
+    { eyebrow: 'Live Events', title: 'Learn live with', accent: 'Tech Guardians experts', text: 'Live classes, webinars, bootcamps and awareness drives — online and on campus. Register in a minute.', image: '/images/site/event-1.jpg', buttonText: 'See Upcoming Events', buttonLink: '/events' },
+  ]),
+};
+
+export const MANAGED_LISTS = [CUSTOM_SECTIONS, PDF_LIST, MEDIA_LIST, VIDEO_LIST, NEWS_ALERTS, RANGE_SCENARIOS, HOME_ECOSYSTEM, HERO_SLIDES];
 
 export const newRowId = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 

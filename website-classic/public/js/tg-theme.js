@@ -372,6 +372,7 @@
     loadFont(t);
     tiltOn = !!t.tilt && !reduceMotion;
     renderFxWhenReady(t);
+    if (colorEl) colorEl.textContent = colorCss(colorsCfg, t);
     try { localStorage.setItem(CACHE, t.id); } catch (e) {}
     window.dispatchEvent(new CustomEvent('tg-theme-changed', { detail: t.id }));
     return t.id;
@@ -381,10 +382,90 @@
     else document.addEventListener('DOMContentLoaded', function () { renderFx(current || t); }, { once: true });
   }
 
-  var previewId = null;
+  /* ---------- Colour palettes (Manage → Themes → Website colours) ----------
+     Saved in `tg_theme_colors` as { palette } or { palette: 'custom', primary,
+     accent, navy } (hex). Applied on top of the chosen theme, on every page. */
+  var COLORS_KEY = 'tg_theme_colors';
+  var COLORS_CACHE = 'tg_theme_colors_cache';
+  var PALETTES = [
+    { id: 'theme', name: 'Theme default', primary: '', accent: '', navy: '' },
+    { id: 'ocean', name: 'Ocean Blue', primary: '#2563eb', accent: '#06b6d4', navy: '#0a1631' },
+    { id: 'royal', name: 'Royal Indigo', primary: '#4f46e5', accent: '#db2777', navy: '#0f0b2e' },
+    { id: 'emerald', name: 'Emerald Shield', primary: '#059669', accent: '#0ea5e9', navy: '#04201c' },
+    { id: 'teal', name: 'Teal Trust', primary: '#0d9488', accent: '#6366f1', navy: '#062226' },
+    { id: 'saffron', name: 'Saffron India', primary: '#ea580c', accent: '#0284c7', navy: '#1a1206' },
+    { id: 'crimson', name: 'Crimson Alert', primary: '#dc2626', accent: '#f59e0b', navy: '#1a0a0e' },
+    { id: 'graphite', name: 'Graphite Pro', primary: '#334155', accent: '#0ea5e9', navy: '#0b1220' },
+  ];
+  var colorsCfg = null, colorEl = null;
+  function hexToHsl(hex) {
+    var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || '');
+    if (!m) return null;
+    var r = parseInt(m[1], 16) / 255, g = parseInt(m[2], 16) / 255, b = parseInt(m[3], 16) / 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b), h = 0, sat = 0, l = (max + min) / 2;
+    if (max !== min) {
+      var d = max - min;
+      sat = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      h *= 60;
+    }
+    return [Math.round(h), Math.round(sat * 100), Math.round(l * 100)];
+  }
+  function hsl(a, l) { return a[0] + ' ' + a[1] + '% ' + (l == null ? a[2] : l) + '%'; }
+  function hslToHex(h, sat, l) {
+    sat /= 100; l /= 100;
+    var k = function (n) { return (n + h / 30) % 12; }, a = sat * Math.min(l, 1 - l);
+    var f = function (n) { return Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))))).toString(16).padStart(2, '0'); };
+    return '#' + f(0) + f(8) + f(4);
+  }
+  function resolveColors(cfg) {
+    if (!cfg || !cfg.palette || cfg.palette === 'theme') return null;
+    var p = cfg.palette === 'custom' ? cfg : PALETTES.filter(function (x) { return x.id === cfg.palette; })[0];
+    if (!p) return null;
+    var pr = hexToHsl(p.primary), ac = hexToHsl(p.accent), nv = hexToHsl(p.navy);
+    return pr ? { pr: pr, ac: ac || pr, nv: nv || [234, 62, 8] } : null;
+  }
+  function colorCss(cfg, t) {
+    var c = resolveColors(cfg);
+    if (!c) return '';
+    var light = !!(t && t.light);
+    // Keep buttons readable: dark enough for white text on light themes, bright enough on dark ones.
+    var pl = light ? Math.min(c.pr[2], 50) : Math.max(c.pr[2], 58);
+    var al = light ? Math.min(c.ac[2], 45) : Math.max(c.ac[2], 55);
+    var nl = Math.min(c.nv[2], 12);
+    var purple = [(c.pr[0] + 22) % 360, c.pr[1], pl];
+    var priHex = hslToHex(c.pr[0], c.pr[1], pl), accHex = hslToHex(c.ac[0], c.ac[1], al);
+    var sel = ':root[data-tg-colors]';
+    return [
+      sel + ':not([data-tg-static]){--primary:' + hsl(c.pr, pl) + ';--ring:' + hsl(c.pr, pl) + ';--glass-border:' + hsl(c.pr, pl) +
+        ';--cyber-purple:' + hsl(purple) + ';--accent:' + hsl(c.ac, al) + ';--cyber-blue:' + hsl(c.ac, al) +
+        ';--secondary:' + c.pr[0] + ' ' + Math.min(c.pr[1], 70) + '% ' + (light ? 96 : 16) + '%;--secondary-foreground:' + hsl(c.pr, light ? 35 : 85) + '}',
+      sel + '{--tg-navy:' + hsl(c.nv, nl) + ';--topbar:' + hsl(c.nv, Math.max(nl - 3, 3)) + ';--tg-glow:' + hsl(c.pr, 60) + ';--tg-glow2:' + hsl(c.ac, 55) +
+        ';--tg-hero-gradient:linear-gradient(100deg,' + hslToHex(c.pr[0], c.pr[1], 72) + ' 0%,' + hslToHex(c.ac[0], c.ac[1], 66) + ' 100%)}',
+      sel + ' .tg-dark{--primary:' + hsl(c.pr, 72) + ';--ring:' + hsl(c.pr, 72) + ';--cyber-purple:' + hsl(purple, 76) + ';--accent:' + hsl(c.ac, 62) + '}',
+      sel + '[data-tg-static]{--cyan:' + priHex + ';--cyan2:' + priHex + ';--pri:' + priHex + ';--blue:' + priHex + ';--c1:' + priHex + ';--hub-cyan:' + priHex + ';--purple:' + accHex + '}',
+      sel + '[data-tg-static] .btn-pri,' + sel + '[data-tg-static] .btn.on,' + sel + '[data-tg-static] .avatar{background:' + priHex + ' !important;color:#fff !important}',
+      sel + ' ::selection{background:' + hslToHex(c.pr[0], c.pr[1], 80) + '}',
+    ].join('\n');
+  }
+  function applyColors(cfg) {
+    colorsCfg = cfg && cfg.palette ? cfg : null;
+    if (!colorEl) {
+      colorEl = document.createElement('style');
+      colorEl.id = 'tg-theme-colors';
+      (document.head || document.documentElement).appendChild(colorEl);
+    }
+    var css = colorCss(colorsCfg, current);
+    colorEl.textContent = css;
+    if (css) root.setAttribute('data-tg-colors', colorsCfg.palette); else root.removeAttribute('data-tg-colors');
+    try { localStorage.setItem(COLORS_CACHE, JSON.stringify(colorsCfg || {})); } catch (e) {}
+    window.dispatchEvent(new CustomEvent('tg-theme-changed', { detail: current ? current.id : DEFAULT_ID }));
+  }
+
+  var previewId = null, previewColors = false;
   function load() {
-    if (previewId) return Promise.resolve();
-    return fetch('/api/settings.php?keys=tg_theme_v2', { credentials: 'same-origin', cache: 'no-store' })
+    if (previewId || previewColors) return Promise.resolve();
+    return fetch('/api/settings.php?keys=tg_theme_v2,' + COLORS_KEY, { credentials: 'same-origin', cache: 'no-store' })
       .then(function (r) {
         if (r.status === 451) { r.json().then(showUnlicensed).catch(function () { showUnlicensed({}); }); return []; }
         return r.ok ? r.json() : [];
@@ -392,6 +473,9 @@
       .then(function (rows) {
         var row = (rows || []).filter(function (x) { return x.key === 'tg_theme_v2'; })[0];
         apply(row && typeof row.value === 'string' ? row.value : DEFAULT_ID);
+        var crow = (rows || []).filter(function (x) { return x.key === COLORS_KEY; })[0];
+        var next = crow && crow.value && typeof crow.value === 'object' ? crow.value : null;
+        if (JSON.stringify(next || null) !== JSON.stringify(colorsCfg || null)) applyColors(next);
       })
       .catch(function () {});
   }
@@ -419,6 +503,7 @@
   var cached = null;
   try { cached = localStorage.getItem(CACHE); } catch (e) {}
   apply(cached || DEFAULT_ID);
+  try { var cc = JSON.parse(localStorage.getItem(COLORS_CACHE) || 'null'); if (cc && cc.palette) applyColors(cc); } catch (e) {}
   load();
   setInterval(load, 15000);
   window.addEventListener('focus', load);
@@ -429,7 +514,12 @@
     apply: function (id) { previewId = null; return apply(id); },
     /** Show a theme to this viewer only, until apply() or endPreview(). */
     preview: function (id) { previewId = id; return apply(id); },
-    endPreview: function () { previewId = null; return load(); },
+    endPreview: function () { previewId = null; var had = previewColors; previewColors = false; if (had) applyColors(null); return load(); },
+    palettes: PALETTES,
+    colors: function () { return colorsCfg; },
+    /** Show colours to this viewer only, until endPreview() or the next saved change. */
+    previewColors: function (cfg) { previewColors = true; applyColors(cfg); },
+    applyColors: function (cfg) { previewColors = false; applyColors(cfg); },
     refresh: load,
   };
 })();

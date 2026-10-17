@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import Footer from './Footer';
 import Navbar from './Navbar';
+import ChatWidget from './ChatWidget';
 
 interface SiteFrameProps {
   children: ReactNode;
@@ -13,6 +14,7 @@ const SiteFrame = ({ children, mainClassName }: SiteFrameProps) => (
     <Navbar />
     <main className={cn('relative z-10 pt-24', mainClassName)}>{children}</main>
     <Footer />
+    <ChatWidget />
   </div>
 );
 
