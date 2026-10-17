@@ -17,6 +17,27 @@ require_once __DIR__ . '/store-lib.php';
 const TG_SHOT_DIR = TG_DATA_DIR . '/payment-shots';
 const TG_STATUSES = ['pending', 'approved', 'rejected', 'recorded'];
 
+/** Header row with every column named once (blank or repeated names get a number). */
+function tg_sheet_head(array $head): array
+{
+    $out = [];
+    foreach (array_values($head) as $i => $h) {
+        $name = trim((string)$h);
+        if ($name === '') $name = 'Column ' . ($i + 1);
+        $base = $name; $n = 2;
+        while (in_array($name, $out, true)) $name = $base . ' ' . $n++;
+        $out[] = $name;
+    }
+    return $out;
+}
+
+/** One sheet row as [header => value]; extra cells are dropped, missing ones left empty. */
+function tg_sheet_row(array $head, array $row): array
+{
+    $cells = array_slice(array_map(fn($c) => is_scalar($c) ? (string)$c : '', array_values($row)), 0, count($head));
+    return array_combine($head, array_pad($cells, count($head), ''));
+}
+
 function tg_shot_path(string $id): ?string
 {
     if (!preg_match('/^[a-f0-9]{16}$/', $id)) return null;
@@ -64,15 +85,15 @@ function tg_sheet_rows(string $url): array
     if (is_array($json)) {
         $list = array_is_list($json) ? $json : ($json['rows'] ?? $json['data'] ?? []);
         if (isset($list[0]) && array_is_list($list[0])) { // [[header...], [row...]]
-            $head = array_map('strval', array_shift($list));
-            foreach ($list as $r) $rows[] = array_combine($head, array_pad(array_map('strval', $r), count($head), ''));
+            $head = tg_sheet_head(array_shift($list));
+            foreach ($list as $r) if (is_array($r)) $rows[] = tg_sheet_row($head, $r);
         } else {
             foreach ($list as $r) if (is_array($r)) $rows[] = $r;
         }
     } elseif ($isCsv || strpos($raw, ',') !== false) {
         $lines = array_map('str_getcsv', preg_split('/\r\n|\n|\r/', trim($raw)));
-        $head = array_shift($lines) ?: [];
-        foreach ($lines as $r) if (count($r) > 1) $rows[] = array_combine($head, array_pad($r, count($head), ''));
+        $head = tg_sheet_head(array_shift($lines) ?: []);
+        foreach ($lines as $r) if (count(array_filter($r, fn($c) => trim((string)$c) !== '')) > 1) $rows[] = tg_sheet_row($head, $r);
     } else {
         throw new RuntimeException('The sheet did not return a list. Use the Apps Script "list" action or a "Publish to web" CSV link.');
     }
