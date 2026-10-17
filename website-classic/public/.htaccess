@@ -17,6 +17,9 @@ RewriteRule (^|/)\.(?!well-known/) - [F,L]
 RewriteRule \.(bak|backup|old|orig|sql|sqlite|log|sh|ini|env|map|md|lock|ts|tsx)$ - [F,L,NC]
 RewriteRule ^api/(data|books)(/|$) - [F,L]
 
+# If rewriting is unavailable, unknown paths still load the React app.
+ErrorDocument 404 /index.html
+
 # Single-page app: unknown paths load the React app.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

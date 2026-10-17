@@ -46,7 +46,7 @@ summary{cursor:pointer;font-weight:600}
 <nav class="topnav" aria-label="Account">
   <div class="wrap">
     <a class="brand" href="/"><img src="/tg-logo.png" alt=""/><span>Tech Guardians<small>My Account</small></span></a>
-    <div class="nav-links"><a href="/pdf-store" class="hide-sm">PDF Store</a><a href="/">Home</a></div>
+    <div class="nav-links"><a href="/pdf-store/" class="hide-sm">PDF Store</a><a href="/">Home</a></div>
   </div>
 </nav>
 
@@ -132,7 +132,7 @@ summary{cursor:pointer;font-weight:600}
       </div>
 
       <div class="card sec">
-        <div class="small">Need another course or book? <a href="/pdf-store">Browse the PDF Store</a> · <a href="/#courses">See courses</a> · <a id="d-wa" target="_blank" rel="noopener" href="#">WhatsApp support</a></div>
+        <div class="small">Need another course or book? <a href="/pdf-store/">Browse the PDF Store</a> · <a href="/#courses">See courses</a> · <a id="d-wa" target="_blank" rel="noopener" href="#">WhatsApp support</a></div>
         <details>
           <summary>Change password</summary>
           <form id="pw-form" style="max-width:420px">
@@ -211,7 +211,7 @@ summary{cursor:pointer;font-weight:600}
     $('pdfs').innerHTML = d.pdfs.length ? d.pdfs.map(function (p) {
       return item('📘', p.cover, p.title, p.pages ? p.pages + ' pages · PDF' : 'PDF',
         p.link ? a(p.link, '⬇ Open in Google Drive', true, true) : '<span>Link being prepared</span>');
-    }).join('') : '<div class="empty">No PDF books yet. <a href="/pdf-store">Visit the PDF Store</a>.</div>';
+    }).join('') : '<div class="empty">No PDF books yet. <a href="/pdf-store/">Visit the PDF Store</a>.</div>';
 
     $('pending-card').hidden = !d.pending.length;
     $('pending').innerHTML = d.pending.map(function (p) {
