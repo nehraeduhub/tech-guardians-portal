@@ -23,6 +23,7 @@ import CyberRange from "./pages/CyberRange.tsx";
 import RJNehra from "./pages/RJNehra.tsx";
 import TrainingPrograms from "./pages/TrainingPrograms.tsx";
 import Terms from "./pages/Terms.tsx";
+import BlogStudio from "./pages/BlogStudio.tsx";
 import { ProductDetail, ProductList } from "./pages/Products.tsx";
 import Events from "./pages/Events.tsx";
 import { useLayout } from "@/lib/layout";
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/cyber-news" element={<Gate path="/cyber-news"><CyberNewsPortal /></Gate>} />
           <Route path="/login" element={<Login />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/write" element={<BlogStudio />} />
           <Route path="/account" element={<StaticPage href="/account.html" />} />
           <Route path="/my-account" element={<StaticPage href="/account.html" />} />
           <Route path="/manage" element={<Manage />} />

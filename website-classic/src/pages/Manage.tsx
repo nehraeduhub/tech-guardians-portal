@@ -16,6 +16,7 @@ import { CUSTOM_SECTIONS, HERO_SLIDES, HOME_ECOSYSTEM, MEDIA_LIST, NEWS_ALERTS, 
 import { EventsAdmin, PortalsAdmin, ProductsAdmin } from '@/components/admin/CatalogPanels';
 import { AboutAdmin, ChatAdmin, LegalAdmin, NewsSourcesAdmin } from '@/components/admin/ContentPanels';
 import ForensicToolsAdmin from '@/components/admin/ForensicToolsAdmin';
+import { BlogPostsAdmin, BlogWritersAdmin, NotificationBell } from '@/components/admin/BlogAdmin';
 import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
@@ -66,7 +67,7 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
-type ManageTab = 'themes' | 'layout' | 'heroslides' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'forensic' | 'range'
+type ManageTab = 'themes' | 'layout' | 'heroslides' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogposts' | 'blogwriters' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'forensic' | 'range'
   | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'chat' | 'video' | 'about' | 'legal' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
@@ -81,7 +82,9 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   events: { label: 'Events', icon: CalendarClock },
   offerings: { label: 'Organization Services', icon: Building2 },
   courses: { label: 'Training Programs', icon: GraduationCap },
-  blogs: { label: 'Blogs', icon: BookOpen },
+  blogposts: { label: 'TG Blog Posts', icon: PencilLine },
+  blogwriters: { label: 'Blog Writers', icon: Users },
+  blogs: { label: 'Blogs (Tech Guardians articles)', icon: BookOpen },
   pdfs: { label: 'PDF Library', icon: FileText },
   media: { label: 'Media Gallery', icon: ImageIcon },
   videos: { label: 'YouTube Videos', icon: Youtube },
@@ -266,6 +269,7 @@ const Manage = () => {
             >
               <PencilLine className="w-4 h-4" /> Edit website visually
             </button>
+            <NotificationBell onOpenTab={(t) => { if (t in TAB_INFO) setTab(t as ManageTab); }} />
             <button onClick={logout} className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
               <LogOut className="w-4 h-4" /> Logout
             </button>
@@ -319,6 +323,10 @@ const Manage = () => {
             <AboutAdmin onPublish={publish} />
           ) : tab === 'legal' ? (
             <LegalAdmin onPublish={publish} />
+          ) : tab === 'blogposts' ? (
+            <BlogPostsAdmin onPublish={publish} />
+          ) : tab === 'blogwriters' ? (
+            <BlogWritersAdmin onPublish={publish} />
           ) : tab === 'forensic' ? (
             <ForensicToolsAdmin onPublish={publish} />
           ) : tab === 'newssources' ? (

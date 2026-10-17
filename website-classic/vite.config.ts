@@ -11,7 +11,7 @@ import { componentTagger } from "lovable-tagger";
 const SPA_PAGES = [
   "login", "manage", "admin", "about", "rj-nehra", "training", "products", "events", "blog", "tg-blogs",
   "cyber-crime-support", "pdf-store", "cyber-portal", "threat-intel", "cyber-news", "terms",
-  "security-assessment", "cyber-range", "account", "my-account",
+  "security-assessment", "cyber-range", "account", "my-account", "write",
 ];
 const spaEntryPages = (): Plugin => {
   let config: ResolvedConfig;

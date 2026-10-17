@@ -126,6 +126,12 @@ summary{cursor:pointer;font-weight:600}
         <div class="items" id="pdfs"></div>
       </div>
 
+      <div class="card sec" id="blog-card" hidden>
+        <h2>✍️ Write for TG Blogs</h2>
+        <p class="small" id="blog-text" style="margin:0 0 12px"></p>
+        <a class="btn btn-pri" id="blog-btn" href="/write/" style="display:inline-block;width:auto;padding:10px 20px;text-decoration:none">Open writer studio</a>
+      </div>
+
       <div class="card sec" id="pending-card" hidden>
         <h2>⏳ Payments being verified</h2>
         <ul class="orders" id="pending"></ul>
@@ -214,6 +220,12 @@ summary{cursor:pointer;font-weight:600}
     }).join('') : '<div class="empty">No PDF books yet. <a href="/pdf-store/">Visit the PDF Store</a>.</div>';
 
     $('pending-card').hidden = !d.pending.length;
+    var blog = d.blog || { canWrite: false, reason: '' };
+    $('blog-card').hidden = !blog.canWrite && !blog.reason;
+    $('blog-text').textContent = blog.canWrite
+      ? 'Share what you have learned. Write an article — our team reviews it and publishes it on TG Blogs.'
+      : blog.reason;
+    $('blog-btn').hidden = !blog.canWrite;
     $('pending').innerHTML = d.pending.map(function (p) {
       return '<li><span>' + esc(p.title || 'Payment') + (p.amount ? ' · ' + esc(p.amount) : '') + '</span><span class="status ' + (p.status === 'rejected' ? 'rejected' : 'pending') + '">' + (p.status === 'rejected' ? 'Not verified' : 'Verifying') + '</span></li>';
     }).join('');
