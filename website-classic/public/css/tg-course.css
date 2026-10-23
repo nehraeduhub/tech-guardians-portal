@@ -1,0 +1,38 @@
+/* Tech Guardians — shared polish for the training program pages (/courses/*.html).
+   Loaded after each page's own styles: tighter, even spacing between texts and a
+   calmer, professional look that follows the site theme (tg-theme.js). */
+
+/* Hero: no full-screen gap above the title */
+.hero { min-height: auto; padding: 56px 5% 48px; }
+.hero-inner { gap: 40px; }
+.course-badge { margin-bottom: 14px; letter-spacing: 1.5px; }
+.hero-title { line-height: 1.1; margin-bottom: 14px; }
+.hero-desc { margin-bottom: 18px; line-height: 1.65; }
+.hero-pills { gap: 8px; margin-bottom: 22px; }
+.pill { padding: 5px 12px; border-radius: 6px; }
+
+/* Sections: one rhythm everywhere */
+.section-wrap { padding: 56px 5%; }
+.section-title { margin-bottom: 10px; line-height: 1.15; }
+.section-sub { margin-bottom: 0; line-height: 1.65; }
+.learn-grid, .curriculum-grid, .tools-grid { margin-top: 28px; gap: 14px; }
+.learn-card p, .module p { line-height: 1.6; }
+.lc-title, .mod-title { margin-bottom: 6px; }
+.cta-inner { padding: 56px 5%; }
+.cta-title { margin-bottom: 12px; }
+.cta-sub { margin-bottom: 24px; }
+
+/* Professional finish: square-ish cards with a coloured top rule, solid theme buttons */
+.learn-card, .module, .instructor-card, .server-card { border-radius: 10px; }
+.learn-card, .module { border-top: 3px solid var(--pri, #12408a); box-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 10px 24px -18px rgba(15, 23, 42, .35); }
+.tool-pill { border-radius: 8px; }
+.btn-enroll { background: var(--pri, #12408a); border-radius: 8px; box-shadow: 0 10px 24px -12px rgba(15, 23, 42, .55); }
+.btn-enroll:hover { filter: brightness(1.1); box-shadow: 0 14px 28px -12px rgba(15, 23, 42, .6); }
+.hero-title .t2 { background: linear-gradient(90deg, var(--pri, #12408a), var(--accent, #c96a0c)); -webkit-background-clip: text; background-clip: text; }
+
+@media (max-width: 900px) {
+  .hero { padding: 36px 5% 32px; }
+  .hero-inner { gap: 28px; }
+  .section-wrap { padding: 40px 5%; }
+  .cta-inner { padding: 40px 5%; }
+}

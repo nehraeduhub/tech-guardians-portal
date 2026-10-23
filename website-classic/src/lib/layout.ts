@@ -10,6 +10,7 @@ export interface HomeSectionInfo { id: string; label: string }
 export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'hero', label: 'Homepage carousel and latest-updates ticker' },
   { id: 'updates', label: 'Events & top cyber news table' },
+  { id: 'product-ads', label: 'Product video ads' },
   { id: 'courses', label: 'Training Programs' },
   { id: 'ecosystem', label: 'Explore the Tech Guardians ecosystem' },
   { id: 'forensic-tools', label: 'Forensic tools (from the Cyber & Forensic Hub)' },
@@ -46,13 +47,16 @@ export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'contact', label: 'Contact us' },
 ];
 
-/** Shown on a fresh homepage: carousel, events & news table, programs, ecosystem, forensic tools, free tools, report-a-crime help and contact. */
-const DEFAULT_VISIBLE_SECTIONS = ['hero', 'updates', 'courses', 'ecosystem', 'forensic-tools', 'free-tools', 'cyber-crime-banner', 'contact'];
+/** Shown on a fresh homepage: carousel, events & news table, product video ads, ecosystem, forensic tools, free tools, report-a-crime help and contact. */
+const DEFAULT_VISIBLE_SECTIONS = ['hero', 'updates', 'product-ads', 'ecosystem', 'forensic-tools', 'free-tools', 'cyber-crime-banner', 'contact'];
 /** Sections switched on for homepages saved before version 3. */
 const ADDED_IN_V3 = ['cyber-crime-banner', 'contact'];
 /** Version 4: the events & news table replaces the separate events cards; programs and forensic tools are added. */
 const ADDED_IN_V4 = ['updates', 'courses', 'forensic-tools'];
 const REMOVED_IN_V4 = ['events'];
+/** Version 5: product video ads are added; training programs leave the homepage (they stay on /training). */
+const ADDED_IN_V5 = ['product-ads'];
+const REMOVED_IN_V5 = ['courses'];
 export const DEFAULT_HIDDEN_SECTIONS = HOME_SECTIONS.map((s) => s.id).filter((id) => !DEFAULT_VISIBLE_SECTIONS.includes(id));
 
 
@@ -80,29 +84,38 @@ export interface SiteLayout {
   order: string[];
   hidden: string[];
   hiddenPages: string[];
-  /** 4 = events & news table, programs and forensic tools (section order reset). 3 = adds the cyber crime help banner and contact. 2 = ecosystem, events and free tools. Older layouts keep only their page switches. */
+  /** 5 = product video ads, programs off the homepage. 4 = events & news table, programs and forensic tools (section order reset). 3 = adds the cyber crime help banner and contact. 2 = ecosystem, events and free tools. Older layouts keep only their page switches. */
   version?: number;
 }
 
 export const LAYOUT_KEY = 'tg_layout';
 const EMPTY: SiteLayout = { order: [], hidden: [], hiddenPages: [] };
 
-export const LAYOUT_VERSION = 4;
+export const LAYOUT_VERSION = 5;
 
 export const loadLayout = (): SiteLayout => {
   const saved = readSetting<Partial<SiteLayout>>(LAYOUT_KEY, EMPTY) || EMPTY;
   const v = saved.version;
-  const known = v === LAYOUT_VERSION || v === 3 || v === 2;
+  const known = v === LAYOUT_VERSION || v === 4 || v === 3 || v === 2;
+  const step = (list: string[], added: string[], removed: string[]) => [...list.filter((id) => !added.includes(id)), ...removed.filter((id) => !list.includes(id))];
   let hidden = known && Array.isArray(saved.hidden) ? saved.hidden : DEFAULT_HIDDEN_SECTIONS;
   if (v === 2) hidden = hidden.filter((id) => !ADDED_IN_V3.includes(id));
-  if (v === 2 || v === 3) hidden = [...hidden.filter((id) => !ADDED_IN_V4.includes(id)), ...REMOVED_IN_V4.filter((id) => !hidden.includes(id))];
+  if (v === 2 || v === 3) hidden = step(hidden, ADDED_IN_V4, REMOVED_IN_V4);
+  if (v === 2 || v === 3 || v === 4) hidden = step(hidden, ADDED_IN_V5, REMOVED_IN_V5);
   return {
-    // Older saved orders are dropped so the new sections appear in their places.
-    order: v === LAYOUT_VERSION && Array.isArray(saved.order) ? saved.order : [],
+    // Orders saved before version 4 are dropped so the new sections appear in their places.
+    order: (v === LAYOUT_VERSION || v === 4) && Array.isArray(saved.order) ? (v === 4 ? withAfter(saved.order, 'product-ads', 'updates') : saved.order) : [],
     hidden,
     hiddenPages: Array.isArray(saved.hiddenPages) ? saved.hiddenPages : [],
     version: LAYOUT_VERSION,
   };
+};
+
+/** Puts `id` right after `anchor` in a saved order (used when a new section is introduced). */
+const withAfter = (order: string[], id: string, anchor: string) => {
+  const rest = order.filter((x) => x !== id);
+  const at = rest.indexOf(anchor);
+  return at < 0 ? rest : [...rest.slice(0, at + 1), id, ...rest.slice(at + 1)];
 };
 
 export const saveLayout = (layout: SiteLayout) => publishSetting(LAYOUT_KEY, { ...layout, version: LAYOUT_VERSION });

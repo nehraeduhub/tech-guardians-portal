@@ -4,6 +4,7 @@ import SiteFrame from '@/components/SiteFrame';
 import PageHero from '@/components/pro/PageHero';
 import SectionHeading from '@/components/pro/SectionHeading';
 import ProductCard from '@/components/pro/ProductCard';
+import ProductAds from '@/components/home/ProductAds';
 import { STATUS_STYLE } from '@/components/pro/styles';
 import PriceTag from '@/components/pro/PriceTag';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -37,6 +38,7 @@ export const ProductList = () => {
           <a href={waLink('Hi Tech Guardians, I would like to discuss a product or service.')} target="_blank" rel="noopener noreferrer" className="tg-btn-outline"><MessageCircle className="h-4 w-4" /> Talk to us</a>
         </>}
       />
+      <ProductAds id="product-videos" />
       <div id="catalogue" className="scroll-mt-24">
         {categories.map((cat, ci) => (
           <section key={cat} className={`tg-section ${ci % 2 ? 'border-y border-border bg-card' : ''}`}>

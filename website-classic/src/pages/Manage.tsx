@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type LucideIcon, Globe2, Package, Rss, Scale, ScanSearch, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video } from 'lucide-react';
+import { type LucideIcon, Globe2, Package, Rss, Scale, ScanSearch, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video, Film } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
@@ -12,7 +12,7 @@ import PaymentsPanel from '@/components/admin/PaymentsPanel';
 import StudentsPanel from '@/components/admin/StudentsPanel';
 import StoreAdminPanel from '@/components/admin/StoreAdminPanel';
 import ListEditor from '@/components/admin/ListEditor';
-import { CUSTOM_SECTIONS, HERO_SLIDES, HOME_ECOSYSTEM, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
+import { CUSTOM_SECTIONS, HERO_SLIDES, HOME_ECOSYSTEM, MEDIA_LIST, NEWS_ALERTS, PDF_LIST, PRODUCT_ADS, RANGE_SCENARIOS, VIDEO_LIST } from '@/lib/content-lists';
 import { EventsAdmin, PortalsAdmin, ProductsAdmin } from '@/components/admin/CatalogPanels';
 import { AboutAdmin, ChatAdmin, LegalAdmin, NewsSourcesAdmin } from '@/components/admin/ContentPanels';
 import ForensicToolsAdmin from '@/components/admin/ForensicToolsAdmin';
@@ -67,13 +67,14 @@ const emptyEvent = (): TGEvent => ({
   color: 'cyber-green',
 });
 
-type ManageTab = 'themes' | 'layout' | 'heroslides' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogposts' | 'blogwriters' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'forensic' | 'range'
+type ManageTab = 'themes' | 'layout' | 'heroslides' | 'videoads' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogposts' | 'blogwriters' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'forensic' | 'range'
   | 'payments' | 'students' | 'store' | 'trainers' | 'contact' | 'chat' | 'video' | 'about' | 'legal' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
   layout: { label: 'Sections & Pages', icon: LayoutList },
   heroslides: { label: 'Homepage Carousel', icon: ImageIcon },
+  videoads: { label: 'Product Video Ads', icon: Film },
   home: { label: 'Homepage Text', icon: Home },
   ecosystem: { label: 'Ecosystem Cards', icon: LayoutList },
   products: { label: 'Products & Solutions', icon: Package },
@@ -303,6 +304,8 @@ const Manage = () => {
             <LayoutPanel onPublish={publish} />
           ) : tab === 'heroslides' ? (
             <ListEditor def={HERO_SLIDES} onPublish={publish} />
+          ) : tab === 'videoads' ? (
+            <ListEditor def={PRODUCT_ADS} onPublish={publish} />
           ) : tab === 'custom' ? (
             <ListEditor def={CUSTOM_SECTIONS} onPublish={publish} />
           ) : tab === 'pdfs' ? (

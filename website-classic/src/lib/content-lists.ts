@@ -9,7 +9,7 @@ export interface ListRow { id: string; visible: boolean; [field: string]: string
 export interface ListField {
   key: string;
   label: string;
-  type?: 'text' | 'textarea' | 'image' | 'url' | 'select';
+  type?: 'text' | 'textarea' | 'image' | 'video' | 'url' | 'select';
   options?: string[];
   placeholder?: string;
 }
@@ -179,7 +179,29 @@ export const HERO_SLIDES: ListDef = {
   ]),
 };
 
-export const MANAGED_LISTS = [CUSTOM_SECTIONS, PDF_LIST, MEDIA_LIST, VIDEO_LIST, NEWS_ALERTS, RANGE_SCENARIOS, HOME_ECOSYSTEM, HERO_SLIDES];
+export const PRODUCT_ADS: ListDef = {
+  key: 'tg_product_ads',
+  title: 'Product video ads',
+  description: 'Short product videos shown as advertisements on the homepage and the Products page. They play silently and automatically, one after another. Use MP4 videos up to 80 MB (shorter and smaller loads faster). Leave the button link empty to open WhatsApp with a "I want to buy" message.',
+  itemLabel: 'video ad',
+  fields: [
+    { key: 'title', label: 'Product name' },
+    { key: 'tagline', label: 'One-line pitch' },
+    { key: 'video', label: 'Video', type: 'video' },
+    { key: 'poster', label: 'Cover picture (shown before the video plays)', type: 'image' },
+    { key: 'badge', label: 'Badge (e.g. New, Bestseller)' },
+    { key: 'price', label: 'Price text (optional, e.g. ₹4,999)' },
+    { key: 'buttonText', label: 'Button text', placeholder: 'Buy Now' },
+    { key: 'buttonLink', label: 'Button link', type: 'url', placeholder: '/products/tg-vapt or https://…' },
+  ],
+  seed: seed([
+    { title: 'Automated VAPT Platform', tagline: 'Plug, scan, report — portable security testing that confirms real vulnerabilities.', video: '/videos/ads/vapt-platform.mp4', videoWebm: '/videos/ads/vapt-platform.webm', poster: '/videos/ads/vapt-platform.jpg', badge: 'New', price: '', buttonText: 'Buy Now', buttonLink: '/products/tg-vapt' },
+    { title: 'AI Social Media Auto-Pilot', tagline: 'Daily cyber-awareness posts, reels and stories — written, designed and posted automatically.', video: '/videos/ads/ai-autopilot.mp4', videoWebm: '/videos/ads/ai-autopilot.webm', poster: '/videos/ads/ai-autopilot.jpg', badge: 'Bestseller', price: '', buttonText: 'Buy Now', buttonLink: '' },
+    { title: 'Cyber Crime Awareness Demo Kit', tagline: '24 real scams decoded with live demos — ready for schools, colleges and offices.', video: '/videos/ads/awareness-kit.mp4', videoWebm: '/videos/ads/awareness-kit.webm', poster: '/videos/ads/awareness-kit.jpg', badge: 'For institutions', price: '', buttonText: 'Buy Now', buttonLink: '' },
+  ]),
+};
+
+export const MANAGED_LISTS = [CUSTOM_SECTIONS, PDF_LIST, MEDIA_LIST, VIDEO_LIST, NEWS_ALERTS, RANGE_SCENARIOS, HOME_ECOSYSTEM, HERO_SLIDES, PRODUCT_ADS];
 
 export const newRowId = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 

@@ -33,9 +33,9 @@ RewriteRule ^ index.html [L]
   Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
   # Which outside sites pages may load from. If you add a new outside service, add its address here.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' https:; connect-src 'self' https://ipapi.co https://ipwho.is https://api.allorigins.win https://api.postalpincode.in; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' https:; connect-src 'self' https://ipapi.co https://ipwho.is https://api.allorigins.win https://api.postalpincode.in https://dns.google https://rdap.org https://rdap.verisign.com https://rdap.publicinterestregistry.org https://rdap.registry.in https://rdap.identitydigital.services https://pubapi.registry.google https://api.pwnedpasswords.com https://ifsc.razorpay.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
   Header always unset X-Powered-By
-  <FilesMatch "\.(js|css|png|jpe?g|webp|gif|svg|woff2?)$">
+  <FilesMatch "\.(js|css|png|jpe?g|webp|gif|svg|woff2?|mp4|webm)$">
     Header set Cache-Control "public, max-age=604800"
   </FilesMatch>
   <FilesMatch "^(index\.html|order\.html)$">

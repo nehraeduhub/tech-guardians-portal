@@ -34,4 +34,14 @@ export const changeAdminPassword = (current: string, next: string) =>
 
 export const uploadImage = (image: string) => apiPost<{ url: string }>('upload.php', { image });
 
+/** Admin video upload (multipart, so large files are not base64-encoded). */
+export async function uploadVideo(file: File): Promise<{ url: string }> {
+  const form = new FormData();
+  form.append('video', file);
+  const res = await fetch(apiUrl('upload-video.php'), { method: 'POST', credentials: 'same-origin', headers: { 'X-TG-Upload': '1' }, body: form });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error || `Upload failed (${res.status})`);
+  return data as { url: string };
+}
+
 export const newsUrl = (feed: 'global' | 'india') => apiUrl(`news.php?feed=${feed}`);

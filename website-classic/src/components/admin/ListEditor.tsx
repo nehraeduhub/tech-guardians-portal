@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Eye, EyeOff, ImagePlus, Plus, Save, Trash2 } from 'lucide-react';
-import { uploadImage } from '@/lib/api';
+import { ArrowDown, ArrowUp, Eye, EyeOff, Film, ImagePlus, Plus, Save, Trash2 } from 'lucide-react';
+import { uploadImage, uploadVideo } from '@/lib/api';
 import { newRowId, readList, saveList, type ListDef, type ListRow } from '@/lib/content-lists';
 import { seedRows } from '@/lib/local-content';
 import { shrinkImageFile } from '@/lib/image-tools';
@@ -38,15 +38,15 @@ const ListEditor = ({ def, onPublish }: { def: ListDef; onPublish: (job: Promise
     change([...rows, row]);
   };
 
-  const upload = async (id: string, key: string, file: File | undefined) => {
+  const upload = async (id: string, key: string, file: File | undefined, video = false) => {
     if (!file) return;
     setError('');
     setBusy(`${id}:${key}`);
     try {
-      const { url } = await uploadImage(await shrinkImageFile(file));
+      const { url } = video ? await uploadVideo(file) : await uploadImage(await shrinkImageFile(file));
       update(id, { [key]: url });
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'The photo could not be uploaded.');
+      setError(e instanceof Error ? e.message : `The ${video ? 'video' : 'photo'} could not be uploaded.`);
     } finally {
       setBusy(null);
     }
@@ -92,7 +92,7 @@ const ListEditor = ({ def, onPublish }: { def: ListDef; onPublish: (job: Promise
               const value = typeof row[f.key] === 'string' ? (row[f.key] as string) : '';
               const id = `${def.key}-${row.id}-${f.key}`;
               return (
-                <label key={f.key} className={`block space-y-1.5 ${f.type === 'textarea' || f.type === 'image' ? 'md:col-span-2' : ''}`}>
+                <label key={f.key} className={`block space-y-1.5 ${f.type === 'textarea' || f.type === 'image' || f.type === 'video' ? 'md:col-span-2' : ''}`}>
                   <span className="text-xs font-semibold text-muted-foreground">{f.label}</span>
                   {f.type === 'textarea' ? (
                     <textarea id={id} rows={3} value={value} placeholder={f.placeholder} onChange={(e) => update(row.id, { [f.key]: e.target.value })} className={inputClass} />
@@ -107,6 +107,15 @@ const ListEditor = ({ def, onPublish }: { def: ListDef; onPublish: (job: Promise
                       <span className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs hover:bg-muted">
                         <ImagePlus className="h-4 w-4" /> {busy === `${row.id}:${f.key}` ? 'Uploading…' : 'Upload'}
                         <input type="file" accept="image/*" className="hidden" onChange={(e) => void upload(row.id, f.key, e.target.files?.[0])} />
+                      </span>
+                    </div>
+                  ) : f.type === 'video' ? (
+                    <div className="flex flex-wrap items-center gap-3">
+                      {value && <video src={value} muted playsInline preload="metadata" className="h-16 w-24 rounded-md border border-border bg-black object-contain" />}
+                      <input id={id} value={value} placeholder="Video link (MP4), or upload" onChange={(e) => update(row.id, { [f.key]: e.target.value })} className={`${inputClass} flex-1 min-w-[12rem]`} />
+                      <span className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs hover:bg-muted">
+                        <Film className="h-4 w-4" /> {busy === `${row.id}:${f.key}` ? 'Uploading…' : 'Upload video'}
+                        <input type="file" accept="video/mp4,video/webm" className="hidden" onChange={(e) => void upload(row.id, f.key, e.target.files?.[0], true)} />
                       </span>
                     </div>
                   ) : (

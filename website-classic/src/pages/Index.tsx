@@ -10,6 +10,7 @@ import { EcosystemSection, EventsSection, FreeToolsSection, ProductsSection, Tra
 import NewsEventsSection from '@/components/NewsEventsSection';
 import UpdatesTable from '@/components/home/UpdatesTable';
 import ForensicToolsShowcase from '@/components/home/ForensicToolsShowcase';
+import ProductAds from '@/components/home/ProductAds';
 import AboutSection from '@/components/AboutSection';
 import FeaturesSection from '@/components/FeaturesSection';
 import ServicesSection from '@/components/ServicesSection';
@@ -41,6 +42,7 @@ const SECTIONS: Record<string, ComponentType> = {
   hero: HeroSection,
   updates: UpdatesTable,
   'forensic-tools': ForensicToolsShowcase,
+  'product-ads': ProductAds,
   'cyber-crime-banner': CyberCrimeBanner,
   'featured-training': SocialHackingVideoSection,
   courses: TrainingProgramsSection,
