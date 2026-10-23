@@ -150,26 +150,32 @@ export const HOME_ECOSYSTEM: ListDef = {
   ]),
 };
 
+export const HERO_LAYOUTS = ['Poster — picture already has its text', 'Photo — show the headline on the picture'] as const;
+
 export const HERO_SLIDES: ListDef = {
-  key: 'tg_hero_slides',
+  // v2: the designed poster slides. Slides saved under the old key are not read.
+  key: 'tg_hero_slides_v2',
   title: 'Homepage carousel',
-  description: 'The photo slides that scroll behind the headline at the top of the homepage. Each slide has its own text and button. Wide photos (at least 1600 px) look best.',
+  description: 'The slides at the top of the homepage. "Poster" slides show the whole picture (nothing is cropped) with a short caption and button underneath; keep the caption short and do not repeat the words already on the picture. "Photo" slides show the headline on top of the photo. Posters at 1600 × 900 px look best; square posters work too.',
   itemLabel: 'slide',
   fields: [
-    { key: 'eyebrow', label: 'Small label above the headline' },
-    { key: 'title', label: 'Headline' },
-    { key: 'accent', label: 'Highlighted end of the headline (colour)' },
-    { key: 'text', label: 'Text', type: 'textarea' },
-    { key: 'image', label: 'Background photo', type: 'image' },
+    { key: 'layout', label: 'Slide type', type: 'select', options: [...HERO_LAYOUTS] },
+    { key: 'image', label: 'Picture', type: 'image' },
+    { key: 'title', label: 'Caption (short — one line)' },
     { key: 'buttonText', label: 'Button text' },
     { key: 'buttonLink', label: 'Button link', type: 'url', placeholder: '/training or https://…' },
+    { key: 'eyebrow', label: 'Photo slides only: small label above the headline' },
+    { key: 'accent', label: 'Photo slides only: highlighted end of the headline' },
+    { key: 'text', label: 'Photo slides only: text', type: 'textarea' },
   ],
   seed: seed([
-    { eyebrow: 'Keep Learning and Keep Sharing', title: 'Secure Your Digital Life', accent: 'with Tech Guardians', text: 'Tech Guardians is an all-in-one cybersecurity, awareness, and forensics platform that keeps scams, fraud, and modern digital threats at bay — for people, families, and businesses.', image: '/images/site/home-training.jpg', buttonText: 'Explore Training Programs', buttonLink: '/training' },
-    { eyebrow: 'Cyber Awareness', title: 'A safer digital world', accent: 'for everyone', text: 'Awareness sessions with real scam case studies and live demos for schools, colleges, offices and communities — online or on campus.', image: '/images/site/home-awareness.jpg', buttonText: 'Book a Session', buttonLink: '/courses/awareness-booking.html' },
-    { eyebrow: 'Products & Solutions', title: 'Security tools built for', accent: 'real-world defence', text: 'VAPT tool, Windows audit & hardening, secure website and app development — with hands-on product training for your team.', image: '/images/site/product-vapt.jpg', buttonText: 'Explore Products', buttonLink: '/products' },
-    { eyebrow: 'PDF Store', title: 'Cyber Security', accent: 'Handbook Series', text: '43 handbooks from zero to mastery — networks, SOC, Windows, forensics, Linux, threat intelligence and cloud. Look inside before you buy.', image: '/images/site/home-resources.jpg', buttonText: 'Browse the Handbooks', buttonLink: '/pdf-store' },
-    { eyebrow: 'Live Events', title: 'Learn live with', accent: 'Tech Guardians experts', text: 'Live classes, webinars, bootcamps and awareness drives — online and on campus. Register in a minute.', image: '/images/site/event-1.jpg', buttonText: 'See Upcoming Events', buttonLink: '/events' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/training.webp', title: 'Learn by doing in live, mentor-led labs', buttonText: 'Explore Training', buttonLink: '/training' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/events.webp', title: 'Seats are limited — register in a minute', buttonText: 'See Events', buttonLink: '/events' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/pdf-handbooks.webp', title: '43 handbooks — look inside before you buy', buttonText: 'Open PDF Store', buttonLink: '/pdf-store' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/cyber-awareness.webp', title: 'Bring a cyber awareness session to your school or office', buttonText: 'Book a Session', buttonLink: '/courses/awareness-booking.html' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/products.webp', title: 'Ready-to-use tools for teams and institutions', buttonText: 'View Products', buttonLink: '/products' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/secure-solutions.webp', title: 'From idea to launch — tested for security first', buttonText: 'Start a Project', buttonLink: '/products' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/cyber-news-forensic.webp', title: 'Today’s cyber news and 78 free forensic tools', buttonText: 'Read Cyber News', buttonLink: '/cyber-news' },
   ]),
 };
 

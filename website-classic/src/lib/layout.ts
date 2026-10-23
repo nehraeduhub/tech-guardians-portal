@@ -8,14 +8,16 @@ export interface HomeSectionInfo { id: string; label: string }
 
 /** Every built-in homepage section, in default order. Custom sections use `custom:<id>`. */
 export const HOME_SECTIONS: HomeSectionInfo[] = [
-  { id: 'hero', label: 'Hero (headline and photo)' },
+  { id: 'hero', label: 'Homepage carousel and latest-updates ticker' },
+  { id: 'updates', label: 'Events & top cyber news table' },
+  { id: 'courses', label: 'Training Programs' },
   { id: 'ecosystem', label: 'Explore the Tech Guardians ecosystem' },
+  { id: 'forensic-tools', label: 'Forensic tools (from the Cyber & Forensic Hub)' },
   { id: 'events', label: 'Events & Workshops' },
   { id: 'free-tools', label: 'Free tools for everyday cyber safety' },
   { id: 'products', label: 'Products & Solutions' },
   { id: 'cyber-crime-banner', label: 'Report cyber crime (victim help)' },
   { id: 'featured-training', label: 'Featured training video' },
-  { id: 'courses', label: 'Training Programs' },
   { id: 'pdf-store', label: 'PDF Store (books for sale)' },
   { id: 'news-events', label: 'News & quick events (older list)' },
   { id: 'organization-offerings', label: 'Organization services' },
@@ -44,10 +46,13 @@ export const HOME_SECTIONS: HomeSectionInfo[] = [
   { id: 'contact', label: 'Contact us' },
 ];
 
-/** Shown on a fresh homepage: banner, ecosystem, events, free tools, report-a-crime help and contact. */
-const DEFAULT_VISIBLE_SECTIONS = ['hero', 'ecosystem', 'events', 'free-tools', 'cyber-crime-banner', 'contact'];
+/** Shown on a fresh homepage: carousel, events & news table, programs, ecosystem, forensic tools, free tools, report-a-crime help and contact. */
+const DEFAULT_VISIBLE_SECTIONS = ['hero', 'updates', 'courses', 'ecosystem', 'forensic-tools', 'free-tools', 'cyber-crime-banner', 'contact'];
 /** Sections switched on for homepages saved before version 3. */
 const ADDED_IN_V3 = ['cyber-crime-banner', 'contact'];
+/** Version 4: the events & news table replaces the separate events cards; programs and forensic tools are added. */
+const ADDED_IN_V4 = ['updates', 'courses', 'forensic-tools'];
+const REMOVED_IN_V4 = ['events'];
 export const DEFAULT_HIDDEN_SECTIONS = HOME_SECTIONS.map((s) => s.id).filter((id) => !DEFAULT_VISIBLE_SECTIONS.includes(id));
 
 
@@ -75,22 +80,26 @@ export interface SiteLayout {
   order: string[];
   hidden: string[];
   hiddenPages: string[];
-  /** 3 = adds the cyber crime help banner and contact. 2 = ecosystem, events and free tools. Older layouts keep only their page switches. */
+  /** 4 = events & news table, programs and forensic tools (section order reset). 3 = adds the cyber crime help banner and contact. 2 = ecosystem, events and free tools. Older layouts keep only their page switches. */
   version?: number;
 }
 
 export const LAYOUT_KEY = 'tg_layout';
 const EMPTY: SiteLayout = { order: [], hidden: [], hiddenPages: [] };
 
-export const LAYOUT_VERSION = 3;
+export const LAYOUT_VERSION = 4;
 
 export const loadLayout = (): SiteLayout => {
   const saved = readSetting<Partial<SiteLayout>>(LAYOUT_KEY, EMPTY) || EMPTY;
-  const current = saved.version === LAYOUT_VERSION || saved.version === 2;
-  const hidden = current && Array.isArray(saved.hidden) ? saved.hidden : DEFAULT_HIDDEN_SECTIONS;
+  const v = saved.version;
+  const known = v === LAYOUT_VERSION || v === 3 || v === 2;
+  let hidden = known && Array.isArray(saved.hidden) ? saved.hidden : DEFAULT_HIDDEN_SECTIONS;
+  if (v === 2) hidden = hidden.filter((id) => !ADDED_IN_V3.includes(id));
+  if (v === 2 || v === 3) hidden = [...hidden.filter((id) => !ADDED_IN_V4.includes(id)), ...REMOVED_IN_V4.filter((id) => !hidden.includes(id))];
   return {
-    order: current && Array.isArray(saved.order) ? saved.order : [],
-    hidden: saved.version === 2 ? hidden.filter((id) => !ADDED_IN_V3.includes(id)) : hidden,
+    // Older saved orders are dropped so the new sections appear in their places.
+    order: v === LAYOUT_VERSION && Array.isArray(saved.order) ? saved.order : [],
+    hidden,
     hiddenPages: Array.isArray(saved.hiddenPages) ? saved.hiddenPages : [],
     version: LAYOUT_VERSION,
   };

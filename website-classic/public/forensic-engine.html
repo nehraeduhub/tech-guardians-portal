@@ -326,7 +326,10 @@ footer a{color:var(--cyan);text-decoration:none}
     document.getElementById('stat-cats').textContent = data.cats.length + 1;
     document.getElementById('stat-official').textContent = data.tools.filter(function (t) { return t.g; }).length;
 
-    state.cat = 'all';
+    // Links such as /forensic-engine.html#cat=breach open one category (used by the homepage).
+    var want = (location.hash.match(/^#cat=([\w-]+)/) || [])[1];
+    state.cat = want && data.cats.some(function (c) { return c.id === want; }) ? want : 'all';
+    Array.prototype.forEach.call(chips.children, function (c) { c.setAttribute('aria-pressed', c.getAttribute('data-cat') === state.cat ? 'true' : 'false'); });
   }
   function validData(d) {
     return d && Array.isArray(d.cats) && Array.isArray(d.tools) && d.cats.length > 0;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, MessageCircle, ChevronDown } from 'lucide-react';
+import { Menu, X, MessageCircle, ChevronDown, PhoneCall } from 'lucide-react';
 import tgLogo from '@/assets/tg-logo.png';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { sectionLinks, toSectionId } from '@/lib/site-nav';
@@ -100,126 +100,61 @@ const Navbar = () => {
     setMobileOpen(false);
   };
 
+  const isActive = (path: string) => (path === '/' ? location.pathname === '/' : location.pathname.startsWith(path));
+  const menuLink = (label: string, onClick: () => void, active = false) => (
+    <button key={label} onClick={onClick} className={`tg-menu-link ${active ? 'active' : ''}`}>{label}</button>
+  );
+
   return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      {/* Top strip */}
+    <>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">Skip to main content</a>
+
+      {/* Utility strip */}
       <div className="hidden md:block" style={{ background: 'hsl(var(--topbar))', color: 'hsl(var(--topbar-foreground))' }}>
-        <div className="container mx-auto flex items-center justify-between h-9 px-4 text-xs">
-          <span className="opacity-80">{home.topBar}</span>
-          <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition">
-            <MessageCircle className="w-3.5 h-3.5" /> Support Center
-          </a>
+        <div className="container mx-auto flex h-9 items-center justify-between gap-4 px-4 text-xs">
+          <span className="truncate opacity-85">{home.topBar}</span>
+          <div className="flex shrink-0 items-center gap-4">
+            <a href="#main" className="opacity-85 hover:opacity-100">Skip to main content</a>
+            <span className="h-3.5 w-px bg-current opacity-30" aria-hidden />
+            <TextSizeControls />
+            <span className="h-3.5 w-px bg-current opacity-30" aria-hidden />
+            <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 opacity-90 transition hover:opacity-100">
+              <MessageCircle className="h-3.5 w-3.5" /> Support Center
+            </a>
+          </div>
         </div>
       </div>
+      <div className="tg-tricolour" aria-hidden />
 
-      <motion.nav
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className={`transition-all duration-300 ${scrolled ? 'bg-background/90 backdrop-blur-xl border-b border-border shadow-sm' : 'bg-background/60 backdrop-blur-md border-b border-transparent'}`}
-      >
-        <div className="container mx-auto flex items-center justify-between h-16 px-4">
-          <button onClick={() => goToSection('Home')} className="flex items-center gap-2 group">
-            <img src={tgLogo} alt="Tech Guardians logo" className="w-9 h-9 rounded-md object-contain" />
-            <span className="text-lg font-semibold tracking-tight text-foreground">
-              Tech<span className="text-primary"> Guardians</span>
+      {/* Brand row (stays at the top on phones) */}
+      <header className={`sticky top-0 z-50 border-b border-border bg-card lg:static ${scrolled ? 'shadow-md lg:shadow-none' : ''}`}>
+        <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 md:h-[84px]">
+          <button onClick={() => goToSection('Home')} className="flex min-w-0 items-center gap-3 text-left">
+            <img src={tgLogo} alt="Tech Guardians logo" className="h-10 w-10 shrink-0 rounded-md object-contain md:h-14 md:w-14" />
+            <span className="min-w-0">
+              <span className="block truncate text-lg font-extrabold leading-tight tracking-tight text-primary md:text-2xl">Tech Guardians</span>
+              <span className="hidden truncate text-xs font-medium text-muted-foreground sm:block md:text-[13px]">Cyber Security · Awareness · Digital Forensics</span>
             </span>
           </button>
 
-          <div ref={menuRef} className="hidden lg:flex items-center gap-1">
-            <button
-              onClick={() => goToSection('Home')}
-              className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Home
-            </button>
-
-            {/* Courses dropdown */}
-            <div className="relative" style={{ display: showCourses ? undefined : 'none' }}>
-              <button
-                onClick={() => setOpenMenu(openMenu === 'courses' ? null : 'courses')}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
-              >
-                Training Programs <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              {openMenu === 'courses' && (
-                <div className="absolute right-0 mt-1 w-72 bg-popover border border-border rounded-xl shadow-lg py-2 z-50">
-                  {allCourses.map((c) => (
-                    <button
-                      key={c.path}
-                      onClick={() => openLink(c.path)}
-                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                    >
-                      {c.label}
-                    </button>
-                  ))}
-                  <button onClick={() => openLink('/training')} className="w-full border-t border-border text-left px-4 py-2 text-sm font-semibold text-primary hover:bg-muted transition-colors">All Training Programs →</button>
-                </div>
-              )}
-            </div>
-
-            {/* TG Portals dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setOpenMenu(openMenu === 'portals' ? null : 'portals')}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
-              >
-                TG Portals <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              {openMenu === 'portals' && (
-                <div className="absolute right-0 mt-1 w-60 bg-popover border border-border rounded-xl shadow-lg py-2 z-50">
-                  {tgPortals.map((p) => (
-                    <button
-                      key={p.path}
-                      onClick={() => openLink(p.path, p.external)}
-                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {sectionLinks.map((link) => (
-              <button
-                key={link}
-                onClick={() => goToSection(link)}
-                className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link}
-              </button>
-            ))}
-
-            {pageOn('/products') && (
-              <button onClick={() => openLink('/products')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Products
-              </button>
-            )}
-            {pageOn('/pdf-store') && (
-              <button onClick={() => openLink('/pdf-store')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                PDF Store
-              </button>
-            )}
-            {showAbout && pageOn('/about') && (
-              <button onClick={() => openLink('/about')} className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                About Us
-              </button>
-            )}
-
-          </div>
-
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden items-center gap-3 lg:flex">
+            <a href="tel:1930" className="flex items-center gap-2.5 rounded-md border border-border bg-background px-3 py-1.5 transition-colors hover:border-accent">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-[#ff9933]/15 text-accent"><PhoneCall className="h-4 w-4" /></span>
+              <span className="leading-tight">
+                <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cyber fraud helpline</span>
+                <span className="block text-lg font-extrabold text-accent">1930</span>
+              </span>
+            </a>
             {pageOn(ACCOUNT_PATH)
-              ? <a href="/account.html" className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">My Account</a>
-              : <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="text-sm font-medium text-foreground/80 hover:text-foreground px-3 py-2">Login</button>}
-            {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full border-2 border-primary text-primary px-5 py-2 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
+              ? <a href="/account.html" className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">My Account</a>
+              : <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">Login</button>}
+            {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110">
               TG Blogs
             </button>}
           </div>
 
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-foreground p-2" aria-label="Toggle menu">
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-foreground lg:hidden" aria-label="Toggle menu" aria-expanded={mobileOpen}>
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
@@ -229,27 +164,28 @@ const Navbar = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-background border-b border-border overflow-hidden"
+              className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-background lg:hidden"
             >
-              <div className="flex flex-col p-4 gap-1">
+              <div className="flex flex-col gap-1 p-4">
+                <button onClick={() => goToSection('Home')} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">Home</button>
                 {sectionLinks.map((link) => (
-                  <button key={link} onClick={() => goToSection(link)} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                  <button key={link} onClick={() => goToSection(link)} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                     {link}
                   </button>
                 ))}
 
                 {pageOn('/products') && (
-                  <button onClick={() => { openLink('/products'); setMobileOpen(false); }} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                  <button onClick={() => openLink('/products')} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                     Products &amp; Solutions
                   </button>
                 )}
                 {pageOn('/pdf-store') && (
-                  <button onClick={() => { openLink('/pdf-store'); setMobileOpen(false); }} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                  <button onClick={() => openLink('/pdf-store')} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                     PDF Store
                   </button>
                 )}
                 {showAbout && pageOn('/about') && (
-                  <button onClick={() => openLink('/about')} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                  <button onClick={() => openLink('/about')} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                     About Us
                   </button>
                 )}
@@ -258,7 +194,7 @@ const Navbar = () => {
                   <>
                     <div className="mt-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Training Programs</div>
                     {allCourses.map((c) => (
-                      <button key={c.path} onClick={() => openLink(c.path)} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                      <button key={c.path} onClick={() => openLink(c.path)} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                         {c.label}
                       </button>
                     ))}
@@ -267,26 +203,95 @@ const Navbar = () => {
 
                 <div className="mt-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">TG Portals</div>
                 {tgPortals.map((p) => (
-                  <button key={p.path} onClick={() => openLink(p.path, p.external)} className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted rounded-lg text-left">
+                  <button key={p.path} onClick={() => openLink(p.path, p.external)} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                     {p.label}
                   </button>
                 ))}
 
-
+                <a href="tel:1930" className="mt-2 flex items-center justify-center gap-2 rounded-md border border-border px-5 py-3 text-sm font-semibold text-accent"><PhoneCall className="h-4 w-4" /> Cyber fraud helpline 1930</a>
                 {pageOn(ACCOUNT_PATH)
-                  ? <a href="/account.html" className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">My Account</a>
-                  : <button onClick={() => { navigate(LOGIN_PATH); setMobileOpen(false); }} className="mt-2 rounded-full border border-border text-foreground text-center px-5 py-3 text-sm font-semibold">
+                  ? <a href="/account.html" className="rounded-md border border-border px-5 py-3 text-center text-sm font-semibold text-foreground">My Account</a>
+                  : <button onClick={() => { navigate(LOGIN_PATH); setMobileOpen(false); }} className="rounded-md border border-border px-5 py-3 text-center text-sm font-semibold text-foreground">
                   Login
                 </button>}
-                {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-full bg-primary text-primary-foreground text-center px-5 py-3 text-sm font-semibold">
+                {pageOn(BLOGS_PATH) && <button onClick={() => openLink(BLOGS_PATH)} className="rounded-md bg-primary px-5 py-3 text-center text-sm font-semibold text-primary-foreground">
                   TG Blogs
                 </button>}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.nav>
-    </div>
+      </header>
+
+      {/* Navy menu bar (sticks to the top on larger screens) */}
+      <nav className="tg-menubar sticky top-0 z-50 hidden lg:block" aria-label="Main menu">
+        <div ref={menuRef} className="container mx-auto flex items-center px-4">
+          {menuLink('Home', () => goToSection('Home'), isActive('/'))}
+
+          <div className="relative" style={{ display: showCourses ? undefined : 'none' }}>
+            <button onClick={() => setOpenMenu(openMenu === 'courses' ? null : 'courses')} aria-expanded={openMenu === 'courses'} className={`tg-menu-link ${isActive('/training') ? 'active' : ''}`}>
+              Training Programs <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+            {openMenu === 'courses' && (
+              <div className="absolute left-0 top-full z-50 w-72 overflow-hidden rounded-b-md border border-border bg-popover py-1 shadow-xl">
+                {allCourses.map((c) => (
+                  <button key={c.path} onClick={() => openLink(c.path)} className="w-full border-l-[3px] border-transparent px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:border-[#ff9933] hover:bg-muted">
+                    {c.label}
+                  </button>
+                ))}
+                <button onClick={() => openLink('/training')} className="w-full border-t border-border px-4 py-2.5 text-left text-sm font-semibold text-primary hover:bg-muted">All Training Programs →</button>
+              </div>
+            )}
+          </div>
+
+          <div className="relative">
+            <button onClick={() => setOpenMenu(openMenu === 'portals' ? null : 'portals')} aria-expanded={openMenu === 'portals'} className="tg-menu-link">
+              TG Portals <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+            {openMenu === 'portals' && (
+              <div className="absolute left-0 top-full z-50 w-64 overflow-hidden rounded-b-md border border-border bg-popover py-1 shadow-xl">
+                {tgPortals.map((p) => (
+                  <button key={p.path} onClick={() => openLink(p.path, p.external)} className="w-full border-l-[3px] border-transparent px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:border-[#ff9933] hover:bg-muted">
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {sectionLinks.map((link) => menuLink(link, () => goToSection(link)))}
+          {pageOn('/products') && menuLink('Products', () => openLink('/products'), isActive('/products'))}
+          {pageOn('/pdf-store') && menuLink('PDF Store', () => openLink('/pdf-store'), isActive('/pdf-store'))}
+          {pageOn('/cyber-news') && menuLink('Cyber News', () => openLink('/cyber-news'), isActive('/cyber-news'))}
+          {showAbout && pageOn('/about') && menuLink('About Us', () => openLink('/about'), isActive('/about'))}
+        </div>
+      </nav>
+    </>
+  );
+};
+
+const SCALES = [0.875, 1, 1.125];
+const SCALE_KEY = 'tg_text_size';
+const applyScale = (i: number) => { document.documentElement.style.fontSize = `${SCALES[i] * 100}%`; };
+
+/** A- A A+ buttons, as on government portals. Remembered on this device. */
+const TextSizeControls = () => {
+  const [size, setSize] = useState(() => {
+    try { const v = localStorage.getItem(SCALE_KEY); return v !== null && SCALES[Number(v)] ? Number(v) : 1; } catch { return 1; }
+  });
+  useEffect(() => {
+    applyScale(size);
+    try { localStorage.setItem(SCALE_KEY, String(size)); } catch { /* private mode */ }
+  }, [size]);
+  return (
+    <span className="flex items-center gap-1" role="group" aria-label="Text size">
+      {['A-', 'A', 'A+'].map((label, i) => (
+        <button key={label} onClick={() => setSize(i)} aria-pressed={size === i} aria-label={['Smaller text', 'Normal text', 'Larger text'][i]}
+          className={`grid h-6 min-w-6 place-items-center rounded px-1 font-semibold transition ${size === i ? 'bg-white/20 text-white' : 'opacity-80 hover:opacity-100'}`}>
+          {label}
+        </button>
+      ))}
+    </span>
   );
 };
 

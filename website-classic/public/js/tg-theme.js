@@ -1,17 +1,39 @@
 /* Tech Guardians — site themes.
    Loaded in the <head> of every page (React app and static pages).
-   The admin picks a theme in Manage → Themes; it is stored in the `tg_theme_v2`
-   setting (the older `tg_theme` choice is no longer read, so every site starts on
-   the Reason Pro default) and every open page switches within 15 seconds.
+   The admin picks a theme in Manage → Themes; it is stored in the `tg_theme_v3`
+   setting (older `tg_theme` / `tg_theme_v2` choices are no longer read, so every
+   site starts on the Gov Classic default) and every open page switches within 15 seconds.
    Each theme sets colours, fonts, card style and an animated 3D background. */
 (function () {
   if (window.tgTheme) return;
 
-  var CACHE = 'tg_theme_cache_v2';
-  var DEFAULT_ID = 'reason-pro';
+  var CACHE = 'tg_theme_cache_v3';
+  var THEME_KEY = 'tg_theme_v3';
+  var DEFAULT_ID = 'gov-classic';
 
   // Shorthand: React tokens are HSL triplets ("h s% l%"), static pages use hex.
   var THEMES = [
+    {
+      id: 'gov-classic',
+      name: 'Gov Classic',
+      tagline: 'Government-portal style: navy menu bar, saffron accents, full-width photo slider and a latest-updates ticker.',
+      swatch: ['#f4f6fa', '#12408a', '#0a2147', '#f08a24'],
+      fontUrl: 'family=Noto+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500',
+      fonts: { head: "'Noto Sans', 'Segoe UI', sans-serif", body: "'Noto Sans', 'Segoe UI', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" },
+      light: true, pro: true, gov: true,
+      react: {
+        background: '216 33% 97%', foreground: '220 50% 12%', card: '0 0% 100%', popover: '0 0% 100%',
+        primary: '217 76% 31%', primaryFg: '0 0% 100%', secondary: '215 60% 95%', secondaryFg: '217 70% 28%',
+        muted: '214 30% 95%', mutedFg: '217 15% 33%', accent: '28 92% 42%', accentFg: '0 0% 100%',
+        border: '214 25% 86%', input: '214 25% 84%', ring: '217 76% 31%',
+        blue: '213 80% 38%', green: '120 85% 27%', purple: '217 76% 31%', orange: '28 92% 42%', red: '0 72% 45%',
+        topbar: '220 70% 9%', topbarFg: '214 40% 88%', radius: '0.5rem',
+      },
+      css: { bg: '#f4f6fa', bg2: '#e9eef6', surface: '#ffffff', surface2: '#f5f8fc', surface3: '#e8eef7', text: '#0f1b33', muted: '#475569', border: 'rgba(15,27,51,.12)', primary: '#12408a', primary2: '#1d56b0', secondary: '#138808', accent: '#c96a0c', gold: '#b45309' },
+      pageBg: '#f4f6fa',
+      heroGradient: 'linear-gradient(100deg, #ffb24d 0%, #ff9933 55%, #ffd27a 100%)', heroAccent: '#ff9933',
+      fx: null, tilt: false,
+    },
     {
       id: 'reason-pro',
       name: 'Reason Pro',
@@ -228,6 +250,13 @@
       out.push(ps + '.btn-pri:hover{filter:brightness(1.08)}');
       out.push(ps + 'h1,' + ps + 'h2{letter-spacing:-0.02em}');
     }
+    if (t.gov) {
+      // Static pages: saffron rule under their header, navy headings, square-ish cards.
+      var gs = sel + '[data-tg-static] ';
+      out.push(gs + 'nav,' + gs + '.topnav,' + gs + '.header{border-bottom:3px solid #ff9933 !important}');
+      out.push(gs + 'h2{color:' + c.primary + '}');
+      out.push(gs + '.card,' + gs + '.tool{border-radius:10px !important;border-top:3px solid ' + c.primary + ' !important}');
+    }
     // 3D: cards lift towards the viewer on hover.
     if (t.tilt && !reduceMotion) {
       out.push(sel + ' .glass-card,' + sel + ':not([data-tg-static]) .rounded-2xl.border,' + sel + ':not([data-tg-static]) .rounded-xl.border{transition:transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease;transform-style:preserve-3d;will-change:transform}');
@@ -367,6 +396,8 @@
     if (current && current.id === t.id && styleEl.textContent) { renderFxWhenReady(t); return t.id; }
     current = t;
     root.setAttribute('data-tg-theme', t.id);
+    if (t.pro) root.setAttribute('data-tg-pro', ''); else root.removeAttribute('data-tg-pro');
+    if (t.gov) root.setAttribute('data-tg-gov', ''); else root.removeAttribute('data-tg-gov');
     styleEl.textContent = fxCss() + '\n' + themeCss(t) +
       '\n:root.tg-theme-custom:not([data-tg-static]) #home canvas{opacity:.35}';
     loadFont(t);
@@ -465,13 +496,13 @@
   var previewId = null, previewColors = false;
   function load() {
     if (previewId || previewColors) return Promise.resolve();
-    return fetch('/api/settings.php?keys=tg_theme_v2,' + COLORS_KEY, { credentials: 'same-origin', cache: 'no-store' })
+    return fetch('/api/settings.php?keys=' + THEME_KEY + ',' + COLORS_KEY, { credentials: 'same-origin', cache: 'no-store' })
       .then(function (r) {
         if (r.status === 451) { r.json().then(showUnlicensed).catch(function () { showUnlicensed({}); }); return []; }
         return r.ok ? r.json() : [];
       })
       .then(function (rows) {
-        var row = (rows || []).filter(function (x) { return x.key === 'tg_theme_v2'; })[0];
+        var row = (rows || []).filter(function (x) { return x.key === THEME_KEY; })[0];
         apply(row && typeof row.value === 'string' ? row.value : DEFAULT_ID);
         var crow = (rows || []).filter(function (x) { return x.key === COLORS_KEY; })[0];
         var next = crow && crow.value && typeof crow.value === 'object' ? crow.value : null;
@@ -510,6 +541,8 @@
 
   window.tgTheme = {
     themes: THEMES.map(function (t) { return { id: t.id, name: t.name, tagline: t.tagline, swatch: t.swatch, fonts: t.fonts, light: !!t.light, original: !!t.original }; }),
+    defaultId: DEFAULT_ID,
+    key: THEME_KEY,
     current: function () { return current ? current.id : DEFAULT_ID; },
     apply: function (id) { previewId = null; return apply(id); },
     /** Show a theme to this viewer only, until apply() or endPreview(). */

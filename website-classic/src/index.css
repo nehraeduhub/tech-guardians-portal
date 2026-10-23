@@ -339,39 +339,104 @@
    White content sections, navy (.tg-dark) hero / call-to-action / footer
    bands, violet accents, readable type sizes and generous spacing.
 --------------------------------------------------------------------------- */
-:root[data-tg-theme="reason-pro"] body { font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
-:root[data-tg-theme="reason-pro"] h1,
-:root[data-tg-theme="reason-pro"] h2,
-:root[data-tg-theme="reason-pro"] h3 { letter-spacing: -0.02em; }
-:root[data-tg-theme="reason-pro"] h1, :root[data-tg-theme="reason-pro"] h2 { font-weight: 800; }
-:root[data-tg-theme="reason-pro"] .tg-eyebrow,
-:root[data-tg-theme="reason-pro"] .rl-eyebrow { letter-spacing: 0.16em; font-weight: 700; }
-:root[data-tg-theme="reason-pro"] .tg-lead { font-size: 1.075rem; }
-:root[data-tg-theme="reason-pro"] .neon-text,
-:root[data-tg-theme="reason-pro"] .neon-text-green,
-:root[data-tg-theme="reason-pro"] .neon-text-purple,
-:root[data-tg-theme="reason-pro"] .neon-text-red,
-:root[data-tg-theme="reason-pro"] .neon-text-orange { text-shadow: none !important; }
-:root[data-tg-theme="reason-pro"] .neon-text-green.text-cyber-green,
-:root[data-tg-theme="reason-pro"] .neon-text-purple.text-cyber-purple { color: hsl(var(--primary)) !important; }
-:root[data-tg-theme="reason-pro"] .cyber-gradient-text {
+:root[data-tg-pro] body { font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+:root[data-tg-pro] h1,
+:root[data-tg-pro] h2,
+:root[data-tg-pro] h3 { letter-spacing: -0.02em; }
+:root[data-tg-pro] h1, :root[data-tg-pro] h2 { font-weight: 800; }
+:root[data-tg-pro] .tg-eyebrow,
+:root[data-tg-pro] .rl-eyebrow { letter-spacing: 0.16em; font-weight: 700; }
+:root[data-tg-pro] .tg-lead { font-size: 1.075rem; }
+:root[data-tg-pro] .neon-text,
+:root[data-tg-pro] .neon-text-green,
+:root[data-tg-pro] .neon-text-purple,
+:root[data-tg-pro] .neon-text-red,
+:root[data-tg-pro] .neon-text-orange { text-shadow: none !important; }
+:root[data-tg-pro] .neon-text-green.text-cyber-green,
+:root[data-tg-pro] .neon-text-purple.text-cyber-purple { color: hsl(var(--primary)) !important; }
+:root[data-tg-pro] .cyber-gradient-text {
   background-image: linear-gradient(100deg, hsl(var(--primary)), hsl(var(--cyber-purple)) 60%, hsl(var(--accent)));
 }
-:root[data-tg-theme="reason-pro"] .glass-card,
-:root[data-tg-theme="reason-pro"] .tg-card { border-radius: 1.25rem; }
-:root[data-tg-theme="reason-pro"] .cyber-btn { font-weight: 600; letter-spacing: 0; }
-:root[data-tg-theme="reason-pro"] .cyber-btn-primary { box-shadow: 0 12px 28px -14px hsl(var(--primary) / 0.9); }
-:root[data-tg-theme="reason-pro"] .cyber-btn-primary:hover { filter: brightness(1.08); }
-:root[data-tg-theme="reason-pro"] .cyber-btn-outline { border-color: hsl(var(--primary) / 0.45); background: hsl(var(--card)); }
-:root[data-tg-theme="reason-pro"] .tg-dark .cyber-btn-outline { background: transparent; }
-:root[data-tg-theme="reason-pro"] .grid-pattern { opacity: .5; }
+:root[data-tg-pro] .glass-card,
+:root[data-tg-pro] .tg-card { border-radius: 1.25rem; }
+:root[data-tg-pro] .cyber-btn { font-weight: 600; letter-spacing: 0; }
+:root[data-tg-pro] .cyber-btn-primary { box-shadow: 0 12px 28px -14px hsl(var(--primary) / 0.9); }
+:root[data-tg-pro] .cyber-btn-primary:hover { filter: brightness(1.08); }
+:root[data-tg-pro] .cyber-btn-outline { border-color: hsl(var(--primary) / 0.45); background: hsl(var(--card)); }
+:root[data-tg-pro] .tg-dark .cyber-btn-outline { background: transparent; }
+:root[data-tg-pro] .grid-pattern { opacity: .5; }
 /* Navy band with violet glow, like a security vendor's hero. */
-:root[data-tg-theme="reason-pro"] .tg-band {
+:root[data-tg-pro] .tg-band {
   background:
     radial-gradient(900px 520px at 85% 0%, hsl(var(--tg-glow, 258 90% 62%) / 0.30), transparent 60%),
     radial-gradient(700px 420px at 0% 100%, hsl(var(--tg-glow2, 199 90% 55%) / 0.14), transparent 60%),
     hsl(var(--tg-navy));
 }
 /* Alternate soft lavender sections for rhythm. */
-:root[data-tg-theme="reason-pro"] main > section.tg-section:nth-of-type(even),
-:root[data-tg-theme="reason-pro"] .tg-alt { background: hsl(250 60% 97.5%); }
+:root[data-tg-pro] main > section.tg-section:nth-of-type(even),
+:root[data-tg-pro] .tg-alt { background: hsl(250 60% 97.5%); }
+
+/* ---------------------------------------------------------------------------
+   Gov Classic theme: government-portal look. Navy menu bar and bands, saffron
+   highlights, square-ish cards with a coloured top rule, plain white sections.
+--------------------------------------------------------------------------- */
+:root[data-tg-gov] {
+  --tg-navy: 218 72% 14%;
+  --tg-saffron: 30 100% 60%;
+  --tg-india-green: 120 85% 27%;
+  --tg-glow: 217 76% 45%;
+  --tg-glow2: 30 100% 60%;
+}
+:root[data-tg-gov] .tg-dark {
+  --primary: 30 100% 62%;
+  --primary-foreground: 218 72% 10%;
+  --ring: 30 100% 62%;
+  --accent: 33 100% 66%;
+  --accent-foreground: 218 72% 10%;
+  --card: 218 55% 19%;
+  --popover: 218 55% 19%;
+  --secondary: 218 45% 22%;
+  --muted: 218 45% 20%;
+  --border: 218 35% 30%;
+  --input: 218 35% 28%;
+  --cyber-blue: 205 90% 70%;
+  --cyber-purple: 30 100% 66%;
+}
+:root[data-tg-gov] h1, :root[data-tg-gov] h2 { letter-spacing: -0.01em; }
+:root[data-tg-gov] .tg-eyebrow { color: hsl(var(--accent)); letter-spacing: 0.14em; }
+:root[data-tg-gov] .tg-dark .tg-eyebrow { color: hsl(var(--tg-saffron)); }
+:root[data-tg-gov] .tg-title { color: hsl(var(--primary)); }
+:root[data-tg-gov] .tg-dark .tg-title { color: #fff; }
+/* Section titles get the government-portal saffron underline. */
+:root[data-tg-gov] .tg-title::after {
+  content: ''; display: block; width: 72px; height: 4px; margin-top: 14px; border-radius: 2px;
+  background: linear-gradient(90deg, hsl(var(--tg-saffron)) 0 50%, hsl(var(--tg-india-green)) 50% 100%);
+}
+:root[data-tg-gov] .text-center .tg-title::after, :root[data-tg-gov] .tg-title.text-center::after { margin-left: auto; margin-right: auto; }
+:root[data-tg-gov] .glass-card,
+:root[data-tg-gov] .tg-card { border-radius: 0.6rem; border-top: 3px solid hsl(var(--primary)); }
+:root[data-tg-gov] .tg-dark .glass-card, :root[data-tg-gov] .tg-dark .tg-card { border-top-color: hsl(var(--tg-saffron)); }
+:root[data-tg-gov] .cyber-btn, :root[data-tg-gov] .cyber-btn-primary, :root[data-tg-gov] .cyber-btn-outline { border-radius: 0.4rem; }
+:root[data-tg-gov] .cyber-btn-primary { box-shadow: 0 8px 18px -12px hsl(var(--primary) / 0.9); }
+:root[data-tg-gov] .tg-band {
+  background:
+    repeating-linear-gradient(135deg, hsl(0 0% 100% / 0.025) 0 2px, transparent 2px 14px),
+    linear-gradient(180deg, hsl(218 72% 17%), hsl(var(--tg-navy)));
+  border-bottom: 4px solid hsl(var(--tg-saffron));
+}
+:root[data-tg-gov] main > section.tg-section:nth-of-type(even),
+:root[data-tg-gov] .tg-alt { background: hsl(214 45% 95%); }
+:root[data-tg-gov] .tg-section { padding-top: 4.5rem; padding-bottom: 4.5rem; }
+@media (min-width: 768px) { :root[data-tg-gov] .tg-section { padding-top: 5.5rem; padding-bottom: 5.5rem; } }
+
+/* Government-style header pieces (used by every theme, coloured by the theme). */
+.tg-tricolour { height: 4px; background: linear-gradient(90deg, #ff9933 0 33.3%, #ffffff 33.3% 66.6%, #138808 66.6% 100%); }
+.tg-menubar { background: hsl(var(--primary)); color: #fff; box-shadow: 0 6px 18px -12px rgb(0 0 0 / .6); }
+:root[data-tg-gov] .tg-menubar { background: hsl(218 72% 18%); border-bottom: 3px solid hsl(var(--tg-saffron)); }
+.tg-menubar .tg-menu-link { position: relative; display: inline-flex; align-items: center; gap: .25rem; height: 3rem; padding: 0 .85rem; font-size: .875rem; font-weight: 600; color: rgb(255 255 255 / .92); transition: background .2s; }
+.tg-menubar .tg-menu-link:hover, .tg-menubar .tg-menu-link[aria-expanded="true"], .tg-menubar .tg-menu-link.active { background: rgb(255 255 255 / .1); color: #fff; }
+.tg-menubar .tg-menu-link::after { content: ''; position: absolute; left: .85rem; right: .85rem; bottom: 0; height: 3px; background: #ff9933; transform: scaleX(0); transition: transform .2s; }
+.tg-menubar .tg-menu-link:hover::after, .tg-menubar .tg-menu-link.active::after { transform: scaleX(1); }
+.tg-updates-label { background: #ff9933; color: #1a1206; }
+:root[data-tg-gov] .tg-updates-label { background: hsl(var(--tg-saffron)); }
+:root[data-tg-gov] footer.tg-band { border-bottom: 0; border-top: 4px solid hsl(var(--tg-saffron)); }

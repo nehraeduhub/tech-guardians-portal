@@ -9,10 +9,12 @@ interface SiteFrameProps {
   mainClassName?: string;
 }
 
+// The header sits in the page flow (only its menu bar sticks), so pages no longer
+// need top padding to clear it; older `pt-*` classes from pages are ignored.
 const SiteFrame = ({ children, mainClassName }: SiteFrameProps) => (
   <div className="relative min-h-screen">
     <Navbar />
-    <main className={cn('relative z-10 pt-24', mainClassName)}>{children}</main>
+    <main id="main" tabIndex={-1} className={cn('relative z-10 outline-none', mainClassName?.replace(/(^|\s)pt-\S+/g, ''))}>{children}</main>
     <Footer />
     <ChatWidget />
   </div>

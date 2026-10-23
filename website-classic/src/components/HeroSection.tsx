@@ -1,21 +1,30 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Activity, ArrowRight, ChevronLeft, ChevronRight, Fingerprint, Pause, Play, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Megaphone, Pause, Play } from 'lucide-react';
 import SmartLink from '@/components/pro/SmartLink';
-import { HERO_SLIDES, useList } from '@/lib/content-lists';
+import { HERO_LAYOUTS, HERO_SLIDES, useList } from '@/lib/content-lists';
+import { eventDateParts, splitEvents, useEvents } from '@/lib/catalog';
+import { useTopNews } from '@/lib/news';
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 const DELAY = 6500;
+/** Caption colours take turns, so neighbouring slides never look the same. */
+const TONES = ['#12408a', '#138808', '#e07b12', '#6d28d9', '#c62828', '#0e7490', '#1e293b'];
 
-/** Homepage hero: photo slides scroll behind the headline (Manage → Homepage Carousel). */
+/**
+ * Homepage carousel in the government-portal pattern: the full picture is
+ * always visible (posters are never cropped), with a short caption bar and a
+ * single button underneath. Photo slides can still carry a headline.
+ */
 const HeroSection = () => {
   const rows = (useList(HERO_SLIDES) ?? HERO_SLIDES.seed ?? []).filter((r) => r.visible && (r.title || r.image));
   const slides = rows.map((r) => ({
-    id: r.id, eyebrow: str(r.eyebrow), title: str(r.title), accent: str(r.accent), text: str(r.text),
+    id: r.id, poster: str(r.layout) !== HERO_LAYOUTS[1], eyebrow: str(r.eyebrow), title: str(r.title), accent: str(r.accent), text: str(r.text),
     image: str(r.image), buttonText: str(r.buttonText), buttonLink: str(r.buttonLink),
   }));
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [hover, setHover] = useState(false);
   const reduce = useReducedMotion();
   const drag = useRef<number | null>(null);
   const count = slides.length;
@@ -23,13 +32,15 @@ const HeroSection = () => {
 
   useEffect(() => { if (index >= count) setIndex(0); }, [count, index]);
   useEffect(() => {
-    if (paused || reduce || count < 2) return;
+    if (paused || hover || reduce || count < 2) return;
     const t = window.setTimeout(() => go(1), DELAY);
     return () => window.clearTimeout(t);
-  }, [index, paused, reduce, count, go]);
+  }, [index, paused, hover, reduce, count, go]);
 
   if (!count) return null;
-  const s = slides[Math.min(index, count - 1)];
+  const i = Math.min(index, count - 1);
+  const s = slides[i];
+  const tone = TONES[i % TONES.length];
 
   const down = (e: PointerEvent) => { drag.current = e.clientX; };
   const up = (e: PointerEvent) => {
@@ -40,113 +51,116 @@ const HeroSection = () => {
   };
 
   return (
-    <section
-      id="home"
-      className="tg-dark relative isolate overflow-hidden bg-[hsl(var(--tg-navy))]"
-      aria-roledescription="carousel"
-      aria-label="Tech Guardians highlights"
-      onPointerDown={down}
-      onPointerUp={up}
-    >
-      {/* Photos */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={s.id}
-          className="absolute inset-0 -z-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 1.1, ease: 'easeInOut' }}
-        >
-          {s.image && (
-            <motion.img
-              src={s.image}
-              alt=""
-              className="h-full w-full object-cover object-center"
-              initial={{ scale: reduce ? 1 : 1.12 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: reduce ? 0 : DELAY / 1000 + 1.5, ease: 'linear' }}
-              draggable={false}
-            />
-          )}
-        </motion.div>
-      </AnimatePresence>
-      {/* Readability overlay */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,hsl(var(--tg-navy)/0.94)_0%,hsl(var(--tg-navy)/0.78)_45%,hsl(var(--tg-navy)/0.25)_100%)]" aria-hidden />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(900px_500px_at_10%_110%,hsl(var(--primary)/0.35),transparent_60%)]" aria-hidden />
-
-      <div className="container mx-auto flex min-h-[600px] max-w-7xl flex-col justify-center px-6 pb-24 pt-16 md:min-h-[660px] md:px-8">
-        <AnimatePresence mode="wait">
+    <section id="home" aria-roledescription="carousel" aria-label="Tech Guardians highlights" className="relative bg-[hsl(var(--tg-navy))]">
+      <div
+        className="relative isolate h-[clamp(210px,52vw,600px)] overflow-hidden select-none"
+        onPointerDown={down}
+        onPointerUp={up}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+      >
+        <AnimatePresence initial={false}>
           <motion.div
             key={s.id}
-            className="max-w-2xl"
-            initial={{ opacity: 0, y: reduce ? 0 : 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: reduce ? 0 : -16 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-            aria-live="polite"
+            className="absolute inset-0"
+            initial={{ opacity: 0, x: reduce ? 0 : 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: reduce ? 0 : -40 }}
+            transition={{ duration: reduce ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            {s.eyebrow && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />{s.eyebrow}
-              </span>
+            {s.image && s.poster && (
+              <>
+                {/* Soft, blurred copy fills the sides; the poster itself is shown whole. */}
+                <img src={s.image} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" draggable={false} />
+                <div className="absolute inset-0 bg-[hsl(var(--tg-navy)/0.35)]" aria-hidden />
+                <img src={s.image} alt={s.title || 'Tech Guardians'} className="relative mx-auto h-full w-auto max-w-full object-contain shadow-[0_0_60px_rgba(0,0,0,.45)]" draggable={false} />
+              </>
             )}
-            <h1 className="mt-6 text-4xl font-extrabold leading-[1.05] text-white sm:text-5xl lg:text-6xl" style={{ textWrap: 'balance' }}>
-              {s.title}{' '}
-              {s.accent && <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'var(--tg-hero-gradient, linear-gradient(100deg, #a78bfa, #38bdf8))' }}>{s.accent}</span>}
-            </h1>
-            {s.text && <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-200">{s.text}</p>}
-            {s.buttonText && (
-              <SmartLink item={{ href: s.buttonLink || '/' }} className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[0_14px_30px_-12px_hsl(var(--primary))] transition-transform hover:-translate-y-0.5">
-                {s.buttonText} <ArrowRight className="h-4 w-4" />
-              </SmartLink>
+            {s.image && !s.poster && (
+              <>
+                <img src={s.image} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--tg-navy)/0.9)_0%,hsl(var(--tg-navy)/0.55)_50%,transparent_100%)]" aria-hidden />
+                <div className="tg-dark relative mx-auto flex h-full max-w-7xl flex-col justify-center px-6 md:px-10">
+                  {s.eyebrow && <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffb24d]">{s.eyebrow}</p>}
+                  <h1 className="mt-3 max-w-2xl text-2xl font-extrabold leading-tight text-white sm:text-4xl lg:text-5xl" style={{ textWrap: 'balance' }}>
+                    {s.title} {s.accent && <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'var(--tg-hero-gradient)' }}>{s.accent}</span>}
+                  </h1>
+                  {s.text && <p className="mt-4 hidden max-w-xl text-base leading-relaxed text-slate-200 md:block">{s.text}</p>}
+                </div>
+              </>
             )}
           </motion.div>
         </AnimatePresence>
 
-        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-slate-300">
-          <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> ISO-aligned practices</span>
-          <span className="flex items-center gap-2"><Fingerprint className="h-4 w-4 text-primary" /> Privacy-first</span>
-          <span className="flex items-center gap-2"><Activity className="h-4 w-4 text-primary" /> 24×7 threat intel</span>
+        {count > 1 && (
+          <>
+            <button onClick={() => go(-1)} aria-label="Previous slide" className="absolute left-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded bg-black/40 text-white backdrop-blur transition hover:bg-black/70 md:left-4 md:h-12 md:w-12"><ChevronLeft className="h-6 w-6" /></button>
+            <button onClick={() => go(1)} aria-label="Next slide" className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded bg-black/40 text-white backdrop-blur transition hover:bg-black/70 md:right-4 md:h-12 md:w-12"><ChevronRight className="h-6 w-6" /></button>
+          </>
+        )}
+      </div>
+
+      {/* Caption bar: one short line and one button per slide */}
+      <div className="border-t-4 transition-colors duration-500" style={{ borderColor: tone, background: `linear-gradient(90deg, ${tone} 0, ${tone} 6px, hsl(var(--tg-navy)) 6px)` }}>
+        <div className="container mx-auto flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-8">
+          <AnimatePresence mode="wait">
+            <motion.p key={s.id} aria-live="polite" initial={{ opacity: 0, y: reduce ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+              className="flex min-w-0 items-center gap-3 text-sm font-semibold text-white md:text-base">
+              <span className="shrink-0 rounded px-2 py-0.5 text-[11px] font-bold tabular-nums text-white" style={{ background: tone }}>{String(i + 1).padStart(2, '0')}/{String(count).padStart(2, '0')}</span>
+              <span className="line-clamp-2">{s.poster ? s.title : s.eyebrow}</span>
+            </motion.p>
+          </AnimatePresence>
+          <div className="flex shrink-0 items-center gap-3">
+            {count > 1 && (
+              <div className="flex items-center gap-1.5" role="tablist" aria-label="Choose slide">
+                {slides.map((x, n) => (
+                  <button key={x.id} role="tab" aria-selected={n === i} aria-label={`Slide ${n + 1}: ${x.title}`} onClick={() => setIndex(n)}
+                    className={`h-2.5 rounded-full transition-all ${n === i ? 'w-7' : 'w-2.5 bg-white/35 hover:bg-white/60'}`} style={n === i ? { background: '#ff9933' } : undefined} />
+                ))}
+                <button onClick={() => setPaused((p) => !p)} aria-label={paused ? 'Play slides' : 'Pause slides'} className="ml-1 grid h-7 w-7 place-items-center rounded border border-white/30 text-white hover:bg-white/10">
+                  {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            )}
+            {s.buttonText && (
+              <SmartLink item={{ href: s.buttonLink || '/' }} className="inline-flex items-center gap-1.5 rounded bg-[#ff9933] px-4 py-2 text-sm font-bold text-[#1a1206] transition hover:brightness-105">
+                {s.buttonText} <ArrowRight className="h-4 w-4" />
+              </SmartLink>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Controls */}
-      {count > 1 && (
-        <div className="absolute inset-x-0 bottom-6">
-          <div className="container mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 md:px-8">
-            <div className="flex items-center gap-2" role="tablist" aria-label="Choose slide">
-              {slides.map((x, i) => (
-                <button
-                  key={x.id}
-                  role="tab"
-                  aria-selected={i === index}
-                  aria-label={`Slide ${i + 1}: ${x.title} ${x.accent}`}
-                  onClick={() => setIndex(i)}
-                  className={`relative h-1.5 overflow-hidden rounded-full bg-white/25 transition-all ${i === index ? 'w-12' : 'w-6 hover:bg-white/45'}`}
-                >
-                  {i === index && (
-                    <motion.span
-                      key={`${x.id}-${paused}`}
-                      className="absolute inset-y-0 left-0 bg-white"
-                      initial={{ width: paused || reduce ? '100%' : '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: paused || reduce ? 0 : DELAY / 1000, ease: 'linear' }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="mr-1 font-display text-xs tabular-nums text-slate-300">{String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}</span>
-              <button onClick={() => setPaused((p) => !p)} aria-label={paused ? 'Play slides' : 'Pause slides'} className="grid h-10 w-10 place-items-center rounded-full border border-white/25 text-white hover:bg-white/10">{paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}</button>
-              <button onClick={() => go(-1)} aria-label="Previous slide" className="grid h-10 w-10 place-items-center rounded-full border border-white/25 text-white hover:bg-white/10"><ChevronLeft className="h-5 w-5" /></button>
-              <button onClick={() => go(1)} aria-label="Next slide" className="grid h-10 w-10 place-items-center rounded-full border border-white/25 text-white hover:bg-white/10"><ChevronRight className="h-5 w-5" /></button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LatestUpdates />
     </section>
+  );
+};
+
+/** "Latest updates" ticker under the slider: upcoming events and today's top cyber news. */
+const LatestUpdates = () => {
+  const { upcoming } = splitEvents(useEvents());
+  const { data: news = [] } = useTopNews(6);
+  const items = [
+    ...upcoming.slice(0, 3).map((e) => ({ key: `e${e.id}`, label: `${eventDateParts(e).full} — ${e.title}`, href: '/events', tag: 'Event' })),
+    ...news.map((n, k) => ({ key: `n${k}`, label: n.title, href: n.url, tag: n.source })),
+  ];
+  if (!items.length) return null;
+  const row = (copy: number) => items.map((it) => (
+    <a key={`${copy}-${it.key}`} href={it.href} target={it.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" tabIndex={copy ? -1 : 0}
+      className="inline-flex shrink-0 items-center gap-2 px-6 text-sm text-foreground hover:text-primary hover:underline">
+      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">{it.tag}</span>{it.label}
+      <span className="ml-4 text-accent" aria-hidden>◆</span>
+    </a>
+  ));
+  return (
+    <div className="flex items-stretch border-b border-border bg-card">
+      <span className="tg-updates-label flex shrink-0 items-center gap-2 px-3 text-xs font-extrabold uppercase tracking-wider md:px-5">
+        <Megaphone className="h-4 w-4" /> <span className="hidden sm:inline">Latest updates</span>
+      </span>
+      <div className="tg-ticker relative min-w-0 flex-1 overflow-hidden py-2.5" aria-label="Latest updates">
+        <div className="tg-ticker-track flex w-max">{row(0)}<span aria-hidden className="flex">{row(1)}</span></div>
+      </div>
+    </div>
   );
 };
 

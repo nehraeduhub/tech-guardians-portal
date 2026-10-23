@@ -25,18 +25,19 @@ interface ThemeEngine {
 }
 export const COLORS_KEY = 'tg_theme_colors';
 
-export const THEME_KEY = 'tg_theme_v2';
+export const THEME_KEY = 'tg_theme_v3';
+const DEFAULT_THEME = 'gov-classic';
 const engine = () => (window as unknown as { tgTheme?: ThemeEngine }).tgTheme;
 const fontName = (stack: string) => stack.split(',')[0].replace(/['"]/g, '').trim();
 
 /** Pick the website theme. One click restyles every page for every visitor. */
 const ThemePanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onSuccess?: () => void) => Promise<void> }) => {
   const themes = engine()?.themes || [];
-  const [live, setLive] = useState(() => readSetting<string>(THEME_KEY, 'reason-pro'));
+  const [live, setLive] = useState(() => readSetting<string>(THEME_KEY, DEFAULT_THEME));
   const [previewing, setPreviewing] = useState<string | null>(null);
 
   useEffect(() => {
-    const refresh = () => setLive(readSetting<string>(THEME_KEY, 'reason-pro'));
+    const refresh = () => setLive(readSetting<string>(THEME_KEY, DEFAULT_THEME));
     window.addEventListener('tg-settings-changed', refresh);
     return () => {
       window.removeEventListener('tg-settings-changed', refresh);
