@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, Globe2, LifeBuoy, PhoneCall, ShieldAlert } from 'lucide-react';
+import { safeLink } from '@/lib/utils';
 
 const ACTIONS = [
   { icon: PhoneCall, title: 'Call 1930', text: 'National cyber crime helpline. Call within the first hour of a money fraud to freeze the transaction.', href: 'tel:1930', cta: 'Call now', external: true },
@@ -60,7 +61,7 @@ const CyberCrimeBanner = () => {
                     );
                     const cls = 'group flex h-full flex-col rounded-xl border border-white/10 bg-black/25 p-4 transition-all hover:-translate-y-0.5 hover:border-red-400/60';
                     return a.external
-                      ? <a key={a.title} href={a.href} target={a.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className={cls}>{body}</a>
+                      ? <a key={a.title} href={safeLink(a.href)} target={a.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className={cls}>{body}</a>
                       : <Link key={a.title} to={a.href} className={cls}>{body}</Link>;
                   })}
                 </div>

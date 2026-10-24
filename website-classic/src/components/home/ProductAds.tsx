@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Pause, Play, ShoppingCart } from 'lucide-react';
 import { PRODUCT_ADS, useList } from '@/lib/content-lists';
 import { waLink } from '@/lib/site-settings';
+import { safeLink } from '@/lib/utils';
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
@@ -45,7 +46,7 @@ const ProductAds = ({ id = 'product-ads' }: { id?: string }) => {
 
   if (!count || !ad) return null;
   const select = (n: number) => { setIndex(n); setProgress(0); setPlaying(true); setPortrait(false); };
-  const buyHref = ad.buttonLink || waLink(`Hi Tech Guardians, I want to buy ${ad.title}.`);
+  const buyHref = ad.buttonLink ? safeLink(ad.buttonLink) : waLink(`Hi Tech Guardians, I want to buy ${ad.title}.`);
   const external = /^https?:/i.test(buyHref);
 
   return (

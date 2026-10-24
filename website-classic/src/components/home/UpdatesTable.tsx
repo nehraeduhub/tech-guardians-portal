@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { eventDateParts, eventRegisterHref, splitEvents, useEvents } from '@/lib/catalog';
 import { timeAgo, useTopNews } from '@/lib/news';
 import { useLayout } from '@/lib/layout';
+import { safeLink } from '@/lib/utils';
 
 /** Panel with a navy title bar and a "View all" link, as on government portals. */
 const Panel = ({ icon, title, viewAll, children }: { icon: ReactNode; title: string; viewAll: ReactNode; children: ReactNode }) => (
@@ -86,7 +87,7 @@ const UpdatesTable = () => {
                       <tr key={n.url} className={`border-t border-border align-top ${k % 2 ? 'bg-muted/25' : ''}`}>
                         <td className="px-4 py-3 font-extrabold text-accent">{String(k + 1).padStart(2, '0')}</td>
                         <td className="px-2 py-3">
-                          <a href={n.url} target="_blank" rel="noopener noreferrer" className="group font-semibold leading-snug text-foreground hover:text-primary">
+                          <a href={safeLink(n.url)} target="_blank" rel="noopener noreferrer" className="group font-semibold leading-snug text-foreground hover:text-primary">
                             <span className="line-clamp-2">{n.title}</span>
                           </a>
                           <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">{n.source}<ExternalLink className="h-3 w-3" /><span className="sm:hidden">· {timeAgo(n.date)}</span></span>

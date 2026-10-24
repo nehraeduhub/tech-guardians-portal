@@ -4,6 +4,7 @@ import { ArrowRight, Check, ClipboardCheck, Clock, ExternalLink, ListChecks, Mes
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import ScrollReveal from './ScrollReveal';
 import { waLink } from '@/lib/site-settings';
+import { safeLink } from '@/lib/utils';
 
 // "Your Digital Defense Kit": four guides that open step by step.
 // Progress is remembered on the visitor's device.
@@ -157,7 +158,7 @@ const Guide = ({ module: m, onClose }: { module: Module; onClose: () => void }) 
                     </div>
                   )}
                   {s.link && (
-                    <a href={s.link.href} target={s.link.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                    <a href={safeLink(s.link.href)} target={s.link.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
                       {s.link.label} <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   )}

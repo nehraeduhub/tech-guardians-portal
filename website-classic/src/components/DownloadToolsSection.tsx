@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import ScrollReveal from './ScrollReveal';
 import { Shield, Smartphone, Lock, Fingerprint, Download } from 'lucide-react';
+import { safeLink } from '@/lib/utils';
 
 const tools = [
   {
@@ -55,7 +56,7 @@ const DownloadToolsSection = () => (
                 <h3 className="font-display text-sm font-semibold mb-1 text-foreground">{tool.name}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-3">{tool.desc}</p>
                 <a
-                  href={tool.url}
+                  href={safeLink(tool.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-display tracking-wider uppercase text-cyber-green hover:text-primary transition-colors"

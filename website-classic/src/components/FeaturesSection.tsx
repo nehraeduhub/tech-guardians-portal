@@ -4,6 +4,7 @@ import { Globe, Monitor, BookOpen } from 'lucide-react';
 import handsOnImg from '@/assets/hands-on-practical.jpg';
 import awarenessImg from '@/assets/pillar-awareness.jpg';
 import pdfLibImg from '@/assets/pillar-pdf-library.jpg';
+import { safeLink } from '@/lib/utils';
 
 const features = [
   {
@@ -47,7 +48,7 @@ const FeaturesSection = () => (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {features.map((f, i) => (
           <ScrollReveal key={f.title} delay={i * 0.1}>
-            <a href={f.link} className="block h-full">
+            <a href={safeLink(f.link)} className="block h-full">
               <GlassCard glowColor={f.glow} className="h-full cursor-pointer hover:border-primary/40 transition-colors">
                 <div className="mb-5 overflow-hidden rounded-xl border border-border/60">
                   <img src={f.image} alt={f.title} className="aspect-[3/2] w-full object-cover" loading="lazy" width={960} height={640} />

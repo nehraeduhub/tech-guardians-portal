@@ -5,6 +5,7 @@ import ScrollReveal from '@/components/ScrollReveal';
 import SiteFrame from '@/components/SiteFrame';
 import { Badge } from '@/components/ui/badge';
 import { loadBlogs, type BlogPost } from '@/lib/local-content';
+import { safeLink } from '@/lib/utils';
 
 const formatDate = (value?: string | null) => {
   if (!value) return 'Coming soon';
@@ -112,7 +113,7 @@ const BlogPostPage = () => {
                     <h3 className="font-display text-xs font-semibold tracking-wider uppercase text-foreground mb-3">Follow Us</h3>
                     <div className="flex flex-wrap gap-2">
                       {socialLinks.map((s) => (
-                        <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                        <a key={s.label} href={safeLink(s.href)} target="_blank" rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors">
                           <s.icon className="h-3.5 w-3.5" />{s.label}
                         </a>

@@ -5,23 +5,30 @@ import SmartLink from '@/components/pro/SmartLink';
 import { HERO_LAYOUTS, HERO_SLIDES, useList } from '@/lib/content-lists';
 import { eventDateParts, splitEvents, useEvents } from '@/lib/catalog';
 import { useTopNews } from '@/lib/news';
+import { safeLink } from '@/lib/utils';
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 const DELAY = 6500;
 /** Caption colours take turns, so neighbouring slides never look the same. */
 const TONES = ['#12408a', '#138808', '#e07b12', '#6d28d9', '#c62828', '#0e7490', '#1e293b'];
 
+/** Banners are designed at 8:3 (1920 × 720); at that shape they fill the full width exactly. */
+const BANNER_RATIO = 8 / 3;
+
 /**
- * Homepage carousel in the government-portal pattern: the full picture is
- * always visible (posters are never cropped), with a short caption bar and a
- * single button underneath. Photo slides can still carry a headline.
+ * Homepage carousel in the government-portal pattern: full-width 8:3 banners
+ * with a short caption bar and a single button underneath. A poster of any
+ * other shape is shown whole on a soft blurred copy instead of being cropped.
+ * Photo slides can still carry a headline.
  */
 const HeroSection = () => {
   const rows = (useList(HERO_SLIDES) ?? HERO_SLIDES.seed ?? []).filter((r) => r.visible && (r.title || r.image));
   const slides = rows.map((r) => ({
     id: r.id, poster: str(r.layout) !== HERO_LAYOUTS[1], eyebrow: str(r.eyebrow), title: str(r.title), accent: str(r.accent), text: str(r.text),
-    image: str(r.image), buttonText: str(r.buttonText), buttonLink: str(r.buttonLink),
+    image: str(r.image), imageMobile: str(r.imageMobile), buttonText: str(r.buttonText), buttonLink: str(r.buttonLink),
   }));
+  // Natural shape of each loaded poster: banners fill the frame, other shapes get the blurred backdrop.
+  const [ratios, setRatios] = useState<Record<string, number>>({});
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [hover, setHover] = useState(false);
@@ -41,6 +48,8 @@ const HeroSection = () => {
   const i = Math.min(index, count - 1);
   const s = slides[i];
   const tone = TONES[i % TONES.length];
+  const ratio = ratios[s.id];
+  const banner = !ratio || Math.abs(ratio - BANNER_RATIO) < 0.2;
 
   const down = (e: PointerEvent) => { drag.current = e.clientX; };
   const up = (e: PointerEvent) => {
@@ -53,7 +62,7 @@ const HeroSection = () => {
   return (
     <section id="home" aria-roledescription="carousel" aria-label="Tech Guardians highlights" className="relative bg-[hsl(var(--tg-navy))]">
       <div
-        className="relative isolate h-[clamp(210px,52vw,600px)] overflow-hidden select-none"
+        className="relative isolate aspect-[8/3] w-full overflow-hidden select-none"
         onPointerDown={down}
         onPointerUp={up}
         onMouseEnter={() => setHover(true)}
@@ -70,10 +79,22 @@ const HeroSection = () => {
           >
             {s.image && s.poster && (
               <>
-                {/* Soft, blurred copy fills the sides; the poster itself is shown whole. */}
-                <img src={s.image} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" draggable={false} />
-                <div className="absolute inset-0 bg-[hsl(var(--tg-navy)/0.35)]" aria-hidden />
-                <img src={s.image} alt={s.title || 'Tech Guardians'} className="relative mx-auto h-full w-auto max-w-full object-contain shadow-[0_0_60px_rgba(0,0,0,.45)]" draggable={false} />
+                {!banner && (
+                  <>
+                    <img src={s.image} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" draggable={false} />
+                    <div className="absolute inset-0 bg-[hsl(var(--tg-navy)/0.35)]" aria-hidden />
+                  </>
+                )}
+                <picture>
+                  {s.imageMobile && <source media="(max-width: 767px)" srcSet={s.imageMobile} />}
+                  <img
+                    src={s.image}
+                    alt={s.title || 'Tech Guardians'}
+                    onLoad={(e) => { const r = e.currentTarget.naturalWidth / e.currentTarget.naturalHeight; if (r) setRatios((m) => (m[s.id] === r ? m : { ...m, [s.id]: r })); }}
+                    className={banner ? 'absolute inset-0 h-full w-full object-cover' : 'relative mx-auto h-full w-auto max-w-full object-contain shadow-[0_0_60px_rgba(0,0,0,.45)]'}
+                    draggable={false}
+                  />
+                </picture>
               </>
             )}
             {s.image && !s.poster && (
@@ -146,7 +167,7 @@ const LatestUpdates = () => {
   ];
   if (!items.length) return null;
   const row = (copy: number) => items.map((it) => (
-    <a key={`${copy}-${it.key}`} href={it.href} target={it.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" tabIndex={copy ? -1 : 0}
+    <a key={`${copy}-${it.key}`} href={safeLink(it.href)} target={it.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" tabIndex={copy ? -1 : 0}
       className="inline-flex shrink-0 items-center gap-2 px-6 text-sm text-foreground hover:text-primary hover:underline">
       <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">{it.tag}</span>{it.label}
       <span className="ml-4 text-accent" aria-hidden>◆</span>

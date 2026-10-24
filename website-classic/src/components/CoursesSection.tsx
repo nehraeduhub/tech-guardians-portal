@@ -5,6 +5,7 @@ import GlassCard from './GlassCard';
 import { courseVisuals } from '@/lib/site-content';
 import { Globe, Shield, Server, Bot, Key, Smartphone, BookOpen, Skull, Search, Brain, HardDrive, Eye, Bug, Code, Database, Cpu, Network } from 'lucide-react';
 import { isCoursesHomeVisible, loadManagedCourses, type ManagedCourse } from '@/lib/courses-store';
+import { safeLink } from '@/lib/utils';
 
 const iconMap: Record<string, React.ComponentType<any>> = {
   Globe, Shield, Server, Bot, Key, Smartphone, BookOpen, Skull, Search, Brain, HardDrive, Eye, Bug, Code, Database, Cpu, Network,
@@ -70,7 +71,7 @@ const CoursesSection = () => {
             const glowVar = glow === 'blue' ? '--cyber-blue' : glow === 'green' ? '--cyber-green' : '--cyber-purple';
             return (
               <ScrollReveal key={c.id} delay={i * 0.05}>
-                <a href={c.page} className="block h-full group w-[280px] sm:w-[320px] shrink-0 snap-start">
+                <a href={safeLink(c.page)} className="block h-full group w-[280px] sm:w-[320px] shrink-0 snap-start">
                   <GlassCard
                     glowColor={glow}
                     className="relative h-full p-0 overflow-hidden cursor-pointer border-border/40 group-hover:border-primary/50 transition-all duration-500"

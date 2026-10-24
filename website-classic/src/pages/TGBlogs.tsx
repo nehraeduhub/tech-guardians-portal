@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen, Clock, Copy, ExternalLink, Linkedin, MessageCircle
 import SiteFrame from '@/components/SiteFrame';
 import BlogBody from '@/components/blog/BlogBody';
 import { formatDate, loadPost, loadPublishedPosts, postUrl, readMinutes, type BlogPost } from '@/lib/blog-posts';
+import { safeLink } from '@/lib/utils';
 
 // TG Blogs — a clean, text-first blog in the style of Blogger: posts by
 // Tech Guardians and by students (published after admin approval).
@@ -178,7 +179,7 @@ const Article = ({ slug, posts }: { slug: string; posts: BlogPost[] }) => {
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm marker:text-muted-foreground">
               {post.refs.map((r, i) => (
                 <li key={i} className="pl-1">
-                  <a href={r.url} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-start gap-1 break-all font-medium text-primary hover:underline">{r.title || r.url} <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" /></a>
+                  <a href={safeLink(r.url)} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-start gap-1 break-all font-medium text-primary hover:underline">{r.title || r.url} <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" /></a>
                 </li>
               ))}
             </ol>

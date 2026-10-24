@@ -9,6 +9,7 @@ import { newsUrl } from '@/lib/api';
 import SiteFrame from '@/components/SiteFrame';
 import ScrollReveal from '@/components/ScrollReveal';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { safeLink } from '@/lib/utils';
 
 interface FeedItem {
   title: string;
@@ -124,7 +125,7 @@ const ThreatIntel = () => {
                   transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
                 >
                   {[...items, ...items].slice(0, 50).map((n, i) => (
-                    <a key={i} href={n.url} target="_blank" rel="noopener noreferrer"
+                    <a key={i} href={safeLink(n.url)} target="_blank" rel="noopener noreferrer"
                       className="text-xs text-foreground/80 hover:text-cyber-orange transition-colors shrink-0">
                       <span className={`mr-2 text-${sevColor(n.severity)} font-display tracking-wider`}>[{(n.severity || 'INFO').toUpperCase()}]</span>
                       {n.title}
@@ -263,7 +264,7 @@ const ThreatIntel = () => {
               return (
                 <a
                   key={`${n.url}-${i}`}
-                  href={n.url}
+                  href={safeLink(n.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="grid grid-cols-1 md:grid-cols-[110px_1fr_160px_120px] gap-2 md:gap-4 items-start px-5 py-4 border-b border-border/40 last:border-0 hover:bg-muted/20 transition-colors group"
@@ -324,7 +325,7 @@ const ThreatIntel = () => {
                       return (
                         <a
                           key={`arch-${n.url}-${i}`}
-                          href={n.url}
+                          href={safeLink(n.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="grid grid-cols-1 md:grid-cols-[90px_1fr_140px_110px] gap-2 md:gap-4 items-start px-5 py-3.5 border-b border-border/30 last:border-0 hover:bg-muted/20 transition-colors group"

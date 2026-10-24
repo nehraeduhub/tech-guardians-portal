@@ -72,9 +72,11 @@ function tg_sheet_rows(string $url): array
 {
     $isCsv = preg_match('#output=csv|format=csv|\.csv(\?|$)#i', $url);
     $fetch = $isCsv ? $url : $url . (strpos($url, '?') === false ? '?' : '&') . 'action=list';
+    if (!tg_public_url($fetch)) throw new RuntimeException('The Google Sheet link must be a public https:// address.');
     $ch = curl_init($fetch);
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_MAXREDIRS => 5,
-        CURLOPT_TIMEOUT => 10, CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_USERAGENT => 'TechGuardiansSync/1.0']);
+        CURLOPT_TIMEOUT => 10, CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_USERAGENT => 'TechGuardiansSync/1.0',
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS, CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS]);
     $raw = curl_exec($ch);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err = curl_error($ch);

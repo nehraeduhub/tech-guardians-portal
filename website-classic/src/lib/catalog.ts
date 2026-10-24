@@ -56,6 +56,14 @@ export const PRODUCT_ICONS = ['Radar', 'ShieldCheck', 'MonitorCog', 'Code2', 'Gr
 
 export const DEFAULT_PRODUCTS: Product[] = [
   {
+    id: 'cyber-sec-chitti', name: 'Cyber Sec Chitti', category: 'Security Tool',
+    tagline: 'Your offline AI SOC analyst — detect, investigate, report',
+    description: 'Cyber Sec Chitti reads your security logs on your own Linux server, correlates thousands of alerts into real incidents, draws the whole attack path and tells you what happened and what to do next — with no cloud and no GPU needed. Your logs never leave your network.',
+    features: ['70+ detection rules with UEBA and MITRE ATT&CK kill-chain mapping', 'Every alert correlated into incidents with a risk score and evidence IDs', 'Attack diagram: attacker → VPN → workstation → servers → data exfiltration', 'Forensics: what happened on each device and step-by-step response guide', 'Live SIEM analysis from Splunk, Wazuh, Elastic and Graylog (HTTPS or syslog)', 'Runs fully offline on your own server — no cloud, no GPU'],
+    price: '', offer: '', priceNote: 'Licence pricing on request', status: 'Available', icon_name: 'Radar',
+    image: '/images/site/product-chitti.jpg', cta: 'demo', ctaLink: '', trainingIncluded: true, visible: true, featured: true,
+  },
+  {
     id: 'tg-vapt', name: 'TG VAPT Tool', category: 'Security Tool',
     tagline: 'Vulnerability assessment and penetration testing in one console',
     description: 'Scan networks, servers and web applications for known vulnerabilities and misconfigurations, verify findings, and produce a clear, prioritised report your team and auditors can act on.',

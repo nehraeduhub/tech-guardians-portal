@@ -16,8 +16,10 @@
     document.head.appendChild(style);
   });
 
+  var here = (document.currentScript && document.currentScript.src) || '/js/tg-3d.js';
   var s = document.createElement('script');
-  s.src = 'https://unpkg.com/three@0.160.0/build/three.min.js';
+  // Self-hosted copy (no third-party CDN can change the code this page runs).
+  s.src = here.replace(/tg-3d\.js(\?.*)?$/, 'vendor/three-0.160.0.min.js');
   s.onload = init;
   document.head.appendChild(s);
 

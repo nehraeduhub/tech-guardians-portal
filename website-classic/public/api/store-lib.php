@@ -102,6 +102,13 @@ function tg_public_settings(): array
     ];
 }
 
+/** A visitor's text must never start a spreadsheet formula (=, +, -, @, tab, CR): prefix it with an apostrophe. */
+function tg_sheet_safe($v)
+{
+    if (!is_string($v)) return $v;
+    return preg_match('/^[=+\-@\t\r]/', $v) ? "'" . $v : $v;
+}
+
 /** Send an enrollment to the Google Sheet (Apps Script) in the format the sheet already uses. */
 function tg_post_to_sheet(array $record): void
 {
@@ -117,6 +124,7 @@ function tg_post_to_sheet(array $record): void
         'transactionId' => $record['utr'], 'screenshotName' => !empty($record['shot_id']) ? 'uploaded on website' : '',
         'orderId' => $record['id'], 'type' => $record['type'],
     ];
+    $payload = array_map('tg_sheet_safe', $payload);
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_POST => true, CURLOPT_POSTFIELDS => json_encode($payload),

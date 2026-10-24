@@ -17,6 +17,7 @@ import { isCoursesHomeVisible, loadManagedCourses, programPrice, type ManagedCou
 import { courseVisuals } from '@/lib/site-content';
 import { portalIsExternal, portalOnHome, splitEvents, useEvents, usePortals, useProducts } from '@/lib/catalog';
 import { useLayout } from '@/lib/layout';
+import { safeLink } from '@/lib/utils';
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
@@ -32,7 +33,7 @@ const ProgramCard = ({ course, index }: { course: ManagedCourse; index: number }
   const Icon = COURSE_ICONS[course.icon_name] || BookOpen;
   const p = programPrice({ price: course.price, offer: course.offer });
   return (
-    <a href={course.page} className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <a href={safeLink(course.page)} className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="relative aspect-[16/9] overflow-hidden">
         <img src={courseImage(course.page, index)} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />

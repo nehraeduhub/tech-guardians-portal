@@ -10,6 +10,7 @@ import SiteFrame from '@/components/SiteFrame';
 import { waLink } from '@/lib/site-settings';
 import ScrollReveal from '@/components/ScrollReveal';
 import GlassCard from '@/components/GlassCard';
+import { safeLink } from '@/lib/utils';
 
 type Item = {
   name: string;
@@ -343,7 +344,7 @@ const IntelligenceHub = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {quickAccess.map((q) => (
-                <a key={q.name} href={q.url} target="_blank" rel="noopener noreferrer"
+                <a key={q.name} href={safeLink(q.url)} target="_blank" rel="noopener noreferrer"
                   className="glass-card p-5 flex flex-col items-center gap-3 hover:border-cyber-green/40 transition-all group">
                   <div className="w-12 h-12 rounded-xl bg-cyber-green/10 border border-cyber-green/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <q.icon className="w-5 h-5 text-cyber-green" />
@@ -393,7 +394,7 @@ const IntelligenceHub = () => {
                 {section.items.map((item, i) => (
                   <motion.a
                     key={item.name}
-                    href={item.url}
+                    href={safeLink(item.url)}
                     target={item.url.startsWith('tel:') ? '_self' : '_blank'}
                     rel="noopener noreferrer"
                     initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}

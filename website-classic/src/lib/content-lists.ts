@@ -153,10 +153,10 @@ export const HOME_ECOSYSTEM: ListDef = {
 export const HERO_LAYOUTS = ['Poster — picture already has its text', 'Photo — show the headline on the picture'] as const;
 
 export const HERO_SLIDES: ListDef = {
-  // v2: the designed poster slides. Slides saved under the old key are not read.
-  key: 'tg_hero_slides_v2',
+  // v3: full-width 8:3 banners. Slides saved under older keys are not read.
+  key: 'tg_hero_slides_v3',
   title: 'Homepage carousel',
-  description: 'The slides at the top of the homepage. "Poster" slides show the whole picture (nothing is cropped) with a short caption and button underneath; keep the caption short and do not repeat the words already on the picture. "Photo" slides show the headline on top of the photo. Posters at 1600 × 900 px look best; square posters work too.',
+  description: 'The full-width banners at the top of the homepage. Make banner pictures 1920 × 720 px (8:3) and keep text and logos inside the middle 1500 × 600 px; they then fill the full width with nothing blurred or cut off. Pictures of any other shape are shown whole on a soft blurred background. Keep the caption short and do not repeat words already on the picture. "Photo" slides show the headline on top of the photo.',
   itemLabel: 'slide',
   fields: [
     { key: 'layout', label: 'Slide type', type: 'select', options: [...HERO_LAYOUTS] },
@@ -169,13 +169,12 @@ export const HERO_SLIDES: ListDef = {
     { key: 'text', label: 'Photo slides only: text', type: 'textarea' },
   ],
   seed: seed([
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/training.webp', title: 'Learn by doing in live, mentor-led labs', buttonText: 'Explore Training', buttonLink: '/training' },
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/events.webp', title: 'Seats are limited — register in a minute', buttonText: 'See Events', buttonLink: '/events' },
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/pdf-handbooks.webp', title: '43 handbooks — look inside before you buy', buttonText: 'Open PDF Store', buttonLink: '/pdf-store' },
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/cyber-awareness.webp', title: 'Bring a cyber awareness session to your school or office', buttonText: 'Book a Session', buttonLink: '/courses/awareness-booking.html' },
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/products.webp', title: 'Ready-to-use tools for teams and institutions', buttonText: 'View Products', buttonLink: '/products' },
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/secure-solutions.webp', title: 'From idea to launch — tested for security first', buttonText: 'Start a Project', buttonLink: '/products' },
-    { layout: HERO_LAYOUTS[0], image: '/images/hero/cyber-news-forensic.webp', title: 'Today’s cyber news and 78 free forensic tools', buttonText: 'Read Cyber News', buttonLink: '/cyber-news' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/banner-training.webp', imageMobile: '/images/hero/banner-training-m.webp', title: 'Learn by doing in live, mentor-led labs', buttonText: 'Explore Training', buttonLink: '/training' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/banner-news-forensic.webp', imageMobile: '/images/hero/banner-news-forensic-m.webp', title: 'Today’s cyber news and free forensic tools in one place', buttonText: 'Read Cyber News', buttonLink: '/cyber-news' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/banner-events.webp', imageMobile: '/images/hero/banner-events-m.webp', title: 'Seats are limited — register in a minute', buttonText: 'See Events', buttonLink: '/events' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/banner-handbooks.webp', imageMobile: '/images/hero/banner-handbooks-m.webp', title: '43 handbooks — look inside before you buy', buttonText: 'Open PDF Store', buttonLink: '/pdf-store' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/banner-awareness.webp', imageMobile: '/images/hero/banner-awareness-m.webp', title: 'Bring a cyber awareness session to your school or office', buttonText: 'Book a Session', buttonLink: '/courses/awareness-booking.html' },
+    { layout: HERO_LAYOUTS[0], image: '/images/hero/banner-products.webp', imageMobile: '/images/hero/banner-products-m.webp', title: 'Ready-to-use security tools — now with Cyber Sec Chitti', buttonText: 'View Products', buttonLink: '/products' },
   ]),
 };
 
@@ -195,7 +194,8 @@ export const PRODUCT_ADS: ListDef = {
     { key: 'buttonLink', label: 'Button link', type: 'url', placeholder: '/products/tg-vapt or https://…' },
   ],
   seed: seed([
-    { title: 'Automated VAPT Platform', tagline: 'Plug, scan, report — portable security testing that confirms real vulnerabilities.', video: '/videos/ads/vapt-platform.mp4', videoWebm: '/videos/ads/vapt-platform.webm', poster: '/videos/ads/vapt-platform.jpg', badge: 'New', price: '', buttonText: 'Buy Now', buttonLink: '/products/tg-vapt' },
+    { title: 'Cyber Sec Chitti', tagline: 'Your offline AI SOC analyst — turns 10,000 alerts into the one real attack, with the full attack path and next steps.', video: '/videos/ads/cyber-sec-chitti.mp4', videoWebm: '/videos/ads/cyber-sec-chitti.webm', poster: '/videos/ads/cyber-sec-chitti.jpg', badge: 'New', price: '', buttonText: 'Buy Now', buttonLink: '/products/cyber-sec-chitti' },
+    { title: 'Automated VAPT Platform', tagline: 'Plug, scan, report — portable security testing that confirms real vulnerabilities.', video: '/videos/ads/vapt-platform.mp4', videoWebm: '/videos/ads/vapt-platform.webm', poster: '/videos/ads/vapt-platform.jpg', badge: 'Portable', price: '', buttonText: 'Buy Now', buttonLink: '/products/tg-vapt' },
     { title: 'AI Social Media Auto-Pilot', tagline: 'Daily cyber-awareness posts, reels and stories — written, designed and posted automatically.', video: '/videos/ads/ai-autopilot.mp4', videoWebm: '/videos/ads/ai-autopilot.webm', poster: '/videos/ads/ai-autopilot.jpg', badge: 'Bestseller', price: '', buttonText: 'Buy Now', buttonLink: '' },
     { title: 'Cyber Crime Awareness Demo Kit', tagline: '24 real scams decoded with live demos — ready for schools, colleges and offices.', video: '/videos/ads/awareness-kit.mp4', videoWebm: '/videos/ads/awareness-kit.webm', poster: '/videos/ads/awareness-kit.jpg', badge: 'For institutions', price: '', buttonText: 'Buy Now', buttonLink: '' },
   ]),

@@ -1,5 +1,6 @@
-# Uploaded images only: never run scripts from this folder.
-<FilesMatch "\.(php\d?|phtml|phar|pl|py|cgi|sh|html?|svg)$">
+# Uploaded images and videos only. Nothing in this folder may run as code.
+Options -Indexes -ExecCGI
+<FilesMatch "\.(php\d?|phtml|phar|pht|cgi|pl|py|sh|asp|aspx|jsp|html?|svg|shtml)$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
@@ -7,4 +8,10 @@
     Deny from all
   </IfModule>
 </FilesMatch>
-Options -Indexes
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Content-Security-Policy "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; sandbox"
+</IfModule>

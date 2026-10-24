@@ -157,12 +157,13 @@
   function fail(box, msg) { $(box).textContent = msg; $(box).classList.add('show'); }
   function clear(box) { $(box).classList.remove('show'); }
 
+  function escHtml(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function renderSummary() {
     var p = state.product;
     $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : 'Course enrollment';
     $('sum-title').textContent = state.title || 'Choose a course';
     $('sum-sub').textContent = p ? (p.pages ? p.pages + ' pages · ' : '') + (p.format || 'PDF') : '';
-    $('sum-media').innerHTML = p && p.cover ? '<img src="' + p.cover + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : '🎓') + '</div>';
+    $('sum-media').innerHTML = p && p.cover ? '<img src="' + escHtml(p.cover) + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : '🎓') + '</div>';
     var hasOffer = p && p.offerPrice > 0 && p.price > p.offerPrice;
     $('row-price').hidden = !hasOffer; $('row-discount').hidden = !hasOffer;
     if (hasOffer) { $('sum-price').textContent = rupees(p.price); $('sum-discount').textContent = '− ' + rupees(p.price - p.offerPrice); }
@@ -302,11 +303,11 @@
     $('done-text').textContent = state.type === 'pdf'
       ? (approved ? 'Download it now. You can download again later from your order link.' : 'We are verifying your payment, usually within a few hours. Your order page unlocks the download as soon as it is approved.')
       : 'We will verify your payment within 2–4 hours and share course access on WhatsApp and email.';
-    $('done-status').innerHTML = '<span class="status ' + d.status + '">' + (approved ? '✓ Approved' : '⏳ Verifying payment') + '</span>';
+    $('done-status').innerHTML = '<span class="status ' + escHtml(d.status) + '">' + (approved ? '✓ Approved' : '⏳ Verifying payment') + '</span>';
     var wa = (state.settings.whatsapp || '919929193136').replace(/\D/g, '');
     var msg = 'Hi Tech Guardians, I have paid for "' + state.title + '" (' + rupees(state.amount) + '). UTR: ' + $('utr').value.trim() + '. Order ID: ' + d.id;
     $('done-actions').innerHTML =
-      (approved && state.type === 'pdf' ? '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + d.id + '&token=' + d.token + '">⬇ Download PDF</a>' : '<a class="btn btn-pri" href="' + d.orderUrl + '">Open my order page</a>') +
+      (approved && state.type === 'pdf' ? '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + encodeURIComponent(d.id) + '&token=' + encodeURIComponent(d.token) + '">⬇ Download PDF</a>' : '<a class="btn btn-pri" href="' + escHtml(String(d.orderUrl || '').indexOf('/order.html?') === 0 ? d.orderUrl : '/order.html') + '">Open my order page</a>') +
       '<a class="btn btn-ghost" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">💬 WhatsApp us</a>';
     $('acct-link').href = '/account.html?' + new URLSearchParams({ name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.trim() }).toString() + '#register';
     show('done'); renderMyOrders();

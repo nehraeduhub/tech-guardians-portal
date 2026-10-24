@@ -39,6 +39,7 @@
     applyCourse();
     applyLegal();
   }
+  function escHtml(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function applyCourse() {
     var match = location.pathname.match(/\/courses\/([^/]+)\.html$/);
     if (!match || match[1] === 'payment' || match[1] === 'awareness-booking') return;
@@ -52,8 +53,8 @@
       });
       document.querySelectorAll('.tg-price-tag').forEach(function (tag) {
         if (!course.showPrice || !amount) { tag.style.display = 'none'; return; }
-        var oldPrice = course.offer && course.price ? '<span style="text-decoration:line-through;color:rgba(255,255,255,0.45);font-size:13px;">' + course.price + '</span>' : '';
-        var currentPrice = '<span style="color:#00FF9C;font-size:18px;">' + (course.offer || course.price) + '</span>';
+        var oldPrice = course.offer && course.price ? '<span style="text-decoration:line-through;color:rgba(255,255,255,0.45);font-size:13px;">' + escHtml(course.price) + '</span>' : '';
+        var currentPrice = '<span style="color:#00FF9C;font-size:18px;">' + escHtml(course.offer || course.price) + '</span>';
         tag.innerHTML = oldPrice + currentPrice;
         tag.style.display = 'inline-flex';
       });

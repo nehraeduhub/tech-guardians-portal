@@ -8,6 +8,7 @@ import {
 import SiteFrame from '@/components/SiteFrame';
 import { newsUrl } from '@/lib/api';
 import { NEWS_ALERTS, useList } from '@/lib/content-lists';
+import { safeLink } from '@/lib/utils';
 
 interface NewsItem {
   title: string;
@@ -160,7 +161,7 @@ const CyberNewsPortal = () => {
             <div className="tg-ticker relative flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
               <div className="tg-ticker-track flex w-max gap-10 whitespace-nowrap text-sm">
                 {[...ticker, ...ticker].map((n, i) => (
-                  <a key={i} href={n.url} target="_blank" rel="noopener noreferrer" className="text-foreground/85 hover:text-primary" aria-hidden={i >= ticker.length || undefined} tabIndex={i >= ticker.length ? -1 : undefined}>
+                  <a key={i} href={safeLink(n.url)} target="_blank" rel="noopener noreferrer" className="text-foreground/85 hover:text-primary" aria-hidden={i >= ticker.length || undefined} tabIndex={i >= ticker.length ? -1 : undefined}>
                     <span className="mr-2 text-primary">■</span>{n.title}
                   </a>
                 ))}
@@ -271,7 +272,7 @@ const CyberNewsPortal = () => {
 
             {lead && (
               <section className="mb-8 grid gap-5 md:grid-cols-[1.35fr_1fr]">
-                <a href={lead.url} target="_blank" rel="noopener noreferrer" className="group overflow-hidden rounded-2xl border border-border bg-card/70 transition-colors hover:border-primary/50">
+                <a href={safeLink(lead.url)} target="_blank" rel="noopener noreferrer" className="group overflow-hidden rounded-2xl border border-border bg-card/70 transition-colors hover:border-primary/50">
                   <Thumb item={lead} className="aspect-[16/9]" />
                   <div className="p-5">
                     <div className="flex items-center gap-2"><span className="rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white">Top story</span><Tag text={lead.category} /></div>
@@ -282,7 +283,7 @@ const CyberNewsPortal = () => {
                 </a>
                 <div className="grid gap-5">
                   {seconds.map((n) => (
-                    <a key={n.url} href={n.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/70 transition-colors hover:border-primary/50">
+                    <a key={n.url} href={safeLink(n.url)} target="_blank" rel="noopener noreferrer" className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/70 transition-colors hover:border-primary/50">
                       <Thumb item={n} className="aspect-[21/9]" />
                       <div className="p-4">
                         <Tag text={n.category} />
@@ -301,7 +302,7 @@ const CyberNewsPortal = () => {
                 {view === 'grid' ? (
                   <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                     {latest.slice(0, limit).map((n, i) => (
-                      <a key={`${n.url}-${i}`} href={n.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/60 transition-colors hover:border-primary/50">
+                      <a key={`${n.url}-${i}`} href={safeLink(n.url)} target="_blank" rel="noopener noreferrer" className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/60 transition-colors hover:border-primary/50">
                         <Thumb item={n} className="aspect-[16/9]" />
                         <div className="flex flex-1 flex-col p-4">
                           <Tag text={n.category} />
@@ -316,7 +317,7 @@ const CyberNewsPortal = () => {
                   <ul className="divide-y divide-border rounded-xl border border-border bg-card/60">
                     {latest.slice(0, limit).map((n, i) => (
                       <li key={`${n.url}-${i}`}>
-                        <a href={n.url} target="_blank" rel="noopener noreferrer" className="group flex gap-4 p-4 hover:bg-muted/30">
+                        <a href={safeLink(n.url)} target="_blank" rel="noopener noreferrer" className="group flex gap-4 p-4 hover:bg-muted/30">
                           <Thumb item={n} className="hidden h-20 w-32 shrink-0 rounded-lg sm:block" />
                           <div className="min-w-0">
                             <Tag text={n.category} />
@@ -357,7 +358,7 @@ const CyberNewsPortal = () => {
                   {filtered.slice(0, 5).map((n, i) => (
                     <li key={n.url} className="flex gap-3">
                       <span className="font-display text-2xl font-bold leading-none text-primary/60 tabular-nums">{i + 1}</span>
-                      <a href={n.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium leading-snug hover:text-primary">{n.title}<span className="mt-1 block text-[11px] text-muted-foreground">{n.source} · {timeAgo(n.date)}</span></a>
+                      <a href={safeLink(n.url)} target="_blank" rel="noopener noreferrer" className="text-sm font-medium leading-snug hover:text-primary">{n.title}<span className="mt-1 block text-[11px] text-muted-foreground">{n.source} · {timeAgo(n.date)}</span></a>
                     </li>
                   ))}
                 </ol>

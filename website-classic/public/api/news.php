@@ -95,7 +95,7 @@ foreach ((array)($cfg['custom'] ?? []) as $c) {
     if (!is_array($c) || ($c['enabled'] ?? true) === false) continue;
     $url = trim((string)($c['url'] ?? ''));
     $f = ($c['feed'] ?? '') === 'india' ? 'india' : 'global';
-    if (!preg_match('#^https?://[^\s]+$#i', $url) || strlen($url) > 500) continue;
+    if (!preg_match('#^https?://[^\s]+$#i', $url) || strlen($url) > 500 || !tg_public_url($url)) continue;
     $name = mb_substr(trim((string)($c['name'] ?? '')), 0, 60) ?: (parse_url($url, PHP_URL_HOST) ?: 'Custom feed');
     $cat = mb_substr(trim((string)($c['category'] ?? '')), 0, 40);
     $SOURCES[$f][] = [$url, $name, $f === 'india' ? ($cat ?: 'Cyber Crime') : null, 10];

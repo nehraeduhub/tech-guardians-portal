@@ -83,6 +83,10 @@ function tg_start_session(): void
         || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
     // Keep idle sessions on the server for as long as the sign-in rules allow.
     ini_set('session.gc_maxlifetime', '43200');
+    // Refuse session IDs the server did not create (session fixation) and never accept them from URLs.
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.use_trans_sid', '0');
     session_name('tg_admin');
     session_set_cookie_params([
         'lifetime' => 0,
@@ -218,6 +222,22 @@ function tg_rate_limit(string $bucket, int $max, int $window): void
         return $all;
     });
     if ($blocked) tg_error('Too many requests. Please try again later.', 429);
+}
+
+// Outgoing requests (news feeds, Google Sheet sync) may only go to public
+// http(s) servers — never to this server, the hosting network or cloud metadata.
+function tg_public_url(string $url): bool
+{
+    if (!preg_match('#^https?://#i', $url) || strlen($url) > 2000) return false;
+    $host = parse_url($url, PHP_URL_HOST);
+    if (!is_string($host) || $host === '') return false;
+    $host = trim($host, '[]');
+    $ips = filter_var($host, FILTER_VALIDATE_IP) ? [$host] : (gethostbynamel($host) ?: []);
+    if (!$ips) return false;
+    foreach ($ips as $ip) {
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) return false;
+    }
+    return true;
 }
 
 // Decode a base64 image data URL and check it really is an image.

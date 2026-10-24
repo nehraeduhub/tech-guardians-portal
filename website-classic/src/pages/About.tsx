@@ -12,6 +12,7 @@ import tgLogo from '@/assets/tg-logo.png';
 import dkPhoto from '@/assets/founder-dk-jha.jpg';
 import rjPhoto from '@/assets/founder-rj-nehra.jpg';
 import teamPhoto from '@/assets/hands-on-practical.jpg';
+import { safeLink } from '@/lib/utils';
 
 const services = [
   { icon: Users, title: 'Cyber awareness programmes', text: 'Live sessions for schools, colleges, offices and communities on scams, phishing, social media safety and reporting cyber crime — online or on campus.', link: '/courses/awareness-booking.html' },
@@ -111,7 +112,7 @@ const About = () => {
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => (
             <ScrollReveal key={s.title} delay={(i % 3) * 0.06}>
-              <a href={s.link} className="glass-card group flex h-full flex-col p-7">
+              <a href={safeLink(s.link)} className="glass-card group flex h-full flex-col p-7">
                 <span className="grid h-12 w-12 place-items-center rounded-xl border border-primary/40 bg-primary/10 text-primary"><s.icon className="h-6 w-6" /></span>
                 <h3 className="mt-5 text-lg font-semibold text-foreground group-hover:text-primary">{s.title}</h3>
                 <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{s.text}</p>
