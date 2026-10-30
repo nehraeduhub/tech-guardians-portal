@@ -30,11 +30,6 @@ const useContentHelpers = () => {
       btn.textContent = 'copied';
       window.setTimeout(() => { btn.textContent = 'copy'; }, 900);
     };
-    // The master quiz has no questions in the room files: reveal the reward note.
-    w.gradeQuiz = () => {
-      const reward = document.getElementById('quiz-reward');
-      if (reward) reward.style.display = '';
-    };
   }, []);
 };
 
@@ -335,6 +330,7 @@ const CtfTaskView = ({ slug, t }: { slug: string; t: number }) => {
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Flag className="h-4 w-4" />} Submit flag
                 </button>
               </form>
+              <p className="mt-2 text-xs text-muted-foreground">Each • is one character of the answer. The answer is taught in <b>Learn the concept</b> above; plain letters (no 0/1/3/4 swaps) are accepted too.</p>
               {msg && <p role="alert" className="mt-2 text-sm font-semibold text-destructive">{msg}</p>}
               {!!task.hints.length && (
                 <div className="mt-4">

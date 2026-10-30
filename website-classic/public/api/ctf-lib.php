@@ -78,3 +78,19 @@ function tg_ctf_progress(string $key): array
     $all = tg_read_json('ctf-progress.json', []);
     return is_array($all[$key] ?? null) ? $all[$key] : [];
 }
+
+/** Plain-letter form of an answer, so TG{H1DD3N-IN plain sight} and hidden_in_plain_sight both match. */
+function tg_ctf_canon(string $s): string
+{
+    $s = mb_strtolower(trim($s));
+    $inner = preg_match('/^tg\{(.*)\}$/s', $s, $m) ? $m[1] : $s;
+    $inner = strtr(preg_replace('/[\s\-]+/u', '_', $inner), ['0' => 'o', '1' => 'i', '3' => 'e', '4' => 'a', '5' => 's', '7' => 't', '@' => 'a', '$' => 's']);
+    return 'tg{' . trim(preg_replace('/_+/', '_', $inner), '_') . '}';
+}
+
+/** Is $flag the answer to task $t? Exact flags match `h`; plain-letter answers match `hc`. */
+function tg_ctf_flag_ok(array $t, string $flag): bool
+{
+    if (hash_equals((string)$t['h'], hash('sha256', mb_strtolower(trim($flag))))) return true;
+    return !empty($t['hc']) && hash_equals((string)$t['hc'], hash('sha256', tg_ctf_canon($flag)));
+}

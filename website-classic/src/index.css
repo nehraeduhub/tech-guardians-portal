@@ -461,6 +461,10 @@
 .ctf-prose .email .eh { background: hsl(var(--muted)); padding: 0.7rem 0.9rem; border-bottom: 1px solid hsl(var(--border)); font-size: 0.92em; }
 .ctf-prose .email .eb { padding: 0.9rem; }
 .ctf-prose .note { margin-top: 0.75rem; border-radius: 8px; background: rgba(19, 136, 8, 0.08); border: 1px solid rgba(19, 136, 8, 0.3); padding: 0.75rem 0.9rem; }
+.ctf-prose .keypoint { margin: 1rem 0 0; border-left: 4px solid #ff9933; border-radius: 0 8px 8px 0; background: #fff4e6; padding: 0.75rem 0.95rem; text-align: left; }
+.ctf-prose .keypoint .kp { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #a3540a; margin-bottom: 0.35rem; }
+.ctf-prose .keypoint p { margin-bottom: 0.4rem; }
+.ctf-prose .keypoint p:last-child { margin-bottom: 0; }
 .ctf-prose .row { margin-top: 0.75rem; }
 .ctf-prose .btn.acc { border-radius: 6px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 700; padding: 0.45rem 1rem; }
 .ctf-prose .res { margin-top: 0.5rem; font-weight: 700; }

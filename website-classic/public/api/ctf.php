@@ -143,9 +143,9 @@ if ($action === 'submit') {
     [$room, $t] = tg_ctf_task_or_404();
     $id = (int)$t['id'];
     if (!tg_ctf_can_open($room, $id, $viewer)) tg_ctf_locked();
-    $flag = mb_strtolower(trim(mb_substr((string)($body['flag'] ?? ''), 0, 300)));
+    $flag = trim(mb_substr((string)($body['flag'] ?? ''), 0, 300));
     if ($flag === '') tg_error('Enter the flag first.');
-    if (!hash_equals((string)$t['h'], hash('sha256', $flag))) tg_json(['ok' => false]);
+    if (!tg_ctf_flag_ok($t, $flag)) tg_json(['ok' => false]);
     $slug = $room['slug'];
     $key = $viewer['key'];
     tg_update_json('ctf-progress.json', function ($all) use ($key, $slug, $id) {
