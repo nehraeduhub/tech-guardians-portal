@@ -37,10 +37,12 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<null | 'portals' | 'courses'>(null);
+  const [mobileGroup, setMobileGroup] = useState<null | 'portals' | 'courses'>(null);
   const [showCourses, setShowCourses] = useState(true);
   const [organizationPortals, setOrganizationPortals] = useState<OrganizationOffering[]>([]);
   const [showAbout, setShowAbout] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
+  const hovered = useRef<null | 'portals' | 'courses'>(null);
   const home = useHomeContent();
   const layout = useLayout();
   const pageOn = (path: string) => !layout.hiddenPages.includes(path.split(/[?#]/)[0]);
@@ -72,9 +74,20 @@ const Navbar = () => {
     const onClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpenMenu(null);
     };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setOpenMenu(null); setMobileOpen(false); }
+    };
     document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
   }, []);
+
+  // Start every visit to the phone menu with its groups collapsed.
+  useEffect(() => { if (!mobileOpen) setMobileGroup(null); }, [mobileOpen]);
+  useEffect(() => { setMobileOpen(false); setOpenMenu(null); }, [location.pathname]);
 
   const goToSection = (label: string) => {
     const id = toSectionId(label);
@@ -102,6 +115,41 @@ const Navbar = () => {
   };
 
   const isActive = (path: string) => (path === '/' ? location.pathname === '/' : location.pathname.startsWith(path));
+  /** A phone-menu group that expands and collapses. */
+  const mobileGroupBlock = (key: 'portals' | 'courses', title: string, items: { label: string; path: string; external?: boolean }[]) => {
+    const open = mobileGroup === key;
+    return (
+      <div className="rounded-lg">
+        <button onClick={() => setMobileGroup(open ? null : key)} aria-expanded={open} aria-controls={`m-${key}`}
+          className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-semibold transition-colors hover:bg-muted ${open ? 'bg-muted text-primary' : 'text-foreground'}`}>
+          {title}
+          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        </button>
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div id={`m-${key}`} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+              <div className="ml-4 flex flex-col border-l-2 border-[#ff9933]/60 py-1 pl-2">
+                {items.map((c) => (
+                  <button key={c.path} onClick={() => openLink(c.path, c.external)} className="rounded-md px-3 py-2.5 text-left text-sm text-foreground hover:bg-muted">
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  /** Desktop dropdowns open on hover (mouse) and on click/tap (keyboard, touch). */
+  const hoverProps = (key: 'portals' | 'courses') => ({
+    onMouseEnter: () => { hovered.current = key; setOpenMenu(key); },
+    onMouseLeave: () => { hovered.current = null; setOpenMenu((m) => (m === key ? null : m)); },
+  });
+  // A click keeps a hover-opened menu open; otherwise it toggles.
+  const toggleMenu = (key: 'portals' | 'courses') => setOpenMenu((m) => (m === key && hovered.current !== key ? null : key));
+
   const menuLink = (label: string, onClick: () => void, active = false) => (
     <button key={label} onClick={onClick} className={`tg-menu-link ${active ? 'active' : ''}`}>{label}</button>
   );
@@ -175,6 +223,8 @@ const Navbar = () => {
             >
               <div className="flex flex-col gap-1 p-4">
                 <button onClick={() => goToSection('Home')} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">Home</button>
+                {showCourses && mobileGroupBlock('courses', 'Training Programs', [...allCourses, { label: 'All Training Programs →', path: '/training' }])}
+                {mobileGroupBlock('portals', 'TG Portals', tgPortals)}
                 {sectionLinks.map((link) => (
                   <button key={link} onClick={() => goToSection(link)} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
                     {link}
@@ -197,23 +247,6 @@ const Navbar = () => {
                   </button>
                 )}
 
-                {showCourses && (
-                  <>
-                    <div className="mt-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Training Programs</div>
-                    {allCourses.map((c) => (
-                      <button key={c.path} onClick={() => openLink(c.path)} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
-                        {c.label}
-                      </button>
-                    ))}
-                  </>
-                )}
-
-                <div className="mt-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">TG Portals</div>
-                {tgPortals.map((p) => (
-                  <button key={p.path} onClick={() => openLink(p.path, p.external)} className="rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-muted">
-                    {p.label}
-                  </button>
-                ))}
 
                 {pageOn(CTF_PATH) && (
                   <button onClick={() => openLink(CTF_PATH)} className="mt-2 flex items-center justify-center gap-2 rounded-md bg-[hsl(var(--tg-navy))] px-5 py-3 text-sm font-bold text-white ring-1 ring-[#ff9933]/60">
@@ -240,9 +273,9 @@ const Navbar = () => {
         <div ref={menuRef} className="container mx-auto flex items-center px-4">
           {menuLink('Home', () => goToSection('Home'), isActive('/'))}
 
-          <div className="relative" style={{ display: showCourses ? undefined : 'none' }}>
-            <button onClick={() => setOpenMenu(openMenu === 'courses' ? null : 'courses')} aria-expanded={openMenu === 'courses'} className={`tg-menu-link ${isActive('/training') ? 'active' : ''}`}>
-              Training Programs <ChevronDown className="h-3.5 w-3.5" />
+          <div className="relative" style={{ display: showCourses ? undefined : 'none' }} {...hoverProps('courses')}>
+            <button onClick={() => toggleMenu('courses')} aria-expanded={openMenu === 'courses'} className={`tg-menu-link ${isActive('/training') ? 'active' : ''}`}>
+              Training Programs <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openMenu === 'courses' ? 'rotate-180' : ''}`} />
             </button>
             {openMenu === 'courses' && (
               <div className="absolute left-0 top-full z-50 w-72 overflow-hidden rounded-b-md border border-border bg-popover py-1 shadow-xl">
@@ -256,9 +289,9 @@ const Navbar = () => {
             )}
           </div>
 
-          <div className="relative">
-            <button onClick={() => setOpenMenu(openMenu === 'portals' ? null : 'portals')} aria-expanded={openMenu === 'portals'} className="tg-menu-link">
-              TG Portals <ChevronDown className="h-3.5 w-3.5" />
+          <div className="relative" {...hoverProps('portals')}>
+            <button onClick={() => toggleMenu('portals')} aria-expanded={openMenu === 'portals'} className="tg-menu-link">
+              TG Portals <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openMenu === 'portals' ? 'rotate-180' : ''}`} />
             </button>
             {openMenu === 'portals' && (
               <div className="absolute left-0 top-full z-50 w-64 overflow-hidden rounded-b-md border border-border bg-popover py-1 shadow-xl">
