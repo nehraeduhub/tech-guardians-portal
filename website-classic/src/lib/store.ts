@@ -36,7 +36,7 @@ export interface PaymentSettings {
 
 export interface Order {
   id: string;
-  type: 'course' | 'pdf' | 'ctf' | 'sheet';
+  type: 'course' | 'pdf' | 'ctf' | 'product' | 'sheet';
   status: 'pending' | 'approved' | 'rejected' | 'recorded';
   name?: string;
   email?: string;
@@ -51,6 +51,11 @@ export interface Order {
   productId?: string;
   source?: string;
   downloads?: number;
+  /** Coupon used, its percent off, the full price and the rupees saved. */
+  coupon?: string;
+  percent?: number;
+  price?: string;
+  discount?: number;
 }
 
 export interface SheetSyncStatus { at: number; ok?: boolean; rows?: number; added?: number; error?: string; enabled?: boolean }

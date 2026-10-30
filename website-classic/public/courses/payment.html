@@ -93,17 +93,18 @@
 
         <!-- Step 3 -->
         <form id="step3" hidden novalidate>
-          <h2>Confirm your payment</h2>
-          <label class="field"><span>UPI transaction ID (UTR)</span><input id="utr" inputmode="text" autocomplete="off" placeholder="e.g. 412345678901" required/>
+          <h2 id="step3-title">Confirm your payment</h2>
+          <p class="free-note" id="free-note" hidden>🎉 Your coupon covers the full price — <b>nothing to pay</b>. Confirm below to get your order.</p>
+          <label class="field" id="utr-field"><span>UPI transaction ID (UTR)</span><input id="utr" inputmode="text" autocomplete="off" placeholder="e.g. 412345678901" required/>
             <small class="hint">Find it in your UPI app under the payment details. Usually 12 digits.</small></label>
-          <label class="field"><span>Payment screenshot (recommended)</span>
+          <label class="field" id="shot-field"><span>Payment screenshot (recommended)</span>
             <span class="drop" id="drop"><span class="ico" id="drop-ico">🧾</span><span id="drop-text">Tap to upload the payment success screenshot</span>
             <input id="shot" type="file" accept="image/*" hidden/></span></label>
-          <label class="check"><input type="checkbox" id="agree"/><span>I confirm I have paid the amount above and the details are correct.</span></label>
+          <label class="check"><input type="checkbox" id="agree"/><span id="agree-text">I confirm I have paid the amount above and the details are correct.</span></label>
           <label class="check"><input type="checkbox" id="agree-terms"/><span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="/terms#refunds" target="_blank" rel="noopener">Refund Policy</a>, and I will keep my order details safe for future login.</span></label>
           <div class="err" id="err3" role="alert"></div>
           <div class="btn-row">
-            <button class="btn btn-ghost" type="button" data-back="2">← Back</button>
+            <button class="btn btn-ghost" type="button" data-back="2" id="back3">← Back</button>
             <button class="btn btn-pri" type="submit" id="submit">Submit payment</button>
           </div>
         </form>
@@ -129,7 +130,14 @@
         <div class="sum-rows">
           <div id="row-price" hidden><span>Price</span><s id="sum-price"></s></div>
           <div id="row-discount" hidden><span>Discount</span><span id="sum-discount" style="color:var(--green)"></span></div>
+          <div id="row-coupon" hidden><span id="sum-coupon-label">Coupon</span><span id="sum-coupon" style="color:var(--green)"></span></div>
           <div class="total"><span>Total</span><span id="sum-total">₹0</span></div>
+        </div>
+        <div class="coupon" id="coupon-box">
+          <label for="coupon-code">Have a coupon code?</label>
+          <div class="coupon-row" id="coupon-form"><input id="coupon-code" autocomplete="off" maxlength="24" placeholder="Enter code"/><button type="button" class="btn btn-ghost" id="coupon-apply">Apply</button></div>
+          <div id="coupon-applied" hidden></div>
+          <div class="coupon-msg" id="coupon-msg" role="status"></div>
         </div>
         <ul class="perks" id="perks"></ul>
         <div class="help">Need help? <a id="help-wa" href="#" target="_blank" rel="noopener">WhatsApp us</a> · <span id="help-email"></span></div>
@@ -148,9 +156,11 @@
   };
   var MY = 'tg_my_orders';
   var params = new URLSearchParams(location.search);
-  var state = { type: 'course', product: null, title: '', amount: 0, settings: {}, shot: '' };
+  var state = { type: 'course', product: null, title: '', amount: 0, settings: {}, shot: '', coupon: null };
   var $ = function (id) { return document.getElementById(id); };
   var rupees = function (n) { return '₹' + Number(n).toLocaleString('en-IN'); };
+  /** What the buyer pays: the coupon total from the server, else the price. */
+  var payable = function () { return state.coupon ? state.coupon.total : state.amount; };
 
   function show(step) {
     ['step1', 'step2', 'step3', 'done'].forEach(function (id, i) { $(id).hidden = id !== step; });
@@ -167,17 +177,26 @@
   function escHtml(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function renderSummary() {
     var p = state.product;
-    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : state.type === 'ctf' ? 'CTF Portal plan' : 'Course enrollment';
+    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : state.type === 'ctf' ? 'CTF Portal plan' : state.type === 'product' ? 'Product / service' : 'Course enrollment';
     $('sum-title').textContent = state.title || 'Choose a course';
     $('sum-sub').textContent = p ? (p.pages ? p.pages + ' pages · ' : '') + (p.format || 'PDF') : '';
-    $('sum-media').innerHTML = p && p.cover ? '<img src="' + escHtml(p.cover) + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : state.type === 'ctf' ? '🚩' : '🎓') + '</div>';
+    $('sum-media').innerHTML = p && p.cover ? '<img src="' + escHtml(p.cover) + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : state.type === 'ctf' ? '🚩' : state.type === 'product' ? '🛡️' : '🎓') + '</div>';
     var hasOffer = p && p.offerPrice > 0 && p.price > p.offerPrice;
     $('row-price').hidden = !hasOffer; $('row-discount').hidden = !hasOffer;
     if (hasOffer) { $('sum-price').textContent = rupees(p.price); $('sum-discount').textContent = '− ' + rupees(p.price - p.offerPrice); }
-    $('sum-total').textContent = rupees(state.amount);
-    ['pay-amount', 'pay-amount-2'].forEach(function (id) { $(id).textContent = rupees(state.amount); });
+    var c = state.coupon;
+    $('row-coupon').hidden = !c;
+    if (c) { $('sum-coupon-label').textContent = 'Coupon ' + c.code + ' (' + (c.percent >= 100 ? 'free' : c.percent + '% off') + ')'; $('sum-coupon').textContent = '− ' + rupees(c.discount); }
+    $('sum-total').textContent = payable() === 0 && c ? 'FREE' : rupees(payable());
+    ['pay-amount', 'pay-amount-2'].forEach(function (id) { $(id).textContent = rupees(payable()); });
+    $('coupon-form').hidden = !!c;
+    $('coupon-applied').hidden = !c;
+    $('coupon-applied').innerHTML = c ? '<div class="coupon-ok"><span>✓ <b>' + escHtml(c.code) + '</b> applied — you save ' + rupees(c.discount) + '</span><button type="button" id="coupon-remove">Remove</button></div>' : '';
+    if (c) $('coupon-remove').onclick = function () { state.coupon = null; $('coupon-msg').textContent = ''; renderSummary(); renderPayment(); };
     $('perks').innerHTML = (state.type === 'ctf'
       ? ['🚩 Every task in all CTF rooms unlocked', '🖥️ TG Lab shells, hints and debriefs', '⏱️ Starts as soon as your payment is verified']
+      : state.type === 'product'
+      ? ['🛡️ Licence and setup details shared on WhatsApp and email', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
       : state.type === 'pdf'
       ? ['📥 Download link on your order page', '♾️ Re-download any time from the same link', '🧾 Your order link is your receipt']
       : ['🎓 Course access shared on WhatsApp and email', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
@@ -195,7 +214,7 @@
       if (mobile) {
         $('upi-app').hidden = false;
         $('upi-app').href = 'upi://pay?pa=' + encodeURIComponent(s.upiId) + '&pn=' + encodeURIComponent(s.payeeName || 'Tech Guardians') +
-          '&am=' + encodeURIComponent(state.amount) + '&cu=INR&tn=' + encodeURIComponent(('TG ' + state.title).slice(0, 40));
+          '&am=' + encodeURIComponent(payable()) + '&cu=INR&tn=' + encodeURIComponent(('TG ' + state.title).slice(0, 40));
       }
     }
     var wa = (s.whatsapp || '919929193136').replace(/\D/g, '');
@@ -220,7 +239,7 @@
       $('course-pick').hidden = false;
       $('course-select').innerHTML = Object.keys(COURSES).map(function (c) { return '<option value="' + c + '">' + c + ' — ' + rupees(COURSES[c]) + '</option>'; }).join('');
       if (name && COURSES[name]) $('course-select').value = name;
-      var pick = function () { state.title = $('course-select').value; state.amount = COURSES[state.title]; renderSummary(); renderPayment(); };
+      var pick = function () { state.title = $('course-select').value; state.amount = COURSES[state.title]; recheckCoupon(); renderSummary(); renderPayment(); };
       $('course-select').addEventListener('change', pick); pick();
     } else {
       state.title = name; state.amount = amount;
@@ -237,7 +256,7 @@
       state.title = 'CTF Portal — ' + p.label + ' plan (' + p.days + ' days)';
       state.amount = p.price;
       Array.prototype.forEach.call(document.querySelectorAll('input[name=ctf-plan]'), function (r) { r.checked = r.value === key; });
-      renderSummary(); renderPayment();
+      recheckCoupon(); renderSummary(); renderPayment();
     };
     return fetch('/api/ctf.php?action=catalog', { credentials: 'same-origin' }).then(function (r) {
       return r.json().then(function (d) { if (!r.ok) { var e = new Error(d.error || 'Sign in first.'); e.status = r.status; throw e; } return d; });
@@ -264,7 +283,76 @@
     });
   }
 
+  // Products & Solutions "Buy now": the price set in the admin manager.
+  function setupProduct(id) {
+    state.type = 'product';
+    return fetch('/api/settings.php?keys=tg_products', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (rows) {
+      var list = (rows[0] && rows[0].value) || [];
+      var p = list.filter(function (x) { return x && x.id === id && x.visible; })[0];
+      var num = function (v) { return Number(String(v || '').replace(/[^\d.]/g, '')) || 0; };
+      if (!p || !(num(p.offer) || num(p.price))) throw new Error('This product cannot be bought online. Please contact us on WhatsApp.');
+      state.productId = p.id; state.title = p.name; state.amount = num(p.offer) || num(p.price);
+      state.product = { cover: p.image, price: num(p.price), offerPrice: num(p.offer), format: p.category };
+      $('page-title').textContent = 'Buy “' + p.name + '”';
+    }).catch(function (e) {
+      fail('err1', (e && e.message) || 'This product is not available.');
+      $('step1').querySelector('button[type=submit]').disabled = true;
+    });
+  }
+
+  /** The order fields the server needs to price it (also used to check a coupon). */
+  function itemBody() {
+    return {
+      type: state.type, productId: state.type === 'pdf' ? state.product.id : state.type === 'product' ? state.productId : undefined,
+      plan: state.type === 'ctf' ? state.plan : undefined, course: state.title, amount: rupees(state.amount)
+    };
+  }
+  function checkCoupon(code) {
+    var body = itemBody();
+    body.code = code; body.email = $('email').value.trim(); body.phone = $('phone').value.replace(/\D/g, '');
+    return fetch('/api/coupons.php?action=check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'This coupon code is not valid.'); return d; }); });
+  }
+  function applyCoupon() {
+    var code = $('coupon-code').value.trim().toUpperCase();
+    var msg = $('coupon-msg');
+    msg.className = 'coupon-msg';
+    if (!code) { msg.textContent = 'Enter a coupon code first.'; msg.className = 'coupon-msg bad'; return; }
+    if (!state.amount) { msg.textContent = 'Choose what you are paying for first.'; msg.className = 'coupon-msg bad'; return; }
+    var btn = $('coupon-apply'); btn.disabled = true; msg.textContent = 'Checking…';
+    checkCoupon(code).then(function (d) {
+      state.coupon = d; state.amount = d.price; msg.textContent = '';
+    }).catch(function (e) {
+      state.coupon = null; msg.textContent = e.message; msg.className = 'coupon-msg bad';
+    }).then(function () { btn.disabled = false; renderSummary(); renderPayment(); });
+  }
+  /** After the item changes, the applied coupon must be checked again. */
+  function recheckCoupon() {
+    if (!state.coupon) return;
+    var code = state.coupon.code; state.coupon = null;
+    $('coupon-code').value = code; applyCoupon();
+  }
+  $('coupon-apply').addEventListener('click', applyCoupon);
+  $('coupon-code').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); } });
+  if (params.get('coupon')) $('coupon-code').value = params.get('coupon').slice(0, 24);
+
+  /** A 100% coupon: no UPI step and no transaction ID. */
+  function setFreeMode(free) {
+    $('free-note').hidden = !free;
+    $('utr-field').hidden = free; $('shot-field').hidden = free;
+    $('step3-title').textContent = free ? 'Confirm your free order' : 'Confirm your payment';
+    $('agree-text').textContent = free ? 'I confirm the details above are correct.' : 'I confirm I have paid the amount above and the details are correct.';
+    $('submit').textContent = free ? 'Get it free' : 'Submit payment';
+    $('back3').setAttribute('data-back', free ? '1' : '2');
+  }
+
   function init() {
+    if (params.get('product_item')) {
+      fetch('/api/store.php').then(function (r) { return r.json(); }).then(function (d) { state.settings = d.settings || {}; }).catch(function () {})
+        .then(function () { return setupProduct(params.get('product_item')); })
+        .then(function () { renderSummary(); renderPayment(); renderMyOrders(); });
+      return;
+    }
     if (params.get('ctf')) {
       fetch('/api/store.php').then(function (r) { return r.json(); }).then(function (d) { state.settings = d.settings || {}; }).catch(function () {})
         .then(function () { return setupCtf(params.get('ctf')); })
@@ -293,7 +381,9 @@
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail('err1', 'Please enter a valid email address.');
     if (phone.length < 10) return fail('err1', 'Please enter a 10-digit phone number.');
     if (!state.amount) return fail('err1', 'Please choose what you are paying for.');
-    show('step2');
+    var free = !!state.coupon && payable() === 0;
+    setFreeMode(free);
+    show(free ? 'step3' : 'step2');
   });
   ['utr', 'agree', 'agree-terms'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err3'); }); });
   ['name', 'email', 'phone'].forEach(function (id) { $(id).addEventListener('input', function () { clear('err1'); }); });
@@ -327,22 +417,22 @@
 
   $('step3').addEventListener('submit', function (e) {
     e.preventDefault(); clear('err3');
-    var utr = $('utr').value.replace(/\s/g, '');
-    if (!/^[A-Za-z0-9]{6,30}$/.test(utr)) return fail('err3', 'Please enter the transaction ID (UTR) exactly as shown in your UPI app.');
-    if (!$('agree').checked) return fail('err3', 'Please tick the box to confirm you have paid.');
+    var free = !!state.coupon && payable() === 0;
+    var utr = free ? '' : $('utr').value.replace(/\s/g, '');
+    if (!free && !/^[A-Za-z0-9]{6,30}$/.test(utr)) return fail('err3', 'Please enter the transaction ID (UTR) exactly as shown in your UPI app.');
+    if (!$('agree').checked) return fail('err3', free ? 'Please tick the box to confirm your details.' : 'Please tick the box to confirm you have paid.');
     if (!$('agree-terms').checked) return fail('err3', 'Please accept the Terms & Conditions and Refund Policy.');
     var btn = $('submit'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
     fetch('/api/payments.php', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
-      body: JSON.stringify({
-        type: state.type, productId: state.product ? state.product.id : undefined, plan: state.type === 'ctf' ? state.plan : undefined,
-        course: state.title, amount: rupees(state.amount),
+      body: JSON.stringify(Object.assign(itemBody(), {
+        coupon: state.coupon ? state.coupon.code : undefined,
         name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.replace(/\D/g, ''),
-        utr: utr, date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), shot: state.shot || undefined
-      })
+        utr: utr, date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), shot: free ? undefined : state.shot || undefined
+      }))
     }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Submission failed.'); return d; }); })
       .then(function (d) { finish(d); })
-      .catch(function (err) { fail('err3', (err && err.message) || 'Could not submit. Please try again.'); btn.disabled = false; btn.textContent = 'Submit payment'; });
+      .catch(function (err) { fail('err3', (err && err.message) || 'Could not submit. Please try again.'); btn.disabled = false; btn.textContent = free ? 'Get it free' : 'Submit payment'; });
   });
 
   function finish(d) {
@@ -351,17 +441,24 @@
     var url = location.origin + d.orderUrl;
     $('order-link').value = url;
     var approved = d.status === 'approved';
-    $('done-title').textContent = approved && state.type === 'pdf' ? 'Payment received — your PDF is ready' : 'Payment submitted — thank you, ' + $('name').value.trim().split(' ')[0] + '!';
-    $('done-text').textContent = state.type === 'ctf'
+    var free = !!state.coupon && payable() === 0;
+    $('done-title').textContent = free ? 'Order confirmed — it\'s free with your coupon!' : approved && state.type === 'pdf' ? 'Payment received — your PDF is ready' : 'Payment submitted — thank you, ' + $('name').value.trim().split(' ')[0] + '!';
+    $('done-text').textContent = free
+      ? (state.type === 'ctf' ? 'Your CTF plan is active now — every room is unlocked. Open the CTF Portal to start.'
+        : state.type === 'pdf' ? 'Download it now. You can download again later from your order link.'
+        : 'We will share access on WhatsApp and email shortly.')
+      : state.type === 'ctf'
       ? 'We will verify your payment, usually within a few hours. Your CTF plan then unlocks every room — just open the CTF Portal.'
       : state.type === 'pdf'
       ? (approved ? 'Download it now. You can download again later from your order link.' : 'We are verifying your payment, usually within a few hours. Your order page unlocks the download as soon as it is approved.')
       : 'We will verify your payment within 2–4 hours and share course access on WhatsApp and email.';
     $('done-status').innerHTML = '<span class="status ' + escHtml(d.status) + '">' + (approved ? '✓ Approved' : '⏳ Verifying payment') + '</span>';
     var wa = (state.settings.whatsapp || '919929193136').replace(/\D/g, '');
-    var msg = 'Hi Tech Guardians, I have paid for "' + state.title + '" (' + rupees(state.amount) + '). UTR: ' + $('utr').value.trim() + '. Order ID: ' + d.id;
+    var msg = free
+      ? 'Hi Tech Guardians, I got "' + state.title + '" free with coupon ' + state.coupon.code + '. Order ID: ' + d.id
+      : 'Hi Tech Guardians, I have paid for "' + state.title + '" (' + rupees(payable()) + (state.coupon ? ', coupon ' + state.coupon.code : '') + '). UTR: ' + $('utr').value.trim() + '. Order ID: ' + d.id;
     $('done-actions').innerHTML =
-      (approved && state.type === 'pdf' ? '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + encodeURIComponent(d.id) + '&token=' + encodeURIComponent(d.token) + '">⬇ Download PDF</a>' : '<a class="btn btn-pri" href="' + escHtml(String(d.orderUrl || '').indexOf('/order.html?') === 0 ? d.orderUrl : '/order.html') + '">Open my order page</a>') +
+      (approved && state.type === 'ctf' ? '<a class="btn btn-pri" href="/ctf">🚩 Open the CTF Portal</a>' : approved && state.type === 'pdf' ? '<a class="btn btn-pri" href="/api/payments.php?action=download&id=' + encodeURIComponent(d.id) + '&token=' + encodeURIComponent(d.token) + '">⬇ Download PDF</a>' : '<a class="btn btn-pri" href="' + escHtml(String(d.orderUrl || '').indexOf('/order.html?') === 0 ? d.orderUrl : '/order.html') + '">Open my order page</a>') +
       '<a class="btn btn-ghost" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '">💬 WhatsApp us</a>';
     $('acct-link').href = '/account.html?' + new URLSearchParams({ name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.trim() }).toString() + '#register';
     show('done'); renderMyOrders();

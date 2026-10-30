@@ -1,7 +1,8 @@
 <?php
 // Orders and enrollments (courses and PDFs).
 // Public (buyer):
-//   POST payments.php                         { type: course|pdf, productId?, course?, amount?, name, email, phone, utr, date, shot? }
+//   POST payments.php                         { type: course|pdf|ctf|product, productId?, plan?, course?, amount?, coupon?, name, email, phone, utr, date, shot? }
+//                                             (the price and any coupon discount are worked out here; a 100% coupon needs no UTR)
 //                                             -> { id, token, status, orderUrl }
 //   GET  payments.php?action=order&id=&token= -> order status for the buyer's order page
 //   GET  payments.php?action=download&id=&token= -> redirects to the PDF once the order is approved
@@ -12,7 +13,7 @@
 //   POST payments.php?action=status { id, status: pending|approved|rejected }
 //   POST payments.php?action=delete { id } / ?action=clear
 // Records: data/payments.json. Screenshots: data/payment-shots/.
-require_once __DIR__ . '/ctf-lib.php';
+require_once __DIR__ . '/coupons-lib.php';
 
 const TG_SHOT_DIR = TG_DATA_DIR . '/payment-shots';
 const TG_STATUSES = ['pending', 'approved', 'rejected', 'recorded'];
@@ -182,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $p = ($order['type'] ?? '') === 'pdf' ? tg_store_product((string)$order['productId']) : null;
         tg_json([
             'id' => $order['id'], 'type' => $order['type'] ?? 'course', 'title' => $order['course'] ?? '',
-            'amount' => $order['amount'] ?? '', 'status' => $order['status'] ?? 'pending', 'date' => $order['date'] ?? '',
+            'amount' => $order['amount'] ?? '', 'coupon' => $order['coupon'] ?? '', 'status' => $order['status'] ?? 'pending', 'date' => $order['date'] ?? '',
             'name' => explode(' ', (string)($order['name'] ?? ''))[0], 'cover' => $p['cover'] ?? '',
             'canDownload' => tg_order_download_link($order) !== '',
             'linkMissing' => ($order['type'] ?? '') === 'pdf' && ($order['status'] ?? '') === 'approved' && tg_order_download_link($order) === '',
@@ -254,8 +255,9 @@ if ($action !== '' && $action !== 'create') tg_error('Unknown action.', 404);
 tg_rate_limit('payments', 10, 3600);
 
 $text = fn(string $k, int $max) => mb_substr(trim((string)($body[$k] ?? '')), 0, $max);
-$type = in_array($body['type'] ?? '', ['pdf', 'ctf'], true) ? $body['type'] : 'course';
 $store = tg_store();
+$item = tg_order_item($body);
+$type = $item['type'];
 $record = [
     'id' => bin2hex(random_bytes(8)),
     'token' => bin2hex(random_bytes(16)),
@@ -263,41 +265,48 @@ $record = [
     'name' => $text('name', 120),
     'email' => $text('email', 160),
     'phone' => $text('phone', 30),
-    'course' => $text('course', 160),
-    'amount' => $text('amount', 30),
+    'course' => $item['title'],
+    'amount' => '',
     'utr' => $text('utr', 60),
     'date' => $text('date', 60),
     'status' => 'pending',
     'received_at' => gmdate('c'),
 ];
-if ($record['name'] === '' || $record['utr'] === '') tg_error('Please enter your name and the UPI transaction ID.');
+foreach (['productId', 'plan'] as $k) if (isset($item[$k])) $record[$k] = $item[$k];
+if ($record['name'] === '') tg_error('Please enter your name.');
 if (!filter_var($record['email'], FILTER_VALIDATE_EMAIL)) tg_error('Please enter a valid email address.');
-if (!preg_match('/^[A-Za-z0-9]{6,30}$/', $record['utr'])) tg_error('The transaction ID (UTR) should be 6–30 letters or digits, as shown in your UPI app.');
-
-if ($type === 'pdf') {
-    $p = tg_store_product($text('productId', 80));
-    if (!$p || empty($p['visible'])) tg_error('This PDF is no longer available.', 404);
-    // The price always comes from the store, never from the browser.
-    $record['productId'] = $p['id'];
-    $record['course'] = $p['title'];
-    $record['amount'] = '₹' . rtrim(rtrim(number_format(tg_product_amount($p), 2, '.', ''), '0'), '.');
-    if ($store['settings']['delivery'] === 'instant') $record['status'] = 'approved';
-}
 
 if ($type === 'ctf') {
-    // CTF plans belong to a student account, and the price always comes from the server.
+    // CTF plans belong to a student account.
     $student = tg_current_user();
     if (!$student) tg_error('Sign in to your student account first, then buy the CTF plan.', 401);
-    $plans = tg_ctf_plans();
-    $plan = (string)($body['plan'] ?? '');
-    if (!isset($plans[$plan])) tg_error('Choose the monthly or annual CTF plan.');
     $record['user_id'] = $student['id'];
-    $record['plan'] = $plan;
-    $record['course'] = 'CTF Portal — ' . $plans[$plan]['label'] . ' plan (' . $plans[$plan]['days'] . ' days)';
-    $record['amount'] = '₹' . $plans[$plan]['price'];
 }
 
-foreach (tg_read_json('payments.json', []) as $r) {
+$coupon = $text('coupon', 30) !== '' ? tg_coupon_check($text('coupon', 30), $item, $record['email'], $record['phone']) : null;
+$bill = tg_coupon_apply($item, $coupon);
+$record['amount'] = tg_money($bill['total']);
+if ($coupon) {
+    $record['coupon'] = $coupon['code'];
+    $record['percent'] = $bill['percent'];
+    $record['price'] = tg_money($bill['price']);
+    $record['discount'] = $bill['discount'];
+}
+$free = $bill['total'] <= 0;
+
+if ($free) {
+    // Nothing to pay: a 100% coupon from the admin. No UTR or screenshot.
+    $record['utr'] = '';
+    $record['status'] = 'approved';
+    $record['status_at'] = gmdate('c');
+    unset($body['shot']);
+} else {
+    if ($record['utr'] === '') tg_error('Please enter the UPI transaction ID.');
+    if (!preg_match('/^[A-Za-z0-9]{6,30}$/', $record['utr'])) tg_error('The transaction ID (UTR) should be 6–30 letters or digits, as shown in your UPI app.');
+    if ($type === 'pdf' && $store['settings']['delivery'] === 'instant') $record['status'] = 'approved';
+}
+
+foreach ($free ? [] : tg_read_json('payments.json', []) as $r) {
     if (!empty($r['utr']) && strcasecmp($r['utr'], $record['utr']) === 0 && ($r['source'] ?? '') !== 'sheet') {
         tg_error('This transaction ID has already been submitted. Open the order link you received, or contact us on WhatsApp.', 409);
     }

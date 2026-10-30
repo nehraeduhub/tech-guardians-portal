@@ -80,9 +80,9 @@
   function render(d) {
     $('loading').hidden = true; $('order').hidden = false;
     var pdf = d.type === 'pdf';
-    $('type').textContent = pdf ? 'PDF download' : d.type === 'ctf' ? 'CTF Portal plan' : 'Course enrollment';
+    $('type').textContent = pdf ? 'PDF download' : d.type === 'ctf' ? 'CTF Portal plan' : d.type === 'product' ? 'Product / service' : 'Course enrollment';
     $('title').textContent = d.title || 'Your order';
-    $('amount').textContent = d.amount || '';
+    $('amount').textContent = (d.amount === '₹0' && d.coupon ? 'Free' : d.amount || '') + (d.coupon ? ' (coupon ' + d.coupon + ')' : '');
     $('oid').textContent = d.id.slice(0, 8).toUpperCase();
     $('date').textContent = d.date || '';
     $('media').innerHTML = d.cover ? '<img src="' + esc(d.cover) + '" alt=""/>' : '<div class="ph">' + (pdf ? '📘' : '🎓') + '</div>';
