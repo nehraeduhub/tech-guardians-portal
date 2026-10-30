@@ -3,10 +3,10 @@ import * as XLSX from 'xlsx';
 import { Check, Copy, Download, ExternalLink, MessageCircle, RefreshCw, Search, Trash2, X } from 'lucide-react';
 import { deleteOrder, loadOrders, setOrderStatus, sheetSyncStatus, syncSheet, type Order, type SheetSyncStatus } from '@/lib/store';
 
-type Filter = 'all' | 'pending' | 'approved' | 'rejected' | 'pdf' | 'course' | 'sheet';
+type Filter = 'all' | 'pending' | 'approved' | 'rejected' | 'pdf' | 'course' | 'ctf' | 'sheet';
 const FILTERS: [Filter, string][] = [
   ['all', 'All'], ['pending', 'Waiting for approval'], ['approved', 'Approved'], ['rejected', 'Rejected'],
-  ['pdf', 'PDF sales'], ['course', 'Courses'], ['sheet', 'From Google Sheet'],
+  ['pdf', 'PDF sales'], ['course', 'Courses'], ['ctf', 'CTF plans'], ['sheet', 'From Google Sheet'],
 ];
 const STATUS_STYLE: Record<Order['status'], string> = {
   pending: 'bg-amber-500/15 text-amber-400 border-amber-500/40',
@@ -54,7 +54,7 @@ const PaymentsPanel = () => {
   const shown = useMemo(() => {
     const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
     return orders.filter((o) => {
-      if (filter === 'pdf' || filter === 'course' || filter === 'sheet') { if ((o.type || 'course') !== filter) return false; }
+      if (filter === 'pdf' || filter === 'course' || filter === 'ctf' || filter === 'sheet') { if ((o.type || 'course') !== filter) return false; }
       else if (filter !== 'all' && o.status !== filter) return false;
       const hay = [o.name, o.email, o.phone, o.course, o.utr, o.amount].join(' ').toLowerCase();
       return words.every((w) => hay.includes(w));
@@ -86,6 +86,8 @@ const PaymentsPanel = () => {
     const to = phone.length === 10 ? `91${phone}` : phone;
     const msg = o.type === 'pdf'
       ? `Hi ${o.name?.split(' ')[0] || ''}, thank you for buying "${o.course}" from Tech Guardians. Your payment is confirmed. Download your PDF here: ${fullLink(o)}`
+      : o.type === 'ctf'
+      ? `Hi ${o.name?.split(' ')[0] || ''}, your Tech Guardians CTF plan is active — every room and task is unlocked. Start here: ${window.location.origin}/ctf`
       : `Hi ${o.name?.split(' ')[0] || ''}, your payment for "${o.course}" is confirmed. Welcome to Tech Guardians! Your order: ${fullLink(o)}`;
     return `https://wa.me/${to}?text=${encodeURIComponent(msg)}`;
   };
@@ -148,7 +150,7 @@ const PaymentsPanel = () => {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-semibold">{o.name || 'Unknown'}</span>
                   <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${STATUS_STYLE[o.status]}`}>{STATUS_LABEL[o.status]}</span>
-                  <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">{o.type === 'pdf' ? 'PDF' : o.type === 'sheet' ? 'Sheet' : 'Course'}</span>
+                  <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">{o.type === 'pdf' ? 'PDF' : o.type === 'ctf' ? 'CTF plan' : o.type === 'sheet' ? 'Sheet' : 'Course'}</span>
                   {o.type === 'pdf' && o.status === 'approved' && <span className="text-[11px] text-muted-foreground">downloaded {o.downloads || 0}×</span>}
                 </div>
                 <div className="truncate text-sm">{o.course || '—'} · <strong className="tabular-nums">{o.amount || '—'}</strong></div>

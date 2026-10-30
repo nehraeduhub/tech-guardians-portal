@@ -1,0 +1,5 @@
+# TG Lab — show archive config differences (running vs baseline)
++ username backdoor privilege 15 secret 5 $1$Xa9$................
++ ip route 0.0.0.0 0.0.0.0 203.0.113.9        ! NEW default route to unknown next-hop
+- logging host 10.10.50.20                     ! central syslog REMOVED
+  ntp server 10.10.50.10 key 1

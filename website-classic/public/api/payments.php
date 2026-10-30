@@ -12,7 +12,7 @@
 //   POST payments.php?action=status { id, status: pending|approved|rejected }
 //   POST payments.php?action=delete { id } / ?action=clear
 // Records: data/payments.json. Screenshots: data/payment-shots/.
-require_once __DIR__ . '/store-lib.php';
+require_once __DIR__ . '/ctf-lib.php';
 
 const TG_SHOT_DIR = TG_DATA_DIR . '/payment-shots';
 const TG_STATUSES = ['pending', 'approved', 'rejected', 'recorded'];
@@ -254,7 +254,7 @@ if ($action !== '' && $action !== 'create') tg_error('Unknown action.', 404);
 tg_rate_limit('payments', 10, 3600);
 
 $text = fn(string $k, int $max) => mb_substr(trim((string)($body[$k] ?? '')), 0, $max);
-$type = ($body['type'] ?? '') === 'pdf' ? 'pdf' : 'course';
+$type = in_array($body['type'] ?? '', ['pdf', 'ctf'], true) ? $body['type'] : 'course';
 $store = tg_store();
 $record = [
     'id' => bin2hex(random_bytes(8)),
@@ -282,6 +282,19 @@ if ($type === 'pdf') {
     $record['course'] = $p['title'];
     $record['amount'] = '₹' . rtrim(rtrim(number_format(tg_product_amount($p), 2, '.', ''), '0'), '.');
     if ($store['settings']['delivery'] === 'instant') $record['status'] = 'approved';
+}
+
+if ($type === 'ctf') {
+    // CTF plans belong to a student account, and the price always comes from the server.
+    $student = tg_current_user();
+    if (!$student) tg_error('Sign in to your student account first, then buy the CTF plan.', 401);
+    $plans = tg_ctf_plans();
+    $plan = (string)($body['plan'] ?? '');
+    if (!isset($plans[$plan])) tg_error('Choose the monthly or annual CTF plan.');
+    $record['user_id'] = $student['id'];
+    $record['plan'] = $plan;
+    $record['course'] = 'CTF Portal — ' . $plans[$plan]['label'] . ' plan (' . $plans[$plan]['days'] . ' days)';
+    $record['amount'] = '₹' . $plans[$plan]['price'];
 }
 
 foreach (tg_read_json('payments.json', []) as $r) {

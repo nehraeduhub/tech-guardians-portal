@@ -1,0 +1,8 @@
+# TG Lab — captured on LNX01 (tshark export of hs.pcap)
+# tshark -r hs.pcap -Y "tcp.flags.syn==1 or tcp.flags.fin==1" -T fields -e frame.number -e ip.src -e ip.dst -e tcp.flags
+1  10.10.10.21  10.10.10.30  0x0002   # SYN
+2  10.10.10.30  10.10.10.21  0x0012   # SYN-ACK   <- server reply
+3  10.10.10.21  10.10.10.30  0x0010   # ACK  (connection established)
+...
+41 10.10.10.21  10.10.10.30  0x0011   # FIN-ACK
+42 10.10.10.30  10.10.10.21  0x0011   # FIN-ACK

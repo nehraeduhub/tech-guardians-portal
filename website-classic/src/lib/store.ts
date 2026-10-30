@@ -36,7 +36,7 @@ export interface PaymentSettings {
 
 export interface Order {
   id: string;
-  type: 'course' | 'pdf' | 'sheet';
+  type: 'course' | 'pdf' | 'ctf' | 'sheet';
   status: 'pending' | 'approved' | 'rejected' | 'recorded';
   name?: string;
   email?: string;

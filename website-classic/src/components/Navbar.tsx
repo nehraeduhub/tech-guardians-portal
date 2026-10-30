@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, MessageCircle, ChevronDown, PhoneCall } from 'lucide-react';
+import { Menu, X, MessageCircle, ChevronDown, PhoneCall, Flag } from 'lucide-react';
 import tgLogo from '@/assets/tg-logo.png';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { sectionLinks, toSectionId } from '@/lib/site-nav';
@@ -14,6 +14,7 @@ import { useLayout } from '@/lib/layout';
 const BLOGS_PATH = '/tg-blogs';
 const LOGIN_PATH = '/login';
 const ACCOUNT_PATH = '/account';
+const CTF_PATH = '/ctf';
 
 const fixedPortals: { label: string; path: string; external?: boolean }[] = [
   { label: 'Cyber News Portal', path: '/cyber-news' },
@@ -145,6 +146,12 @@ const Navbar = () => {
                 <span className="block text-lg font-extrabold text-accent">1930</span>
               </span>
             </a>
+            {pageOn(CTF_PATH) && (
+              <button onClick={() => openLink(CTF_PATH)} className="group relative inline-flex items-center gap-2 overflow-hidden rounded-md bg-[hsl(var(--tg-navy))] px-4 py-2 text-sm font-bold text-white shadow-sm ring-1 ring-[#ff9933]/60 transition hover:ring-[#ff9933]">
+                <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-[#ff9933]" />
+                <Flag className="h-4 w-4 text-[#ff9933] transition group-hover:-rotate-12" /> CTF Portal
+              </button>
+            )}
             {pageOn(ACCOUNT_PATH)
               ? <a href="/account.html" className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">My Account</a>
               : <button onClick={() => { navigate(LOGIN_PATH); window.scrollTo({ top: 0 }); }} className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:border-primary hover:text-primary">Login</button>}
@@ -208,6 +215,11 @@ const Navbar = () => {
                   </button>
                 ))}
 
+                {pageOn(CTF_PATH) && (
+                  <button onClick={() => openLink(CTF_PATH)} className="mt-2 flex items-center justify-center gap-2 rounded-md bg-[hsl(var(--tg-navy))] px-5 py-3 text-sm font-bold text-white ring-1 ring-[#ff9933]/60">
+                    <Flag className="h-4 w-4 text-[#ff9933]" /> CTF Portal
+                  </button>
+                )}
                 <a href="tel:1930" className="mt-2 flex items-center justify-center gap-2 rounded-md border border-border px-5 py-3 text-sm font-semibold text-accent"><PhoneCall className="h-4 w-4" /> Cyber fraud helpline 1930</a>
                 {pageOn(ACCOUNT_PATH)
                   ? <a href="/account.html" className="rounded-md border border-border px-5 py-3 text-center text-sm font-semibold text-foreground">My Account</a>

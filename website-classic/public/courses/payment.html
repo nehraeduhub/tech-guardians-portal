@@ -41,6 +41,13 @@
         <!-- Step 1 -->
         <form id="step1" novalidate>
           <h2>Your details</h2>
+          <div id="ctf-pick" hidden>
+            <div class="ctf-plans" role="radiogroup" aria-label="CTF plan">
+              <label class="ctf-plan"><input type="radio" name="ctf-plan" value="monthly"/><span><b>Monthly</b><em id="ctf-price-monthly">₹99</em><small>30 days of full access</small></span></label>
+              <label class="ctf-plan"><input type="radio" name="ctf-plan" value="annual"/><span><b>Annual <i>Best value</i></b><em id="ctf-price-annual">₹999</em><small>365 days of full access</small></span></label>
+            </div>
+            <p class="hint" id="ctf-who"></p>
+          </div>
           <div id="course-pick" hidden>
             <label class="field"><span>Course</span><select id="course-select"></select></label>
           </div>
@@ -160,16 +167,18 @@
   function escHtml(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function renderSummary() {
     var p = state.product;
-    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : 'Course enrollment';
+    $('sum-type').textContent = state.type === 'pdf' ? 'PDF download' : state.type === 'ctf' ? 'CTF Portal plan' : 'Course enrollment';
     $('sum-title').textContent = state.title || 'Choose a course';
     $('sum-sub').textContent = p ? (p.pages ? p.pages + ' pages · ' : '') + (p.format || 'PDF') : '';
-    $('sum-media').innerHTML = p && p.cover ? '<img src="' + escHtml(p.cover) + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : '🎓') + '</div>';
+    $('sum-media').innerHTML = p && p.cover ? '<img src="' + escHtml(p.cover) + '" alt=""/>' : '<div class="ph">' + (state.type === 'pdf' ? '📘' : state.type === 'ctf' ? '🚩' : '🎓') + '</div>';
     var hasOffer = p && p.offerPrice > 0 && p.price > p.offerPrice;
     $('row-price').hidden = !hasOffer; $('row-discount').hidden = !hasOffer;
     if (hasOffer) { $('sum-price').textContent = rupees(p.price); $('sum-discount').textContent = '− ' + rupees(p.price - p.offerPrice); }
     $('sum-total').textContent = rupees(state.amount);
     ['pay-amount', 'pay-amount-2'].forEach(function (id) { $(id).textContent = rupees(state.amount); });
-    $('perks').innerHTML = (state.type === 'pdf'
+    $('perks').innerHTML = (state.type === 'ctf'
+      ? ['🚩 Every task in all CTF rooms unlocked', '🖥️ TG Lab shells, hints and debriefs', '⏱️ Starts as soon as your payment is verified']
+      : state.type === 'pdf'
       ? ['📥 Download link on your order page', '♾️ Re-download any time from the same link', '🧾 Your order link is your receipt']
       : ['🎓 Course access shared on WhatsApp and email', '⏱️ Verified within 2–4 hours', '🧾 Your order link is your receipt']
     ).map(function (t) { return '<li>' + t + '</li>'; }).join('');
@@ -218,7 +227,50 @@
     }
   }
 
+  // CTF Portal plan: only for a signed-in student; the server sets the price.
+  function setupCtf(plan) {
+    state.type = 'ctf';
+    $('ctf-pick').hidden = false;
+    var pick = function (key) {
+      state.plan = key;
+      var p = state.plans[key];
+      state.title = 'CTF Portal — ' + p.label + ' plan (' + p.days + ' days)';
+      state.amount = p.price;
+      Array.prototype.forEach.call(document.querySelectorAll('input[name=ctf-plan]'), function (r) { r.checked = r.value === key; });
+      renderSummary(); renderPayment();
+    };
+    return fetch('/api/ctf.php?action=catalog', { credentials: 'same-origin' }).then(function (r) {
+      return r.json().then(function (d) { if (!r.ok) { var e = new Error(d.error || 'Sign in first.'); e.status = r.status; throw e; } return d; });
+    }).then(function (d) {
+      state.plans = d.plans;
+      ['monthly', 'annual'].forEach(function (k) { $('ctf-price-' + k).textContent = rupees(d.plans[k].price); });
+      Array.prototype.forEach.call(document.querySelectorAll('input[name=ctf-plan]'), function (r) { r.addEventListener('change', function () { pick(r.value); }); });
+      pick(plan === 'annual' ? 'annual' : 'monthly');
+      return fetch('/api/users.php?action=me', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (m) {
+        if (m && m.user) {
+          if (!$('name').value) $('name').value = m.user.name || '';
+          if (!$('email').value) $('email').value = m.user.email || '';
+          $('ctf-who').textContent = 'The plan is added to your student account @' + m.user.username + '.';
+        } else if (d.viewer && d.viewer.admin) {
+          $('ctf-who').textContent = 'You are signed in as the admin. Students buy plans from their own account.';
+        }
+      });
+    }).catch(function (e) {
+      state.title = 'CTF Portal plan'; state.amount = 0;
+      $('ctf-who').innerHTML = e && e.status === 401
+        ? 'Please <a href="/account.html?next=/ctf/plans">sign in to your student account</a> first — the plan is added to that account.'
+        : escHtml((e && e.message) || 'Plans could not be loaded.');
+      $('step1').querySelector('button[type=submit]').disabled = true;
+    });
+  }
+
   function init() {
+    if (params.get('ctf')) {
+      fetch('/api/store.php').then(function (r) { return r.json(); }).then(function (d) { state.settings = d.settings || {}; }).catch(function () {})
+        .then(function () { return setupCtf(params.get('ctf')); })
+        .then(function () { renderSummary(); renderPayment(); renderMyOrders(); });
+      return;
+    }
     var productId = params.get('product');
     var job = productId
       ? fetch('/api/store.php?id=' + encodeURIComponent(productId)).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error); return d; }); })
@@ -283,7 +335,7 @@
     fetch('/api/payments.php', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
       body: JSON.stringify({
-        type: state.type, productId: state.product ? state.product.id : undefined,
+        type: state.type, productId: state.product ? state.product.id : undefined, plan: state.type === 'ctf' ? state.plan : undefined,
         course: state.title, amount: rupees(state.amount),
         name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.replace(/\D/g, ''),
         utr: utr, date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), shot: state.shot || undefined
@@ -300,7 +352,9 @@
     $('order-link').value = url;
     var approved = d.status === 'approved';
     $('done-title').textContent = approved && state.type === 'pdf' ? 'Payment received — your PDF is ready' : 'Payment submitted — thank you, ' + $('name').value.trim().split(' ')[0] + '!';
-    $('done-text').textContent = state.type === 'pdf'
+    $('done-text').textContent = state.type === 'ctf'
+      ? 'We will verify your payment, usually within a few hours. Your CTF plan then unlocks every room — just open the CTF Portal.'
+      : state.type === 'pdf'
       ? (approved ? 'Download it now. You can download again later from your order link.' : 'We are verifying your payment, usually within a few hours. Your order page unlocks the download as soon as it is approved.')
       : 'We will verify your payment within 2–4 hours and share course access on WhatsApp and email.';
     $('done-status').innerHTML = '<span class="status ' + escHtml(d.status) + '">' + (approved ? '✓ Approved' : '⏳ Verifying payment') + '</span>';

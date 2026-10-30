@@ -15,7 +15,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # Never serve hidden files, backups, logs, source maps or developer files.
 RewriteRule (^|/)\.(?!well-known/) - [F,L]
 RewriteRule \.(bak|backup|old|orig|sql|sqlite|log|sh|ini|env|map|md|lock|ts|tsx)$ - [F,L,NC]
-RewriteRule ^api/(data|books)(/|$) - [F,L]
+RewriteRule ^api/(data|books|ctf-data)(/|$) - [F,L]
 # Internal files: PHP includes, the default book list and the licence are read by the
 # API only, never fetched by browsers.
 RewriteRule ^api/(config|lib|store-lib|users-lib)\.php$ - [F,L,NC]

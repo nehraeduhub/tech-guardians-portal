@@ -440,3 +440,28 @@
 .tg-updates-label { background: #ff9933; color: #1a1206; }
 :root[data-tg-gov] .tg-updates-label { background: hsl(var(--tg-saffron)); }
 :root[data-tg-gov] footer.tg-band { border-bottom: 0; border-top: 4px solid hsl(var(--tg-saffron)); }
+
+/* ---------------------------------------------------------------------------
+   CTF portal: lesson and challenge text from the room files.
+--------------------------------------------------------------------------- */
+.ctf-prose { color: hsl(var(--foreground)); line-height: 1.75; }
+@media (min-width: 768px) { .ctf-prose { text-align: justify; hyphens: auto; } }
+.ctf-prose p { margin: 0 0 0.85rem; }
+.ctf-prose p:last-child { margin-bottom: 0; }
+.ctf-prose ul { list-style: disc; padding-left: 1.4rem; margin: 0 0 0.85rem; }
+.ctf-prose li { margin: 0.2rem 0; }
+.ctf-prose b { color: hsl(var(--foreground)); font-weight: 700; }
+.ctf-prose code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.88em; background: hsl(var(--muted)); border: 1px solid hsl(var(--border)); border-radius: 4px; padding: 0.05rem 0.35rem; overflow-wrap: anywhere; }
+.ctf-prose .flag, .ctf-prose .flagfmt { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; color: #a3540a; background: #fff4e6; border: 1px dashed #e8a35a; border-radius: 5px; padding: 0 0.4rem; overflow-wrap: anywhere; }
+.ctf-prose .data { position: relative; margin: 0.75rem 0; padding: 0.85rem 4.5rem 0.85rem 0.95rem; border-radius: 8px; background: #071a33; color: #bfe0ff; border: 1px solid #1d3b5c; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; white-space: pre-wrap; word-break: break-all; text-align: left; }
+.ctf-prose .data .cp, .ctf-prose .btn.cp { position: absolute; top: 0.5rem; right: 0.5rem; border-radius: 5px; background: #ff9933; color: #1a1206; font-size: 11px; font-weight: 700; padding: 0.2rem 0.55rem; }
+.ctf-prose .hiddenflag { color: transparent; user-select: all; -webkit-user-select: all; }
+.ctf-prose .hiddenflag::selection { background: #ff9933; color: #1a1206; }
+.ctf-prose .email { margin: 0.75rem 0; border: 1px solid hsl(var(--border)); border-radius: 8px; overflow: hidden; text-align: left; }
+.ctf-prose .email .eh { background: hsl(var(--muted)); padding: 0.7rem 0.9rem; border-bottom: 1px solid hsl(var(--border)); font-size: 0.92em; }
+.ctf-prose .email .eb { padding: 0.9rem; }
+.ctf-prose .note { margin-top: 0.75rem; border-radius: 8px; background: rgba(19, 136, 8, 0.08); border: 1px solid rgba(19, 136, 8, 0.3); padding: 0.75rem 0.9rem; }
+.ctf-prose .row { margin-top: 0.75rem; }
+.ctf-prose .btn.acc { border-radius: 6px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 700; padding: 0.45rem 1rem; }
+.ctf-prose .res { margin-top: 0.5rem; font-weight: 700; }
+.ctf-term .ctf-term-flag { color: #1a1206; background: #ffb24d; border-radius: 3px; padding: 0 0.25rem; font-weight: 700; }

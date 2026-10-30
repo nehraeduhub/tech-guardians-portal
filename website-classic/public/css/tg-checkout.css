@@ -126,3 +126,15 @@ h2{font-size:18px}
 .check a,.privacy-note a{color:var(--cyan)}
 .legal-links{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
 .legal-links a{color:var(--muted)}
+/* CTF Portal plan picker */
+.ctf-plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 10px}
+.ctf-plan{position:relative;display:block;cursor:pointer}
+.ctf-plan input{position:absolute;opacity:0}
+.ctf-plan span{display:flex;flex-direction:column;gap:2px;height:100%;border:2px solid var(--border,#d6deea);border-radius:10px;padding:12px 14px;background:var(--surface,#fff);transition:border-color .15s,box-shadow .15s}
+.ctf-plan b{font-size:15px}
+.ctf-plan i{font-style:normal;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:#ff9933;color:#1a1206;border-radius:4px;padding:1px 5px;margin-left:4px}
+.ctf-plan em{font-style:normal;font-size:24px;font-weight:800;color:var(--text,#0f1b33)}
+.ctf-plan small{color:var(--muted,#475569);font-size:12px}
+.ctf-plan input:checked+span{border-color:#ff9933;box-shadow:0 0 0 3px rgba(255,153,51,.25)}
+.ctf-plan input:focus-visible+span{outline:2px solid #12408a;outline-offset:2px}
+@media (max-width:560px){.ctf-plans{grid-template-columns:1fr}}

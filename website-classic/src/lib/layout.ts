@@ -66,6 +66,7 @@ export const SITE_PAGES: { path: string; label: string }[] = [
   { path: '/rj-nehra', label: 'RJ Nehra profile' },
   { path: '/blog', label: 'Blog' },
   { path: '/tg-blogs', label: 'TG Blogs' },
+  { path: '/ctf', label: 'CTF Portal' },
   { path: '/cyber-crime-support', label: 'Cyber Crime Support' },
   { path: '/threat-intel', label: 'Threat Intel Hub' },
   { path: '/cyber-news', label: 'Cyber News Portal' },

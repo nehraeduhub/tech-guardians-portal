@@ -26,6 +26,7 @@ import Terms from "./pages/Terms.tsx";
 import BlogStudio from "./pages/BlogStudio.tsx";
 import { ProductDetail, ProductList } from "./pages/Products.tsx";
 import Events from "./pages/Events.tsx";
+import { CtfHome, CtfPlans, CtfRoomPage } from "./pages/Ctf.tsx";
 import { useLayout } from "@/lib/layout";
 import type { ReactNode } from "react";
 
@@ -77,6 +78,9 @@ const App = () => (
           <Route path="/security-assessment" element={<Gate path="/security-assessment"><SecurityAssessment /></Gate>} />
           <Route path="/cyber-range" element={<Gate path="/cyber-range"><CyberRange /></Gate>} />
           <Route path="/tg-blogs" element={<Gate path="/tg-blogs"><TGBlogs /></Gate>} />
+          <Route path="/ctf" element={<Gate path="/ctf"><CtfHome /></Gate>} />
+          <Route path="/ctf/plans" element={<Gate path="/ctf"><CtfPlans /></Gate>} />
+          <Route path="/ctf/:slug" element={<Gate path="/ctf"><CtfRoomPage /></Gate>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

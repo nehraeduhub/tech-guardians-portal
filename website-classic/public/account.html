@@ -245,7 +245,13 @@ summary{cursor:pointer;font-weight:600}
     e.preventDefault(); showErr('l-err', '');
     busy($('l-btn'), true, 'Sign in');
     api('login', { username: $('l-user').value, password: $('l-pass').value })
-      .then(function () { $('l-pass').value = ''; load(); })
+      .then(function () {
+        $('l-pass').value = '';
+        // Came from a members-only page (e.g. the CTF portal)? Go back there.
+        var next = new URLSearchParams(location.search).get('next') || '';
+        if (/^\/(ctf)(\/[A-Za-z0-9\/_-]*)?$/.test(next)) { location.assign(next); return; }
+        load();
+      })
       .catch(function (err) { showErr('l-err', err.message); })
       .then(function () { busy($('l-btn'), false, 'Sign in'); });
   };
