@@ -109,7 +109,7 @@ h2{font-size:18px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 @media (max-width:900px){
-  .layout{grid-template-columns:1fr}
+  .layout{grid-template-columns:minmax(0,1fr)}
   .summary{position:static;order:-1}
 }
 @media (max-width:560px){
