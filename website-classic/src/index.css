@@ -469,3 +469,8 @@
 .ctf-prose .btn.acc { border-radius: 6px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 700; padding: 0.45rem 1rem; }
 .ctf-prose .res { margin-top: 0.5rem; font-weight: 700; }
 .ctf-term .ctf-term-flag { color: #1a1206; background: #ffb24d; border-radius: 3px; padding: 0 0.25rem; font-weight: 700; }
+
+/* Homepage 3D cube carousel: the cube dips back a little while it turns. */
+.tg-cube-stage { background: radial-gradient(120% 140% at 50% 50%, hsl(var(--tg-navy)) 0%, #050d22 100%); }
+.tg-cube-dip { animation-name: tg-cube-dip; animation-timing-function: cubic-bezier(.645,.045,.355,1); }
+@keyframes tg-cube-dip { 0%, 100% { transform: scale(1); } 50% { transform: scale(.86); } }
