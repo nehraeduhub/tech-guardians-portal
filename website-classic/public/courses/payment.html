@@ -224,7 +224,8 @@
     var note = (state.ref + ' ' + state.title).replace(/[^\w .,&()-]/g, '').replace(/\s+/g, ' ').slice(0, 50).trim();
     // Keep "@" as is in pa: some UPI apps do not decode %40.
     return 'upi://pay?pa=' + encodeURIComponent(s.upiId).replace('%40', '@') + '&pn=' + encodeURIComponent((s.payeeName || 'Tech Guardians').slice(0, 50)) +
-      '&am=' + Number(amt).toFixed(2) + '&cu=INR&tn=' + encodeURIComponent(note);
+      // mam = minimum amount: UPI apps that support it refuse a smaller payment.
+      '&am=' + Number(amt).toFixed(2) + '&mam=' + Number(amt).toFixed(2) + '&cu=INR&tn=' + encodeURIComponent(note);
   }
   var lastQr = '';
   function renderPayment() {

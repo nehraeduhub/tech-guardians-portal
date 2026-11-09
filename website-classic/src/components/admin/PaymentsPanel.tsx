@@ -79,6 +79,11 @@ const PaymentsPanel = () => {
     try { setSync(await syncSheet()); await refresh(); } catch (e) { setError(e instanceof Error ? e.message : 'Sync failed.'); }
     finally { setBusy(''); }
   };
+  /** UPI apps can let a buyer change the amount, so check what actually arrived before approving. */
+  const confirmReceived = (o: Order) => o.type === 'sheet' || !amountNumber(o.amount) || window.confirm(
+    `Approve only if you received the full ${o.amount} in your bank / UPI app.\n\n` +
+    `UTR: ${o.utr || '—'}${o.ref ? `\nUPI note: ${o.ref}` : ''}\nBuyer: ${o.name || '—'}\n\nDid you receive ${o.amount}?`,
+  );
   const fullLink = (o: Order) => (o.orderUrl ? `${window.location.origin}${o.orderUrl}` : '');
   const copyLink = (o: Order) => {
     void navigator.clipboard?.writeText(fullLink(o)).then(() => { setCopied(o.id); setTimeout(() => setCopied(''), 1600); }).catch(() => undefined);
@@ -164,7 +169,7 @@ const PaymentsPanel = () => {
             </div>
             <div className="flex flex-wrap gap-2 md:justify-end">
               {o.type !== 'sheet' && o.status !== 'approved' && (
-                <button disabled={busy === o.id} onClick={() => void act(o.id, () => setOrderStatus(o.id, 'approved'))} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"><Check className="h-4 w-4" /> Approve</button>
+                <button disabled={busy === o.id} onClick={() => { if (confirmReceived(o)) void act(o.id, () => setOrderStatus(o.id, 'approved')); }} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"><Check className="h-4 w-4" /> Approve</button>
               )}
               {o.type !== 'sheet' && o.status !== 'rejected' && (
                 <button disabled={busy === o.id} onClick={() => void act(o.id, () => setOrderStatus(o.id, 'rejected'))} className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/40 px-3 py-2 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-60"><X className="h-4 w-4" /> Reject</button>
