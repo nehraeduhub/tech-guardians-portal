@@ -6,7 +6,7 @@ import {
   Phone, RefreshCw, Search, ShieldAlert, ShieldCheck, Siren, X,
 } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
-import { newsUrl } from '@/lib/api';
+import { apiUrl, newsUrl } from '@/lib/api';
 import { NEWS_ALERTS, useList } from '@/lib/content-lists';
 import { safeLink } from '@/lib/utils';
 
@@ -69,13 +69,22 @@ const loadFeed = async (feed: 'india' | 'global') => {
   return { items: (data?.items ?? []) as NewsItem[], fetchedAt: (data?.fetched_at as string) || '' };
 };
 
+/**
+ * The story's picture, fetched by our server (api/news-img.php): the feed's own image,
+ * else the article's share image. This avoids hotlink blocks and http-only pictures.
+ */
+const newsImage = (item: NewsItem) => {
+  const u = item.image || (/^https?:\/\/(?!news\.google\.com\/)/i.test(item.url) ? item.url : '');
+  return u ? apiUrl(`news-img.php?u=${encodeURIComponent(u)}`) : '';
+};
+
 const Thumb = ({ item, className = '' }: { item: NewsItem; className?: string }) => (
   <div className={`relative overflow-hidden bg-muted/40 ${className}`}>
     <div aria-hidden className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_25%_25%,hsl(var(--primary)/0.28),transparent_60%),radial-gradient(circle_at_80%_80%,hsl(var(--cyber-green)/0.18),transparent_55%)]">
       <span className="font-display text-3xl font-bold text-foreground/25">{item.source.slice(0, 2).toUpperCase()}</span>
     </div>
-    {item.image ? (
-      <img src={item.image} alt="" loading="lazy" referrerPolicy="no-referrer" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+    {newsImage(item) ? (
+      <img src={newsImage(item)} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
     ) : null}
   </div>

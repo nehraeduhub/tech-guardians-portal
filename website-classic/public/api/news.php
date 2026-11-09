@@ -101,7 +101,7 @@ foreach ((array)($cfg['custom'] ?? []) as $c) {
     $SOURCES[$f][] = [$url, $name, $f === 'india' ? ($cat ?: 'Cyber Crime') : null, 10];
 }
 $SOURCES[$feed] = array_values(array_filter($SOURCES[$feed], fn($s) => !isset($disabled[$feed . '|' . $s[0]])));
-$cfgHash = substr(md5(json_encode($cfg)), 0, 10);
+$cfgHash = substr(md5('img2|' . json_encode($cfg)), 0, 10); // bump the prefix when parsing changes
 
 $cacheFile = "news-$feed.json";
 $cached = tg_read_json($cacheFile, null);
@@ -120,6 +120,27 @@ function tg_decode(string $s): string
 function tg_match(string $re, string $s): string
 {
     return preg_match($re, $s, $m) ? $m[1] : '';
+}
+
+/** The story's picture from a feed item: media tags, enclosure, or the first <img> in its HTML. */
+function tg_item_image(string $block): string
+{
+    $q = '["\']([^"\']+)["\']';
+    $found = tg_match("/<media:content[^>]+url={$q}/i", $block)
+        ?: tg_match("/<media:thumbnail[^>]+url={$q}/i", $block)
+        ?: tg_match("/<enclosure[^>]+type=[\"']image[^>]+url={$q}/i", $block)
+        ?: tg_match("/<enclosure[^>]+url={$q}[^>]*type=[\"']image/i", $block)
+        ?: tg_match("/<itunes:image[^>]+href={$q}/i", $block);
+    if ($found === '') {
+        // Many feeds put the picture inside entity-encoded or CDATA HTML.
+        $html = html_entity_decode(preg_replace('/<!\[CDATA\[([\s\S]*?)\]\]>/', '$1', $block), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        foreach (preg_match_all("/<img[^>]+src={$q}/i", $html, $m) ? $m[1] : [] as $src) {
+            if (!preg_match('#feedburner|/pixel|1x1|gravatar\.com|stats\.|doubleclick#i', $src)) { $found = $src; break; }
+        }
+    }
+    $found = trim(html_entity_decode($found, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    if (strpos($found, '//') === 0) $found = 'https:' . $found;
+    return preg_match('#^https?://[^\s"<>]+$#i', $found) ? $found : '';
 }
 
 function tg_parse_rss(string $xml, string $source, ?string $category, int $limit): array
@@ -149,14 +170,9 @@ function tg_parse_rss(string $xml, string $source, ?string $category, int $limit
         }
         $item = ['title' => $title, 'url' => $link, 'source' => $publisher !== '' && strpos($source, 'Google News') === 0 ? $publisher : $source, 'date' => $date,
                  'summary' => mb_substr(tg_decode($desc), 0, $category === null ? 320 : 600)];
-        if ($category !== null) {
-            $item['category'] = $category;
-            $image = tg_match('/<media:content[^>]+url="([^"]+)"/i', $block)
-                ?: tg_match('/<enclosure[^>]+url="([^"]+)"/i', $block)
-                ?: tg_match('/<media:thumbnail[^>]+url="([^"]+)"/i', $block)
-                ?: tg_match('/<img[^>]+src="([^"]+)"/i', $block);
-            if (preg_match('#^https?://#i', $image)) $item['image'] = $image;
-        }
+        if ($category !== null) $item['category'] = $category;
+        $image = tg_item_image($block);
+        if ($image !== '') $item['image'] = $image;
         if ($title !== '') $items[] = $item;
     }
     return $items;
