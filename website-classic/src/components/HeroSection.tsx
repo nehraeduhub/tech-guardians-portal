@@ -14,13 +14,13 @@ const TONES = ['#12408a', '#138808', '#e07b12', '#6d28d9', '#c62828', '#0e7490',
 
 /** Banners are designed at 8:3 (1920 × 720); at that shape they fill the full width exactly. */
 const BANNER_RATIO = 8 / 3;
-/** How long the 3D cube takes to turn to the next banner. */
-const TURN_MS = 1100;
+/** How long one banner takes to slide into the next. */
+const TURN_MS = 900;
 
 /**
- * Homepage carousel: full-width 8:3 banners on the faces of a 3D cube, so each
- * banner turns into the next one joined to it. A short caption bar and a single
- * button sit underneath. A poster of any other shape is shown whole on a soft
+ * Homepage carousel: full-width 8:3 banners joined edge to edge, so each one
+ * slides out as the next slides in beside it, with a thin line showing when
+ * the next banner comes. A short caption bar and a single button sit underneath. A poster of any other shape is shown whole on a soft
  * blurred copy instead of being cropped. Photo slides can still carry a headline.
  */
 const HeroSection = () => {
@@ -32,16 +32,14 @@ const HeroSection = () => {
   // Natural shape of each loaded poster: banners fill the frame, other shapes get the blurred backdrop.
   const [ratios, setRatios] = useState<Record<string, number>>({});
   const [index, setIndex] = useState(0);
-  // The banner the cube is turning to, and which way (1 = next, -1 = previous).
+  // The banner sliding in, and from which side (1 = next, -1 = previous).
   const [turn, setTurn] = useState<{ to: number; dir: 1 | -1; on: boolean } | null>(null);
-  const [width, setWidth] = useState(0);
-  const frame = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   const [hover, setHover] = useState(false);
   const reduce = useReducedMotion();
   const drag = useRef<number | null>(null);
   const count = slides.length;
-  /** Turn the cube to banner `to` (wraps around); instant when motion is reduced. */
+  /** Slide to banner `to` (wraps around); instant when motion is reduced. */
   const show = useCallback((to: number, dir: 1 | -1) => {
     if (!count) return;
     const target = (to + count) % count;
@@ -51,15 +49,7 @@ const HeroSection = () => {
   const go = useCallback((n: number) => show(index + n, n < 0 ? -1 : 1), [index, show]);
 
   useEffect(() => { if (index >= count) setIndex(0); }, [count, index]);
-  // The cube's depth is half its width, so measure it.
-  useEffect(() => {
-    const el = frame.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [count]);
-  // Two steps: first place the next banner on the side face, then start turning.
+  // Two steps: first place the next banner beside the current one, then slide.
   useEffect(() => {
     if (!turn) return;
     if (!turn.on) {
@@ -89,7 +79,7 @@ const HeroSection = () => {
     if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
   };
 
-  /** One banner, drawn on a face of the cube. */
+  /** One banner. */
   const face = (n: number) => {
     const f = slides[n];
     const ratio = ratios[f.id];
@@ -133,48 +123,40 @@ const HeroSection = () => {
     );
   };
 
-  // The cube: faces sit half a width out from its centre; turning it 90° brings the side face to the front.
-  const depth = width / 2;
-  const ease = `${TURN_MS}ms cubic-bezier(.645,.045,.355,1)`;
+  const ease = `${TURN_MS}ms cubic-bezier(.65,0,.35,1)`;
   const on = !!turn?.on;
   const dir = turn?.dir ?? 1;
-  const faceStyle = (angle: number) => ({ transform: `rotateY(${angle}deg) translateZ(${depth}px)`, backfaceVisibility: 'hidden' as const });
-  const shade = (from: number, to: number) => (
-    <div aria-hidden className="pointer-events-none absolute inset-0 bg-black" style={{ opacity: on ? to : from, transition: turn ? `opacity ${ease}` : undefined }} />
-  );
+  const autoplay = count > 1 && !paused && !hover && !reduce && !turn;
 
   return (
     <section id="home" aria-roledescription="carousel" aria-label="Tech Guardians highlights" className="relative bg-[hsl(var(--tg-navy))]">
       <div
-        ref={frame}
-        className="tg-cube-stage relative isolate aspect-[8/3] w-full overflow-hidden select-none"
-        style={{ perspective: `${Math.max(1200, width * 1.6)}px` }}
+        className="relative isolate aspect-[8/3] w-full overflow-hidden select-none"
         onPointerDown={down}
         onPointerUp={up}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        <div className={`absolute inset-0 ${turn ? 'tg-cube-dip' : ''}`} style={{ animationDuration: `${TURN_MS}ms`, transformStyle: 'preserve-3d' }}>
-          <div
-            className="absolute inset-0"
-            style={{
-              transformStyle: 'preserve-3d',
-              transform: `translateZ(${-depth}px) rotateY(${on ? -dir * 90 : 0}deg)`,
-              transition: turn ? `transform ${ease}` : undefined,
-            }}
-          >
-            <div className="absolute inset-0 overflow-hidden bg-[hsl(var(--tg-navy))]" style={faceStyle(0)} aria-hidden={!!turn}>
-              {face(cur)}
-              {turn && shade(0, 0.55)}
-            </div>
-            {turn && (
-              <div className="absolute inset-0 overflow-hidden bg-[hsl(var(--tg-navy))]" style={faceStyle(dir * 90)}>
-                {face(turn.to)}
-                {shade(0.55, 0)}
-              </div>
-            )}
+        {/* The current banner and the incoming one sit side by side and move together. */}
+        <div className="absolute inset-0" style={{ transform: `translateX(${on ? -dir * 100 : 0}%)`, transition: turn ? `transform ${ease}` : undefined }}>
+          <div className="absolute inset-0 overflow-hidden" aria-hidden={!!turn}>
+            <div className="absolute inset-0" style={{ transform: `scale(${on ? 0.96 : 1})`, opacity: on ? 0.55 : 1, transition: turn ? `transform ${ease}, opacity ${ease}` : undefined }}>{face(cur)}</div>
           </div>
+          {turn && (
+            <div className="absolute inset-0 overflow-hidden" style={{ transform: `translateX(${dir * 100}%)` }}>
+              {face(turn.to)}
+              {/* A thin saffron seam marks where the two banners join. */}
+              <span aria-hidden className="absolute inset-y-0 w-1 bg-[#ff9933] shadow-[0_0_24px_rgba(255,153,51,.7)]" style={{ [dir > 0 ? 'left' : 'right']: 0 }} />
+            </div>
+          )}
         </div>
+
+        {/* Time left before the next banner. */}
+        {count > 1 && (
+          <div aria-hidden className="absolute inset-x-0 bottom-0 z-10 h-1 bg-white/15">
+            <div key={`${cur}-${autoplay}`} className={`h-full bg-[#ff9933] ${autoplay ? 'tg-hero-progress' : ''}`} style={{ animationDuration: `${DELAY}ms`, width: autoplay ? undefined : 0 }} />
+          </div>
+        )}
 
         {count > 1 && (
           <>
