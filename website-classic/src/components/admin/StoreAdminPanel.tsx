@@ -98,7 +98,7 @@ const StoreAdminPanel = ({ onPublish }: { onPublish: (job: Promise<unknown>, onS
           </fieldset>
           <label className="space-y-1.5"><span className={label}>Payee name shown to buyers</span>
             <input id="pay-payee" className={input} value={settings.payeeName} onChange={(e) => setS({ payeeName: e.target.value })} /></label>
-          <label className="space-y-1.5"><span className={label}>UPI ID (optional, enables “Pay with UPI app” on phones)</span>
+          <label className="space-y-1.5"><span className={label}>UPI ID — checkout makes a fresh QR with the amount filled in (leave empty to use the one inside the bundled QR)</span>
             <input id="pay-upi" className={input} placeholder="yourname@okaxis" value={settings.upiId} onChange={(e) => setS({ upiId: e.target.value.trim() })} /></label>
           <label className="space-y-1.5"><span className={label}>WhatsApp number for support (with country code)</span>
             <input id="pay-wa" className={input} value={settings.whatsapp} onChange={(e) => setS({ whatsapp: e.target.value })} /></label>

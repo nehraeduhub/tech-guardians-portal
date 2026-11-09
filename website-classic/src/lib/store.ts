@@ -53,6 +53,8 @@ export interface Order {
   downloads?: number;
   /** Coupon used, its percent off, the full price and the rupees saved. */
   coupon?: string;
+  /** Note the buyer's UPI payment carried (e.g. TG7K2M9Q), to match the bank statement. */
+  ref?: string;
   percent?: number;
   price?: string;
   discount?: number;

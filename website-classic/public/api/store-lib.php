@@ -93,11 +93,21 @@ function tg_product_amount(array $p): float
     return $offer > 0 ? $offer : (float)($p['price'] ?? 0);
 }
 
+/** UPI ID inside the bundled /images/payment-qr.jpg (PhonePe merchant QR). */
+const TG_DEFAULT_QR_UPI = 'Q490174069@ybl';
+
+/** The UPI ID the checkout builds amount-filled QR codes for: the admin's, else the one in the bundled QR. */
+function tg_payment_upi(array $s): string
+{
+    if (!empty($s['upiId'])) return (string)$s['upiId'];
+    return ($s['qrImage'] ?? '') === '/images/payment-qr.jpg' ? TG_DEFAULT_QR_UPI : '';
+}
+
 function tg_public_settings(): array
 {
     $s = tg_store()['settings'];
     return [
-        'payeeName' => $s['payeeName'], 'upiId' => $s['upiId'], 'qrImage' => $s['qrImage'],
+        'payeeName' => $s['payeeName'], 'upiId' => tg_payment_upi($s), 'qrImage' => $s['qrImage'],
         'whatsapp' => $s['whatsapp'], 'email' => $s['email'], 'delivery' => $s['delivery'],
     ];
 }

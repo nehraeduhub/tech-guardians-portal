@@ -273,6 +273,8 @@ $record = [
     'received_at' => gmdate('c'),
 ];
 foreach (['productId', 'plan'] as $k) if (isset($item[$k])) $record[$k] = $item[$k];
+// The note the checkout put in the UPI payment (e.g. TG7K2M9Q), to match it in the bank statement.
+if (preg_match('/^TG[A-Z0-9]{6}$/', (string)($body['ref'] ?? ''))) $record['ref'] = $body['ref'];
 if ($record['name'] === '') tg_error('Please enter your name.');
 if (!filter_var($record['email'], FILTER_VALIDATE_EMAIL)) tg_error('Please enter a valid email address.');
 

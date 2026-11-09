@@ -151,3 +151,11 @@ h2{font-size:18px}
 .coupon-ok b{color:var(--green);letter-spacing:.05em}
 .coupon-ok button{background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer}
 .free-note{margin:0 0 14px;padding:12px 14px;border-radius:12px;border:1px solid color-mix(in srgb,var(--green) 45%,transparent);background:color-mix(in srgb,var(--green) 9%,transparent);font-size:14px}
+/* Amount-filled UPI QR */
+.qr-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+.qr #qr-live{width:100%;height:100%}
+.qr #qr-live svg{width:100%;height:100%;display:block}
+.qr.live{box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 55%,transparent)}
+.qr-badge{font-size:12px;font-weight:700;color:var(--green);text-align:center}
+.ref-row{margin-top:6px;font-size:13px;color:var(--muted)}
+.ref-row strong{font-family:var(--mono);color:var(--text);letter-spacing:.06em}

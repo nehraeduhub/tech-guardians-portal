@@ -58,7 +58,7 @@ const PaymentsPanel = () => {
       if (filter === 'coupon') { if (!o.coupon) return false; }
       else if (filter === 'pdf' || filter === 'course' || filter === 'ctf' || filter === 'product' || filter === 'sheet') { if ((o.type || 'course') !== filter) return false; }
       else if (filter !== 'all' && o.status !== filter) return false;
-      const hay = [o.name, o.email, o.phone, o.course, o.utr, o.amount, o.coupon].join(' ').toLowerCase();
+      const hay = [o.name, o.email, o.phone, o.course, o.utr, o.amount, o.coupon, o.ref].join(' ').toLowerCase();
       return words.every((w) => hay.includes(w));
     });
   }, [orders, filter, q]);
@@ -96,7 +96,7 @@ const PaymentsPanel = () => {
   const exportExcel = () => {
     const rows = shown.map((o) => ({
       Date: o.date || o.received_at || '', Name: o.name || '', Email: o.email || '', Phone: o.phone || '',
-      Item: o.course || '', Type: o.type, Amount: o.amount || '', Coupon: o.coupon || '', 'Full price': o.price || '', 'UTR / Transaction ID': o.utr || '', Status: STATUS_LABEL[o.status] || o.status,
+      Item: o.course || '', Type: o.type, Amount: o.amount || '', Coupon: o.coupon || '', 'Full price': o.price || '', 'UPI note': o.ref || '', 'UTR / Transaction ID': o.utr || '', Status: STATUS_LABEL[o.status] || o.status,
       Downloads: o.downloads || 0,
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
@@ -158,7 +158,7 @@ const PaymentsPanel = () => {
                 </div>
                 <div className="truncate text-sm">{o.course || '—'} · <strong className="tabular-nums">{o.amount || '—'}</strong>{o.coupon && o.price && <span className="ml-1 text-xs text-muted-foreground line-through">{o.price}</span>}</div>
                 <div className="text-xs text-muted-foreground break-all">
-                  UTR <span className="font-mono">{o.utr || (o.coupon ? 'not needed (free)' : '—')}</span> · {o.phone || 'no phone'} · {o.email || 'no email'} · {o.date || (o.received_at ? new Date(o.received_at).toLocaleString('en-IN') : '')}
+                  UTR <span className="font-mono">{o.utr || (o.coupon ? 'not needed (free)' : '—')}</span>{o.ref && <> · UPI note <span className="font-mono font-semibold text-foreground">{o.ref}</span></>} · {o.phone || 'no phone'} · {o.email || 'no email'} · {o.date || (o.received_at ? new Date(o.received_at).toLocaleString('en-IN') : '')}
                 </div>
               </div>
             </div>
