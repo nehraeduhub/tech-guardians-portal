@@ -40,7 +40,15 @@ function tg_setting_value(string $key, $fallback = null)
  */
 function tg_order_item(array $body): array
 {
-    $type = in_array($body['type'] ?? '', ['pdf', 'ctf', 'product'], true) ? $body['type'] : 'course';
+    $type = in_array($body['type'] ?? '', ['pdf', 'ctf', 'product', 'link'], true) ? $body['type'] : 'course';
+    if ($type === 'link') {
+        // Payment page for other websites (/pay.html): the amount and purpose come from the link.
+        // The admin checks the amount actually received before approving.
+        $amount = round(tg_amount_of($body['amount'] ?? ''), 2);
+        if ($amount < 1 || $amount > 200000) tg_error('This payment link has no valid amount (₹1 – ₹2,00,000).');
+        $title = trim(preg_replace('/[\x00-\x1F<>]+/u', ' ', mb_substr((string)($body['course'] ?? ''), 0, 120)));
+        return ['type' => 'link', 'title' => $title !== '' ? $title : 'Payment', 'price' => $amount];
+    }
     if ($type === 'pdf') {
         $p = tg_store_product(mb_substr((string)($body['productId'] ?? ''), 0, 80));
         if (!$p || empty($p['visible'])) tg_error('This PDF is no longer available.', 404);

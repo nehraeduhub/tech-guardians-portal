@@ -1,7 +1,8 @@
 <?php
 // Orders and enrollments (courses and PDFs).
 // Public (buyer):
-//   POST payments.php                         { type: course|pdf|ctf|product, productId?, plan?, course?, amount?, coupon?, name, email, phone, utr, date, shot? }
+//   POST payments.php                         { type: course|pdf|ctf|product|link, productId?, plan?, course?, amount?, coupon?, name, email, phone, utr, date, shot? }
+//                                             link = /pay.html for other websites: also { site?, extRef?, returnUrl? }
 //                                             (the price and any coupon discount are worked out here; a 100% coupon needs no UTR)
 //                                             -> { id, token, status, orderUrl }
 //   GET  payments.php?action=order&id=&token= -> order status for the buyer's order page
@@ -14,6 +15,7 @@
 //   POST payments.php?action=delete { id } / ?action=clear
 // Records: data/payments.json. Screenshots: data/payment-shots/.
 require_once __DIR__ . '/coupons-lib.php';
+require_once __DIR__ . '/pay-config.php';
 
 const TG_SHOT_DIR = TG_DATA_DIR . '/payment-shots';
 const TG_STATUSES = ['pending', 'approved', 'rejected', 'recorded'];
@@ -165,6 +167,12 @@ $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($action === 'order' || $action === 'download') {
+        // Websites in pay-config.php may read their buyers' order status from the browser.
+        $origin = (string)($_SERVER['HTTP_ORIGIN'] ?? '');
+        if ($action === 'order' && $origin !== '' && tg_pay_site_allowed($origin . '/')) {
+            header('Access-Control-Allow-Origin: ' . $origin);
+            header('Vary: Origin');
+        }
         tg_rate_limit('orderlookup', 240, 3600);
         $order = tg_find_order((string)($_GET['id'] ?? ''), (string)($_GET['token'] ?? ''));
         if ($action === 'download') {
@@ -183,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $p = ($order['type'] ?? '') === 'pdf' ? tg_store_product((string)$order['productId']) : null;
         tg_json([
             'id' => $order['id'], 'type' => $order['type'] ?? 'course', 'title' => $order['course'] ?? '',
-            'amount' => $order['amount'] ?? '', 'coupon' => $order['coupon'] ?? '', 'status' => $order['status'] ?? 'pending', 'date' => $order['date'] ?? '',
+            'amount' => $order['amount'] ?? '', 'coupon' => $order['coupon'] ?? '', 'extRef' => $order['extRef'] ?? '', 'site' => $order['site'] ?? '', 'status' => $order['status'] ?? 'pending', 'date' => $order['date'] ?? '',
             'name' => explode(' ', (string)($order['name'] ?? ''))[0], 'cover' => $p['cover'] ?? '',
             'canDownload' => tg_order_download_link($order) !== '',
             'linkMissing' => ($order['type'] ?? '') === 'pdf' && ($order['status'] ?? '') === 'approved' && tg_order_download_link($order) === '',
@@ -275,6 +283,12 @@ $record = [
 foreach (['productId', 'plan'] as $k) if (isset($item[$k])) $record[$k] = $item[$k];
 // The note the checkout put in the UPI payment (e.g. TG7K2M9Q), to match it in the bank statement.
 if (preg_match('/^TG[A-Z0-9]{6}$/', (string)($body['ref'] ?? ''))) $record['ref'] = $body['ref'];
+if ($type === 'link') {
+    $record['site'] = trim(preg_replace('/[\x00-\x1F<>]+/u', ' ', $text('site', 60)));
+    $record['extRef'] = preg_replace('/[^A-Za-z0-9._\/-]/', '', $text('extRef', 40));
+    $ret = $text('returnUrl', 500);
+    if ($ret !== '' && tg_pay_site_allowed($ret)) $record['returnUrl'] = $ret;
+}
 if ($record['name'] === '') tg_error('Please enter your name.');
 if (!filter_var($record['email'], FILTER_VALIDATE_EMAIL)) tg_error('Please enter a valid email address.');
 
@@ -332,6 +346,9 @@ header('Cache-Control: no-store');
 echo json_encode([
     'ok' => true, 'id' => $record['id'], 'token' => $record['token'], 'status' => $record['status'],
     'orderUrl' => '/order.html?id=' . $record['id'] . '&token=' . $record['token'],
+    // Back to the website that sent the buyer, with what it needs to look the order up.
+    'returnUrl' => empty($record['returnUrl']) ? '' : $record['returnUrl'] . (strpos($record['returnUrl'], '?') === false ? '?' : '&') . http_build_query(
+        ['tg_order' => $record['id'], 'tg_token' => $record['token'], 'tg_status' => $record['status'], 'tg_ref' => $record['extRef'] ?? '']),
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
 else { if (function_exists('session_write_close')) session_write_close(); flush(); }

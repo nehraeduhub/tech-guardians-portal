@@ -36,7 +36,7 @@ export interface PaymentSettings {
 
 export interface Order {
   id: string;
-  type: 'course' | 'pdf' | 'ctf' | 'product' | 'sheet';
+  type: 'course' | 'pdf' | 'ctf' | 'product' | 'link' | 'sheet';
   status: 'pending' | 'approved' | 'rejected' | 'recorded';
   name?: string;
   email?: string;
@@ -55,6 +55,9 @@ export interface Order {
   coupon?: string;
   /** Note the buyer's UPI payment carried (e.g. TG7K2M9Q), to match the bank statement. */
   ref?: string;
+  /** Payments from other websites (/pay.html): the website's name and its own reference. */
+  site?: string;
+  extRef?: string;
   percent?: number;
   price?: string;
   discount?: number;

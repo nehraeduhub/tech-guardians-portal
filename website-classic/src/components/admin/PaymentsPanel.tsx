@@ -3,10 +3,10 @@ import * as XLSX from 'xlsx';
 import { Check, Copy, Download, ExternalLink, MessageCircle, RefreshCw, Search, Trash2, X } from 'lucide-react';
 import { deleteOrder, loadOrders, setOrderStatus, sheetSyncStatus, syncSheet, type Order, type SheetSyncStatus } from '@/lib/store';
 
-type Filter = 'all' | 'pending' | 'approved' | 'rejected' | 'pdf' | 'course' | 'ctf' | 'product' | 'coupon' | 'sheet';
+type Filter = 'all' | 'pending' | 'approved' | 'rejected' | 'pdf' | 'course' | 'ctf' | 'product' | 'link' | 'coupon' | 'sheet';
 const FILTERS: [Filter, string][] = [
   ['all', 'All'], ['pending', 'Waiting for approval'], ['approved', 'Approved'], ['rejected', 'Rejected'],
-  ['pdf', 'PDF sales'], ['course', 'Courses'], ['ctf', 'CTF plans'], ['product', 'Products'], ['coupon', 'With coupon'], ['sheet', 'From Google Sheet'],
+  ['pdf', 'PDF sales'], ['course', 'Courses'], ['ctf', 'CTF plans'], ['product', 'Products'], ['link', 'Pay links'], ['coupon', 'With coupon'], ['sheet', 'From Google Sheet'],
 ];
 const STATUS_STYLE: Record<Order['status'], string> = {
   pending: 'bg-amber-500/15 text-amber-400 border-amber-500/40',
@@ -16,7 +16,7 @@ const STATUS_STYLE: Record<Order['status'], string> = {
 };
 const STATUS_LABEL: Record<Order['status'], string> = { pending: 'Pending', approved: 'Approved', rejected: 'Rejected', recorded: 'From sheet' };
 
-const TYPE_LABEL: Record<Order['type'], string> = { pdf: 'PDF', ctf: 'CTF plan', product: 'Product', sheet: 'Sheet', course: 'Course' };
+const TYPE_LABEL: Record<Order['type'], string> = { pdf: 'PDF', ctf: 'CTF plan', product: 'Product', link: 'Pay link', sheet: 'Sheet', course: 'Course' };
 const amountNumber = (a?: string) => Number(String(a || '').replace(/[^\d.]/g, '')) || 0;
 const ago = (unix: number) => {
   if (!unix) return 'never';
@@ -56,9 +56,9 @@ const PaymentsPanel = () => {
     const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
     return orders.filter((o) => {
       if (filter === 'coupon') { if (!o.coupon) return false; }
-      else if (filter === 'pdf' || filter === 'course' || filter === 'ctf' || filter === 'product' || filter === 'sheet') { if ((o.type || 'course') !== filter) return false; }
+      else if (filter === 'pdf' || filter === 'course' || filter === 'ctf' || filter === 'product' || filter === 'link' || filter === 'sheet') { if ((o.type || 'course') !== filter) return false; }
       else if (filter !== 'all' && o.status !== filter) return false;
-      const hay = [o.name, o.email, o.phone, o.course, o.utr, o.amount, o.coupon, o.ref].join(' ').toLowerCase();
+      const hay = [o.name, o.email, o.phone, o.course, o.utr, o.amount, o.coupon, o.ref, o.site, o.extRef].join(' ').toLowerCase();
       return words.every((w) => hay.includes(w));
     });
   }, [orders, filter, q]);
@@ -101,7 +101,7 @@ const PaymentsPanel = () => {
   const exportExcel = () => {
     const rows = shown.map((o) => ({
       Date: o.date || o.received_at || '', Name: o.name || '', Email: o.email || '', Phone: o.phone || '',
-      Item: o.course || '', Type: o.type, Amount: o.amount || '', Coupon: o.coupon || '', 'Full price': o.price || '', 'UPI note': o.ref || '', 'UTR / Transaction ID': o.utr || '', Status: STATUS_LABEL[o.status] || o.status,
+      Item: o.course || '', Type: o.type, Amount: o.amount || '', Coupon: o.coupon || '', 'Full price': o.price || '', 'UPI note': o.ref || '', Website: o.site || '', 'Their ref': o.extRef || '', 'UTR / Transaction ID': o.utr || '', Status: STATUS_LABEL[o.status] || o.status,
       Downloads: o.downloads || 0,
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
@@ -163,7 +163,8 @@ const PaymentsPanel = () => {
                 </div>
                 <div className="truncate text-sm">{o.course || '—'} · <strong className="tabular-nums">{o.amount || '—'}</strong>{o.coupon && o.price && <span className="ml-1 text-xs text-muted-foreground line-through">{o.price}</span>}</div>
                 <div className="text-xs text-muted-foreground break-all">
-                  UTR <span className="font-mono">{o.utr || (o.coupon ? 'not needed (free)' : '—')}</span>{o.ref && <> · UPI note <span className="font-mono font-semibold text-foreground">{o.ref}</span></>} · {o.phone || 'no phone'} · {o.email || 'no email'} · {o.date || (o.received_at ? new Date(o.received_at).toLocaleString('en-IN') : '')}
+                  UTR <span className="font-mono">{o.utr || (o.coupon ? 'not needed (free)' : '—')}</span>{o.ref && <> · UPI note <span className="font-mono font-semibold text-foreground">{o.ref}</span></>}
+                  {o.type === 'link' && (o.site || o.extRef) && <> · from <span className="font-semibold text-foreground">{o.site || 'another website'}</span>{o.extRef && <> ref <span className="font-mono">{o.extRef}</span></>}</>} · {o.phone || 'no phone'} · {o.email || 'no email'} · {o.date || (o.received_at ? new Date(o.received_at).toLocaleString('en-IN') : '')}
                 </div>
               </div>
             </div>
