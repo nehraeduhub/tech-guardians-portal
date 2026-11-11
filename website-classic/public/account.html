@@ -40,6 +40,9 @@ details{margin-top:20px}
 summary{cursor:pointer;font-weight:600}
 .btn-sm{padding:8px 14px;font-size:13px}
 @media (max-width:560px){.stats{grid-template-columns:1fr 1fr 1fr}.stats b{font-size:18px}}
+.otp-switch{display:block;width:100%;margin:0 0 16px;padding:11px 14px;border-radius:12px;border:1px dashed var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.otp-switch:hover{border-color:var(--cyan)}
+.otp-code{font-family:var(--mono);font-size:26px!important;letter-spacing:.5em;text-align:center}
 </style>
 </head>
 <body>
@@ -67,12 +70,26 @@ summary{cursor:pointer;font-weight:600}
         </div>
 
         <form id="login-form" autocomplete="on">
+          <button type="button" class="otp-switch" id="use-otp" hidden>✉️ Sign in with an email code instead</button>
           <label class="field"><span>User ID or email</span><input id="l-user" autocomplete="username" required/></label>
           <label class="field"><span>Password</span><input id="l-pass" type="password" autocomplete="current-password" required/></label>
           <div class="err" id="l-err" role="alert"></div>
           <div class="btn-row"><button class="btn btn-pri" id="l-btn">Sign in</button></div>
           <p class="small" style="margin-top:14px">Forgot your password? <a id="forgot" href="#" target="_blank" rel="noopener">Message us on WhatsApp</a> and we will reset it.</p>
           <p class="small" style="margin-top:6px"><a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a> · <a href="/terms#privacy" target="_blank" rel="noopener">Privacy</a></p>
+        </form>
+
+        <form id="otp-form" hidden autocomplete="on" novalidate>
+          <button type="button" class="otp-switch" id="use-pass">🔑 Sign in with user ID and password instead</button>
+          <label class="field"><span>Email of your account</span><input id="o-email" type="email" autocomplete="email" required/></label>
+          <div id="o-code-box" hidden>
+            <label class="field"><span>6-digit code from the email</span><input id="o-code" class="otp-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="••••••"/></label>
+            <p class="small" id="o-sent"></p>
+          </div>
+          <div class="err" id="o-err" role="alert"></div>
+          <div class="btn-row"><button class="btn btn-pri" id="o-btn">Send code</button></div>
+          <p class="small" style="margin-top:12px"><a href="#" id="o-resend" hidden>Send a new code</a> <span id="o-wait"></span></p>
+          <p class="small" style="margin-top:6px">The code is valid for 10 minutes. Never share it — Tech Guardians will never ask for it.</p>
         </form>
 
         <form id="register-form" hidden autocomplete="on">
@@ -174,8 +191,51 @@ summary{cursor:pointer;font-weight:600}
 
   function setTab(reg) {
     $('tab-login').classList.toggle('on', !reg); $('tab-register').classList.toggle('on', reg);
-    $('login-form').hidden = reg; $('register-form').hidden = !reg; $('r-done').hidden = true;
+    $('login-form').hidden = reg || otpMode; $('otp-form').hidden = reg || !otpMode; $('register-form').hidden = !reg; $('r-done').hidden = true;
   }
+
+  /* ---------- Sign in with an email code ---------- */
+  var otpOn = false, otpMode = false, otpTimer = 0;
+  function setOtp(on) {
+    otpMode = on; setTab(false); showErr('l-err', ''); showErr('o-err', '');
+    if (on && !$('o-email').value && /@/.test($('l-user').value)) $('o-email').value = $('l-user').value.trim();
+    (on ? $('o-email') : $('l-user')).focus();
+  }
+  $('use-otp').onclick = function () { setOtp(true); };
+  $('use-pass').onclick = function () { setOtp(false); };
+  function waitResend(sec) {
+    clearInterval(otpTimer); $('o-resend').hidden = true;
+    var left = sec;
+    var tick = function () {
+      if (left <= 0) { clearInterval(otpTimer); $('o-wait').textContent = ''; $('o-resend').hidden = false; return; }
+      $('o-wait').textContent = 'You can ask for a new code in ' + left + ' s.'; left--;
+    };
+    tick(); otpTimer = setInterval(tick, 1000);
+  }
+  function sendCode() {
+    showErr('o-err', '');
+    var email = $('o-email').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showErr('o-err', 'Please enter the email address of your account.'); return; }
+    busy($('o-btn'), true, 'Send code');
+    api('otp_send', { email: email }).then(function (d) {
+      $('o-code-box').hidden = false; $('o-sent').textContent = d.message; $('o-code').value = ''; $('o-code').focus();
+      $('o-btn').dataset.step = 'verify'; busy($('o-btn'), false, 'Verify & sign in');
+      waitResend(d.gap || 60);
+    }).catch(function (err) { showErr('o-err', err.message); busy($('o-btn'), false, $('o-btn').dataset.step === 'verify' ? 'Verify & sign in' : 'Send code'); });
+  }
+  $('o-resend').onclick = function (e) { e.preventDefault(); sendCode(); };
+  $('o-email').oninput = function () { $('o-btn').dataset.step = ''; $('o-code-box').hidden = true; $('o-btn').textContent = 'Send code'; };
+  $('o-code').oninput = function () { this.value = this.value.replace(/\D/g, '').slice(0, 6); if (this.value.length === 6) $('o-btn').click(); };
+  $('otp-form').onsubmit = function (e) {
+    e.preventDefault();
+    if ($('o-btn').dataset.step !== 'verify') { sendCode(); return; }
+    var code = $('o-code').value;
+    if (code.length !== 6) { showErr('o-err', 'Enter the 6-digit code from the email.'); return; }
+    showErr('o-err', ''); busy($('o-btn'), true, 'Verify & sign in');
+    api('otp_login', { email: $('o-email').value.trim(), code: code }).then(function () {
+      clearInterval(otpTimer); afterSignIn();
+    }).catch(function (err) { showErr('o-err', err.message); busy($('o-btn'), false, 'Verify & sign in'); $('o-code').select(); });
+  };
   $('tab-login').onclick = function () { setTab(false); };
   $('tab-register').onclick = function () { setTab(true); };
   $('back-login').onclick = function () { setTab(false); };
@@ -235,23 +295,25 @@ summary{cursor:pointer;font-weight:600}
     api('me').then(function (d) {
       if (d.settings && d.settings.whatsapp) wa = String(d.settings.whatsapp).replace(/\D/g, '') || wa;
       if (d.closed) { $('loading').innerHTML = 'Student accounts are closed at the moment. Please contact Tech Guardians on <a href="' + waLink('Hi Tech Guardians, I need access to my courses.') + '" target="_blank" rel="noopener">WhatsApp</a>.'; return; }
+      otpOn = !!d.otp; $('use-otp').hidden = !otpOn;
       if (d.user) showDash(d); else showAuth();
     }).catch(function (e) {
       $('loading').innerHTML = esc(e.message);
     });
   }
 
+  function afterSignIn() {
+    // Came from a members-only page (e.g. the CTF portal)? Go back there.
+    var next = new URLSearchParams(location.search).get('next') || '';
+    if (/^\/(ctf)(\/[A-Za-z0-9\/_-]*)?$/.test(next)) { location.assign(next); return; }
+    load();
+  }
+
   $('login-form').onsubmit = function (e) {
     e.preventDefault(); showErr('l-err', '');
     busy($('l-btn'), true, 'Sign in');
     api('login', { username: $('l-user').value, password: $('l-pass').value })
-      .then(function () {
-        $('l-pass').value = '';
-        // Came from a members-only page (e.g. the CTF portal)? Go back there.
-        var next = new URLSearchParams(location.search).get('next') || '';
-        if (/^\/(ctf)(\/[A-Za-z0-9\/_-]*)?$/.test(next)) { location.assign(next); return; }
-        load();
-      })
+      .then(function () { $('l-pass').value = ''; afterSignIn(); })
       .catch(function (err) { showErr('l-err', err.message); })
       .then(function () { busy($('l-btn'), false, 'Sign in'); });
   };
