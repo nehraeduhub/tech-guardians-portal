@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type LucideIcon, Globe2, Package, Rss, Scale, ScanSearch, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video, Film, Flag, Tag, Mail } from 'lucide-react';
+import { type LucideIcon, Globe2, Package, Rss, Scale, ScanSearch, Crosshair, Newspaper, ShoppingBag, Palette, PencilLine, BookOpen, FileText, Home, Image as ImageIcon, KeyRound, LayoutList, Youtube, Building2, CalendarClock, Eye, EyeOff, GraduationCap, LogOut, MessageCircle, Plus, RefreshCw, Save, Trash2, Users, Wallet, Video, Film, Flag, Tag, Mail, Bot } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import { refreshSettings } from '@/lib/shared-settings';
 import { adminSignOut, adminStatus, uploadImage } from '@/lib/api';
@@ -20,6 +20,7 @@ import { BlogPostsAdmin, BlogWritersAdmin, NotificationBell } from '@/components
 import CtfAdmin from '@/components/admin/CtfAdmin';
 import CouponsAdmin from '@/components/admin/CouponsAdmin';
 import EmailOtpAdmin from '@/components/admin/EmailOtpAdmin';
+import AiChatAdmin from '@/components/admin/AiChatAdmin';
 import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
@@ -71,7 +72,7 @@ const emptyEvent = (): TGEvent => ({
 });
 
 type ManageTab = 'themes' | 'layout' | 'heroslides' | 'videoads' | 'ctf' | 'home' | 'ecosystem' | 'products' | 'portals' | 'custom' | 'events' | 'offerings' | 'courses' | 'blogposts' | 'blogwriters' | 'blogs' | 'pdfs' | 'media' | 'videos' | 'newsdesk' | 'newssources' | 'forensic' | 'range'
-  | 'payments' | 'coupons' | 'students' | 'emailotp' | 'store' | 'trainers' | 'contact' | 'chat' | 'video' | 'about' | 'legal' | 'password';
+  | 'payments' | 'coupons' | 'students' | 'emailotp' | 'aichat' | 'store' | 'trainers' | 'contact' | 'chat' | 'video' | 'about' | 'legal' | 'password';
 
 const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   themes: { label: 'Themes', icon: Palette },
@@ -101,6 +102,7 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   coupons: { label: 'Coupons', icon: Tag },
   students: { label: 'Students', icon: Users },
   emailotp: { label: 'Email & OTP Login', icon: Mail },
+  aichat: { label: 'AI Chatbot', icon: Bot },
   store: { label: 'PDF Store & Payments', icon: ShoppingBag },
   trainers: { label: 'Trainings At', icon: Users },
   contact: { label: 'WhatsApp Number', icon: MessageCircle },
@@ -318,6 +320,8 @@ const Manage = () => {
             <CouponsAdmin onPublish={publish} />
           ) : tab === 'emailotp' ? (
             <EmailOtpAdmin onPublish={publish} />
+          ) : tab === 'aichat' ? (
+            <AiChatAdmin onPublish={publish} />
           ) : tab === 'custom' ? (
             <ListEditor def={CUSTOM_SECTIONS} onPublish={publish} />
           ) : tab === 'pdfs' ? (
