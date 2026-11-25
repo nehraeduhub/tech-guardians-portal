@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 $body = tg_require_json_post();
 tg_require_admin();
+tg_audit('PDF store / payment settings saved');
 if ($action !== 'save') tg_error('Unknown action.', 404);
 
 $str = fn($v, int $max) => mb_substr(trim((string)$v), 0, $max);

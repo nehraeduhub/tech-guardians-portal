@@ -26,6 +26,7 @@ $body = tg_require_json_post();
 
 if ($action === 'save') {
     tg_require_admin();
+    tg_audit('AI chatbot settings saved');
     $old = [];
     foreach (tg_ai_config()['providers'] as $p) $old[(string)($p['id'] ?? '')] = $p;
     $providers = [];

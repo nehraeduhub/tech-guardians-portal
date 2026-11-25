@@ -23,8 +23,10 @@ export async function apiPost<T>(path: string, body: unknown = {}): Promise<T> {
   return data as T;
 }
 
+/** Password step. When the admin turned on two-step sign-in the answer is { need2fa: true } and the code is sent next. */
 export const adminSignIn = (username: string, password: string) =>
-  apiPost<{ admin: boolean }>('auth.php?action=login', { username, password });
+  apiPost<{ admin?: boolean; need2fa?: boolean }>('auth.php?action=login', { username, password });
+export const adminSignIn2fa = (code: string) => apiPost<{ admin: boolean }>('auth.php?action=login_2fa', { code });
 export const adminSignOut = () => apiPost('auth.php?action=logout');
 export const isAdmin = async () => (await apiGet<{ admin: boolean }>('auth.php?action=me')).admin;
 /** Signed in, and whether the original password still has to be changed. */

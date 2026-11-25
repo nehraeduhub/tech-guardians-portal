@@ -29,6 +29,7 @@ $raw = json_decode(file_get_contents('php://input') ?: '', false);
 $key = (string)($body['key'] ?? '');
 if (!preg_match('/^[a-z0-9_.-]{1,80}$/i', $key)) tg_error('Invalid setting name.');
 if (!array_key_exists('value', $body)) tg_error('Missing value.');
+tg_audit('setting changed: ' . $key);
 if (strlen(json_encode($body['value'])) > TG_MAX_SETTING_BYTES) tg_error('Setting is too large.', 413);
 
 tg_update_json('settings.json', function ($all) use ($key, $raw) {

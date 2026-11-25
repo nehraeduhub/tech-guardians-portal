@@ -217,6 +217,7 @@ if ($action === 'delete') {
 
 /* ---------- admin only ---------- */
 tg_require_admin();
+tg_audit('blog: ' . $action . ' ' . mb_substr((string)($body['id'] ?? $body['userId'] ?? ''), 0, 24));
 
 if ($action === 'review') {
     $id = (string)($body['id'] ?? '');

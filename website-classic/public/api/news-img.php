@@ -26,6 +26,7 @@ function tg_img_get(string $url, int $max, string $accept): ?array
     for ($hop = 0; $hop < 4; $hop++) {
         if (!tg_public_url($url)) return null;
         $ch = curl_init($url);
+        tg_curl_pin($ch, $url);
         $body = '';
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => false, CURLOPT_FOLLOWLOCATION => false, CURLOPT_HEADER => false,

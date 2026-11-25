@@ -77,6 +77,7 @@ function tg_sheet_rows(string $url): array
     $fetch = $isCsv ? $url : $url . (strpos($url, '?') === false ? '?' : '&') . 'action=list';
     if (!tg_public_url($fetch)) throw new RuntimeException('The Google Sheet link must be a public https:// address.');
     $ch = curl_init($fetch);
+    tg_curl_pin($ch, $fetch);
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_MAXREDIRS => 5,
         CURLOPT_TIMEOUT => 10, CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_USERAGENT => 'TechGuardiansSync/1.0',
         CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS, CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS]);
@@ -229,6 +230,7 @@ $body = tg_require_json_post();
 
 if ($action === 'status') {
     tg_require_admin();
+    tg_audit('payment ' . (string)($body['id'] ?? '') . ' set to ' . (string)($body['status'] ?? ''));
     $id = (string)($body['id'] ?? '');
     $status = (string)($body['status'] ?? '');
     if (!in_array($status, ['pending', 'approved', 'rejected'], true)) tg_error('Unknown status.');
@@ -243,6 +245,7 @@ if ($action === 'status') {
 
 if ($action === 'delete' || $action === 'clear') {
     tg_require_admin();
+    tg_audit('payments: ' . $action . ' ' . mb_substr((string)($body['id'] ?? ''), 0, 20));
     $id = (string)($body['id'] ?? '');
     $removed = [];
     tg_update_json('payments.json', function ($rows) use ($action, $id, &$removed) {

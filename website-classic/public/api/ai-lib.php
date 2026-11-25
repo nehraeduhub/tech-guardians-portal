@@ -90,6 +90,7 @@ function tg_ai_post(string $url, array $headers, array $body): array
 {
     if (!tg_public_url($url)) return [0, null, 'The provider address is not a public https:// URL.'];
     $ch = curl_init($url);
+    tg_curl_pin($ch, $url);
     curl_setopt_array($ch, [
         CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_CONNECTTIMEOUT => 8, CURLOPT_TIMEOUT => 60,

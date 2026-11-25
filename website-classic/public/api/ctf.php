@@ -120,6 +120,7 @@ $body = tg_require_json_post();
 
 if ($action === 'grant') {
     tg_require_admin();
+    tg_audit('CTF access grant for ' . mb_substr((string)($body['userId'] ?? ''), 0, 24));
     $id = (string)($body['userId'] ?? '');
     $until = (string)($body['until'] ?? '');
     if ($until !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $until)) tg_error('Use a date like 2027-03-31, or leave it empty to remove.');

@@ -1,6 +1,7 @@
 <?php
 // Shared helpers for the Tech Guardians PHP API.
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/security.php';
 
 // Never show PHP errors (file paths, internals) to visitors.
 ini_set('display_errors', '0');
@@ -87,7 +88,8 @@ function tg_start_session(): void
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     ini_set('session.use_trans_sid', '0');
-    session_name('tg_admin');
+    // On HTTPS the cookie gets the __Host- prefix: browsers then refuse to let any other site or sub-domain set or replace it.
+    session_name($https ? '__Host-tgs' : 'tg_admin');
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
@@ -105,6 +107,7 @@ function tg_session_fingerprint(): string
 
 function tg_is_admin(): bool
 {
+    if (!tg_sec_admin_ip_ok()) return false; // Manage -> Security: admin sign-in limited to chosen IPs
     tg_start_session();
     if (empty($_SESSION['tg_admin'])) return false;
     $now = time();
@@ -188,8 +191,13 @@ function tg_require_json_post(): array
         $host = parse_url($origin, PHP_URL_HOST);
         $port = parse_url($origin, PHP_URL_PORT);
         $originHost = $host . ($port ? ':' . $port : '');
-        if (strcasecmp($originHost, $_SERVER['HTTP_HOST'] ?? '') !== 0) tg_error('Cross-site request blocked.', 403);
+        if (strcasecmp($originHost, $_SERVER['HTTP_HOST'] ?? '') !== 0) {
+            tg_sec_log('csrf_block', 'cross-site request from ' . mb_substr($origin, 0, 120), 15);
+            tg_sec_penalize(tg_client_ip(), 15, 'cross-site request');
+            tg_error('Cross-site request blocked.', 403);
+        }
     }
+    if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 8 * 1024 * 1024) tg_error('Request is too large.', 413);
     $body = json_decode(file_get_contents('php://input') ?: '', true);
     if (!is_array($body)) tg_error('Invalid JSON body.');
     return $body;
@@ -199,11 +207,6 @@ function tg_admin_password_hash(): string
 {
     $stored = tg_read_json('admin.json', []);
     return is_string($stored['password_hash'] ?? null) ? $stored['password_hash'] : TG_ADMIN_PASSWORD_HASH;
-}
-
-function tg_client_ip(): string
-{
-    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 }
 
 // Allow at most $max requests per IP for $bucket within $window seconds.
@@ -221,7 +224,11 @@ function tg_rate_limit(string $bucket, int $max, int $window): void
         $all[$ip][] = $now;
         return $all;
     });
-    if ($blocked) tg_error('Too many requests. Please try again later.', 429);
+    if ($blocked) {
+        tg_sec_log('rate_limit', $bucket, 5);
+        tg_sec_penalize($ip, 5, "rate limit $bucket");
+        tg_error('Too many requests. Please try again later.', 429);
+    }
 }
 
 // Outgoing requests (news feeds, Google Sheet sync) may only go to public
@@ -240,6 +247,17 @@ function tg_public_url(string $url): bool
     return true;
 }
 
+// Pin an outgoing connection to the address tg_public_url() just checked, so a hostile DNS
+// server cannot answer "public" for the check and "internal" for the real request (DNS rebinding).
+function tg_curl_pin($ch, string $url): void
+{
+    $host = parse_url($url, PHP_URL_HOST);
+    if (!is_string($host) || $host === '' || filter_var(trim($host, '[]'), FILTER_VALIDATE_IP)) return;
+    $port = parse_url($url, PHP_URL_PORT) ?: (stripos($url, 'https') === 0 ? 443 : 80);
+    $ips = gethostbynamel($host) ?: [];
+    if ($ips) curl_setopt($ch, CURLOPT_RESOLVE, ["$host:$port:" . $ips[0]]);
+}
+
 // Decode a base64 image data URL and check it really is an image.
 // Returns [binary, extension].
 function tg_decode_image(string $dataUrl, int $maxBytes): array
@@ -253,7 +271,22 @@ function tg_decode_image(string $dataUrl, int $maxBytes): array
     $info = @getimagesizefromstring($bin);
     $types = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp', IMAGETYPE_GIF => 'gif'];
     if (!$info || !isset($types[$info[2]])) tg_error('File is not a valid image.');
+    if ($info[0] < 1 || $info[1] < 1 || $info[0] * $info[1] > 40000000) tg_error('Image dimensions are not supported.');
+    // Draw the picture again from its pixels: anything hidden inside the file (scripts, metadata) is dropped.
+    if (function_exists('imagecreatefromstring') && $info[2] !== IMAGETYPE_GIF) {
+        $img = @imagecreatefromstring($bin);
+        if ($img) {
+            ob_start();
+            $ok = $info[2] === IMAGETYPE_JPEG ? imagejpeg($img, null, 90)
+                : ($info[2] === IMAGETYPE_PNG ? (imagesavealpha($img, true) && imagepng($img))
+                : (function_exists('imagewebp') && imagewebp($img, null, 90)));
+            $clean = ob_get_clean();
+            imagedestroy($img);
+            if ($ok && is_string($clean) && $clean !== '') $bin = $clean;
+        }
+    }
     return [$bin, $types[$info[2]]];
 }
 
+tg_sec_gate();
 tg_enforce_license();

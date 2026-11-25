@@ -8,6 +8,7 @@ $body = tg_require_json_post();
 tg_require_admin();
 
 [$bin, $ext] = tg_decode_image((string)($body['image'] ?? ''), 3000000);
+tg_audit('image uploaded');
 
 $dir = dirname(__DIR__) . '/uploads';
 if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) tg_error('Upload folder is not writable.', 500);

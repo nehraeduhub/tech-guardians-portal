@@ -24,12 +24,20 @@ const useCatalog = () => {
 const useContentHelpers = () => {
   useEffect(() => {
     const w = window as unknown as Record<string, unknown>;
-    w.copy = (btn: HTMLElement) => {
+    const copy = (btn: HTMLElement) => {
       const text = (btn.parentNode?.childNodes[0]?.nodeValue || '').trim();
       void navigator.clipboard?.writeText(text);
       btn.textContent = 'copied';
       window.setTimeout(() => { btn.textContent = 'copy'; }, 900);
     };
+    w.copy = copy;
+    // Lesson text has no inline handlers (the page's security policy forbids them): copy buttons work through this one listener.
+    const onClick = (e: MouseEvent) => {
+      const btn = (e.target as Element | null)?.closest?.('.ctf-prose button.cp');
+      if (btn instanceof HTMLElement) copy(btn);
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
   }, []);
 };
 

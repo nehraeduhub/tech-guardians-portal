@@ -36,4 +36,5 @@ if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) tg_error('Upload
 $name = bin2hex(random_bytes(10)) . '.' . $ext;
 if (!move_uploaded_file($file['tmp_name'], "$dir/$name")) tg_error('Upload folder is not writable.', 500);
 
+tg_audit('video uploaded');
 tg_json(['url' => '/uploads/videos/' . $name]);

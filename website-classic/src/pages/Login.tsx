@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, User, ShieldCheck, LogIn } from 'lucide-react';
 import SiteFrame from '@/components/SiteFrame';
 import tgLogo from '@/assets/tg-logo.png';
-import { adminSignIn } from '@/lib/api';
+import { adminSignIn, adminSignIn2fa } from '@/lib/api';
 
 // Member login — admin credentials open the events & payment manager.
 const Login = () => {
@@ -11,15 +11,29 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [needCode, setNeedCode] = useState(false);
+  const [code, setCode] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError('');
+    if (needCode) {
+      try {
+        await adminSignIn2fa(code);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'That code is not right.');
+        return;
+      }
+      navigate('/manage');
+      return;
+    }
     if (!username.trim() || !password.trim()) {
       setError('Please enter both username and password.');
       return;
     }
     try {
-      await adminSignIn(username.trim(), password);
+      const r = await adminSignIn(username.trim(), password);
+      if (r.need2fa) { setNeedCode(true); setPassword(''); return; }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign-in failed. Check your username and password.');
       return;
@@ -42,6 +56,17 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {needCode ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">Open your authenticator app and enter the 6-digit code for Tech Guardians.</p>
+                  <input
+                    type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} autoFocus placeholder="123456"
+                    value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    aria-label="Authenticator code"
+                    className="w-full bg-muted/40 border border-border rounded-lg px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                </div>
+              ) : (<>
               <div className="relative">
                 <User className="absolute left-3.5 top-3.5 w-4 h-4 text-muted-foreground" />
                 <input
@@ -63,13 +88,15 @@ const Login = () => {
                 />
               </div>
 
+              </>)}
+
               {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
 
               <button
                 type="submit"
                 className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary text-white text-sm font-semibold px-5 py-3 hover:bg-primary/90 transition-colors"
               >
-                <LogIn className="w-4 h-4" /> Sign in
+                <LogIn className="w-4 h-4" /> {needCode ? 'Verify code' : 'Sign in'}
               </button>
 
               <div className="flex items-center gap-2 justify-center text-[11px] text-muted-foreground pt-2">

@@ -41,10 +41,11 @@ function tg_sign_in(array $user): void
     $_SESSION['tg_user'] = $user['id'];
     $_SESSION['tg_user_seen'] = time();
     $_SESSION['tg_user_fp'] = tg_session_fingerprint();
+    tg_sec_log('login_ok', 'student signed in: ' . $user['username']);
 }
 
-/** Count a failed sign-in for this IP (shared by password and code sign-in). */
-function tg_login_failed(): void
+/** Count a failed sign-in for this IP and for the account that was tried (shared by password and code sign-in). */
+function tg_login_failed(string $who = ''): void
 {
     $ip = tg_client_ip();
     $now = time();
@@ -53,7 +54,29 @@ function tg_login_failed(): void
         $all[$ip][] = $now;
         return $all;
     });
+    if ($who !== '') {
+        $key = substr(hash('sha256', strtolower($who)), 0, 24);
+        tg_update_json('user-account-fails.json', function ($all) use ($key, $now) {
+            foreach ($all as $k => $t) { $all[$k] = array_values(array_filter($t, fn($x) => $x > $now - 900)); if (!$all[$k]) unset($all[$k]); }
+            $all[$key][] = $now;
+            return $all;
+        });
+    }
+    tg_sec_log('login_fail', 'student sign-in failed' . ($who !== '' ? ' for ' . mb_substr(preg_replace('/[^\w@.+-]/', '', $who), 0, 60) : ''), 8);
+    tg_sec_penalize($ip, 8, 'failed student sign-in');
     usleep(300000);
+}
+
+/** After 10 wrong tries on one account (from any addresses) it rests for 15 minutes, so spread-out guessing is stopped too. */
+function tg_account_locked(string $who): void
+{
+    if ($who === '') return;
+    $key = substr(hash('sha256', strtolower($who)), 0, 24);
+    $recent = array_filter(tg_read_json('user-account-fails.json', [])[$key] ?? [], fn($t) => $t > time() - 900);
+    if (count($recent) >= 10) {
+        tg_sec_log('lockout', 'account locked after repeated wrong tries: ' . mb_substr(preg_replace('/[^\w@.+-]/', '', $who), 0, 60), 0);
+        tg_error('This account is resting for 15 minutes after many wrong attempts. Please try again later.', 429);
+    }
 }
 
 function tg_login_blocked(): void
@@ -148,12 +171,13 @@ if ($action === 'login') {
     tg_login_blocked();
     $login = strtolower(trim((string)($body['username'] ?? '')));
     $password = (string)($body['password'] ?? '');
+    tg_account_locked($login);
     $user = null;
     foreach (tg_users() as $u) if ($login !== '' && ($u['username'] === $login || strcasecmp($u['email'], $login) === 0) && $u['status'] !== 'rejected') { $user = $u; break; }
     // Always run one bcrypt check so timing does not reveal which user IDs exist.
     $ok = password_verify($password, $user['password_hash'] ?? '$2y$12$Clcam7rsvOMWib3UfW1HDe2Dz70UzDOUdYPg.cC0XeBnM6pE9YIMG');
     if (!$user || !$ok) {
-        tg_login_failed();
+        tg_login_failed($login);
         tg_error('Sign-in failed. Check your user ID and password.', 401);
     }
     if ($user['status'] === 'pending') tg_error('Your account request is waiting for approval. We will confirm it soon.', 403);
@@ -197,6 +221,7 @@ if ($action === 'otp_login') {
     if (!tg_otp_on()) tg_error('Sign-in with an email code is not available. Please use your password.', 403);
     tg_login_blocked();
     $email = strtolower(trim(mb_substr((string)($body['email'] ?? ''), 0, 160)));
+    tg_account_locked($email);
     $code = preg_replace('/\D/', '', (string)($body['code'] ?? ''));
     $now = time();
     $result = 'bad';
@@ -210,7 +235,7 @@ if ($action === 'otp_login') {
         return $all;
     });
     if ($result !== 'ok') {
-        tg_login_failed();
+        tg_login_failed($email);
         tg_error($result === 'expired' ? 'This code has expired or was not requested. Ask for a new code.'
             : ($result === 'locked' ? 'Too many wrong codes. Ask for a new code.' : 'That code is not right. Check the latest email and try again.'), 401);
     }
@@ -242,6 +267,7 @@ if ($action === 'password') {
 
 /* ---------- admin ---------- */
 tg_require_admin();
+tg_audit('students: ' . $action . ' ' . mb_substr((string)($body['id'] ?? $body['userId'] ?? $body['username'] ?? ''), 0, 40));
 
 if ($action === 'create') {
     $profile = tg_check_profile($body, true);

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <meta http-equiv="refresh" content="0; url=/rj-nehra"/>
 <title>RJ Nehra — Cybersecurity Professional | Tech Guardians</title>
-<script>window.location.replace('/rj-nehra');</script>
+<script src="/js/pages/rj-nehra-1.js"></script>
 </head>
 <body><p><a href="/rj-nehra">Open RJ Nehra's professional profile</a></p></body>
 </html>
@@ -888,29 +888,7 @@ footer{
   </div>
 </footer>
 
-<script>
-/* Scroll progress */
-window.addEventListener('scroll',()=>{
-  const s=document.documentElement;
-  document.getElementById('prog').style.width=
-    (s.scrollTop/(s.scrollHeight-s.clientHeight))*100+'%';
-});
-
-/* Fade-in on scroll */
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add('in');
-      io.unobserve(e.target);
-    }
-  });
-},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
-
-document.querySelectorAll('.fade,.fade-l,.fade-r').forEach((el,i)=>{
-  el.style.transitionDelay=(i%6)*.08+'s';
-  io.observe(el);
-});
-</script>
+<script src="/js/pages/rj-nehra-2.js"></script>
 <script defer src="/js/tg-3d.js"></script>
 <script src="/js/tg-contact.js"></script>
 <script src="/js/tg-editor.js" defer></script>

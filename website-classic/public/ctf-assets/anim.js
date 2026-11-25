@@ -241,8 +241,10 @@ window.TGANIM=A;
 window.animFigure=function(key){var a=A[key]||A.shield;
  return '<figure class="tganim" data-k="'+key+'">'
   +'<div class="tganim-bar"><span class="tganim-t">▦ '+a.t+'</span>'
-  +'<button type="button" class="tganim-btn" onclick="animToggle(this)" aria-label="pause">⏸ Pause</button></div>'
+  +'<button type="button" class="tganim-btn" aria-label="pause">⏸ Pause</button></div>'
   +'<div class="tganim-stage">'+a.d+'</div></figure>';};
 window.animToggle=function(btn){var f=btn.closest('.tganim');var p=f.classList.toggle('paused');
  btn.innerHTML=p?'▶ Play':'⏸ Pause';};
+/* No inline onclick (the site's content-security policy forbids it): one listener serves every figure. */
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.tganim-btn');if(b)window.animToggle(b);});
 })();

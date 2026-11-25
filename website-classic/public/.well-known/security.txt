@@ -1,5 +1,6 @@
-# How to report a security problem on techguardians.in
+# Tech Guardians — how to report a security problem
 Contact: mailto:ittechguardians@gmail.com
-Expires: 2027-10-24T00:00:00.000Z
+Expires: 2027-11-25T00:00:00.000Z
 Preferred-Languages: en, hi
 Canonical: https://techguardians.in/.well-known/security.txt
+Policy: Please report privately and give us reasonable time to fix before sharing details. Do not access other people's data or disrupt the service.

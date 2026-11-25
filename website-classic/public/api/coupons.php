@@ -35,6 +35,7 @@ if ($action === 'check') {
 }
 
 tg_require_admin();
+tg_audit('coupons: ' . $action . ' ' . mb_substr((string)($body['code'] ?? $body['id'] ?? ''), 0, 30));
 
 if ($action === 'save') {
     $code = tg_coupon_code((string)($body['code'] ?? ''));

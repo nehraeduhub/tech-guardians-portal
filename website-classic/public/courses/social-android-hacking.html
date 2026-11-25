@@ -699,42 +699,10 @@ footer{
   <div class="footer-copy">© 2025 Tech Guardians. All Rights Reserved. · techguardians.in</div>
 </footer>
 
-<script>
-window.addEventListener('scroll',()=>{
-  const s=document.documentElement;
-  document.getElementById('progress').style.width=(s.scrollTop/(s.scrollHeight-s.clientHeight))*100+'%';
-});
-const obs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
-},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.fade-up').forEach((el,i)=>{
-  el.style.transitionDelay=(i%4)*0.08+'s';obs.observe(el);
-});
-</script>
+<script src="/js/pages/courses-social-android-hacking-1.js"></script>
 
 <!-- TG_PRICE_SYNC -->
-<script>
-(function(){
-  const COURSE_NAME = 'Learn Social Media and Ethical Hacking';
-  const COURSE_PRICE = 499;
-  const ORIGINAL_PRICE = 999;
-  const fmt = n => Number(n).toLocaleString('en-IN');
-  const url = `/courses/payment.html?course=${encodeURIComponent(COURSE_NAME)}&amount=${COURSE_PRICE}`;
-  const priceHTML = `<span class="tg-price-tag" style="display:inline-flex;align-items:center;gap:8px;margin-left:12px;font-family:'JetBrains Mono',monospace;font-weight:700;vertical-align:middle;flex-wrap:wrap;justify-content:center;">`+
-    `<span style="text-decoration:line-through;color:rgba(255,255,255,0.45);font-size:13px;">₹${fmt(ORIGINAL_PRICE)}</span>`+
-    `<span style="color:#00FF9C;font-size:18px;">₹${fmt(COURSE_PRICE)}</span>`+
-    (ORIGINAL_PRICE > COURSE_PRICE ? `<span style="background:#FF3B3B;color:#fff;font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:0.5px;">${Math.round((ORIGINAL_PRICE - COURSE_PRICE) / ORIGINAL_PRICE * 100)}% OFF</span>` : '')+
-    `</span>`;
-  document.querySelectorAll('a[href*="/courses/payment.html"]').forEach(a => {
-    a.href = url;
-    if (a.classList.contains('btn-enroll') || a.classList.contains('cta-btn')) {
-      if (!a.querySelector('.tg-price-tag')) a.insertAdjacentHTML('beforeend', priceHTML);
-      a.style.flexWrap = 'wrap';
-      a.style.gap = '8px';
-    }
-  });
-})();
-</script>
+<script src="/js/pages/courses-social-android-hacking-2.js"></script>
 <!-- /TG_PRICE_SYNC -->
 <script defer src="/js/tg-3d.js"></script>
 <script src="/js/tg-contact.js"></script>
