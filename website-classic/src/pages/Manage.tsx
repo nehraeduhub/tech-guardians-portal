@@ -27,7 +27,11 @@ import { TIPS_LIST } from '@/lib/daily-tips';
 import { TGEvent, loadEvents, saveEvents } from '@/lib/manage-store';
 import {
   DEFAULT_WA_NUMBER,
-  getWhatsAppNumber,
+  NEW_WA_NUMBER,
+  getOldWhatsAppNumber,
+  getWaChannels,
+  setWaChannels,
+  type WaChannels,
   setWhatsAppNumber,
   getFeaturedVideo,
   setFeaturedVideo,
@@ -111,7 +115,7 @@ const TAB_INFO: Record<ManageTab, { label: string; icon: LucideIcon }> = {
   dailytips: { label: 'Daily Tips', icon: Lightbulb },
   store: { label: 'PDF Store & Payments', icon: ShoppingBag },
   trainers: { label: 'Trainings At', icon: Users },
-  contact: { label: 'WhatsApp Number', icon: MessageCircle },
+  contact: { label: 'WhatsApp', icon: MessageCircle },
   chat: { label: 'Chat & Telegram Bot', icon: MessageCircle },
   video: { label: 'Featured Training', icon: Video },
   about: { label: 'About Us Page', icon: Eye },
@@ -137,6 +141,7 @@ const Manage = () => {
   const [trainersSaved, setTrainersSaved] = useState(false);
   const [waNumber, setWaNumber] = useState(DEFAULT_WA_NUMBER);
   const [waSaved, setWaSaved] = useState(false);
+  const [waCh, setWaCh] = useState<WaChannels>(getWaChannels);
   const [videoData, setVideoData] = useState({ id: DEFAULT_VIDEO_ID, title: DEFAULT_VIDEO_TITLE, tagline: DEFAULT_VIDEO_TAGLINE });
   const [videoSaved, setVideoSaved] = useState(false);
   const [events, setEvents] = useState<TGEvent[]>([]);
@@ -153,7 +158,8 @@ const Manage = () => {
       try { await refreshSettings(); } catch (error) { if (active) setPublishError('Could not load shared settings. Please check your connection.'); }
       if (!active) return;
       setEvents(loadEvents());
-      setWaNumber(getWhatsAppNumber());
+      setWaNumber(getOldWhatsAppNumber());
+      setWaCh(getWaChannels());
       setVideoData(getFeaturedVideo());
       setTrainers(loadTrainers());
       setBlogs(loadBlogs());
@@ -677,32 +683,51 @@ const Manage = () => {
             <ChatAdmin onPublish={publish} />
           ) : tab === 'contact' ? (
             <div className="rounded-2xl border border-border bg-card/70 p-6 md:p-8 max-w-xl">
-              <h2 className="font-display text-lg font-semibold text-foreground mb-2">Site-wide WhatsApp number</h2>
+              <h2 className="font-display text-lg font-semibold text-foreground mb-2">WhatsApp on the website</h2>
               <p className="text-sm text-muted-foreground mb-5">
-                Update the support number used by every page — homepage, courses, awareness booking,
-                payment gateway and the forensic engine.
+                Switch each WhatsApp number on or off. Every WhatsApp button on the homepage, courses, payment pages, chat button and
+                forensic engine follows these switches. If both are on, the New number is used on links and the chat button shows both.
+                If both are off, WhatsApp buttons are hidden.
               </p>
-              <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                Number with country code
+              <label className="flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-3 mb-3">
+                <span><span className="block text-sm font-semibold text-foreground">New WhatsApp (api.whatsapp.com)</span>
+                  <span className="block text-xs text-muted-foreground">https://api.whatsapp.com/send/?phone={waCh.newNumber}</span></span>
+                <input type="checkbox" className="h-5 w-5 accent-primary" checked={waCh.newOn} onChange={(e) => setWaCh({ ...waCh, newOn: e.target.checked })} />
               </label>
+              <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-2">New number with country code</label>
               <input
-                value={waNumber}
-                onChange={(e) => setWaNumber(e.target.value.replace(/\D/g, ''))}
-                placeholder="919929193136"
+                value={waCh.newNumber}
+                onChange={(e) => setWaCh({ ...waCh, newNumber: e.target.value.replace(/\D/g, '') })}
+                placeholder={NEW_WA_NUMBER}
                 className="w-full bg-muted/30 border border-border rounded-lg px-3 py-2.5 text-sm text-foreground mb-4"
               />
+              <label className="flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-3 mb-3">
+                <span><span className="block text-sm font-semibold text-foreground">Previous WhatsApp number</span>
+                  <span className="block text-xs text-muted-foreground">+{waNumber}</span></span>
+                <input type="checkbox" className="h-5 w-5 accent-primary" checked={waCh.oldOn} onChange={(e) => setWaCh({ ...waCh, oldOn: e.target.checked })} />
+              </label>
+              <details className="mb-5 rounded-xl border border-border px-4 py-3">
+                <summary className="cursor-pointer text-sm font-semibold text-muted-foreground">Previous number settings (hidden)</summary>
+                <label className="block text-xs uppercase tracking-wider text-muted-foreground mt-3 mb-2">Number with country code</label>
+                <input
+                  value={waNumber}
+                  onChange={(e) => setWaNumber(e.target.value.replace(/\D/g, ''))}
+                  placeholder={DEFAULT_WA_NUMBER}
+                  className="w-full bg-muted/30 border border-border rounded-lg px-3 py-2.5 text-sm text-foreground"
+                />
+              </details>
               <div className="flex flex-wrap gap-3 items-center">
                 <button
                   onClick={() => {
-                    void publish(setWhatsAppNumber(waNumber), () => setWaSaved(true));
+                    void publish(Promise.all([setWaChannels(waCh), setWhatsAppNumber(waNumber)]), () => setWaSaved(true));
                     window.setTimeout(() => setWaSaved(false), 2200);
                   }}
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity"
                 >
-                  <Save className="w-4 h-4" /> Save number
+                  <Save className="w-4 h-4" /> Save
                 </button>
                 <button
-                  onClick={() => void publish(setWhatsAppNumber(DEFAULT_WA_NUMBER), () => setWaNumber(DEFAULT_WA_NUMBER))}
+                  onClick={() => { setWaCh({ newOn: true, newNumber: NEW_WA_NUMBER, oldOn: false }); setWaNumber(DEFAULT_WA_NUMBER); }}
                   className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" /> Reset to default

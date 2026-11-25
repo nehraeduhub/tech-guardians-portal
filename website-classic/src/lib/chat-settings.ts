@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { publishSetting, readSetting } from '@/lib/shared-settings';
-import { waLink } from '@/lib/site-settings';
+import { waLink, waLinks } from '@/lib/site-settings';
 
 // Website chat button (Manage → Chat & Telegram Bot): WhatsApp now, and a
 // Telegram bot once its username is entered.
@@ -48,3 +48,6 @@ export const useChat = () => {
   }, []);
   return chat;
 };
+
+/** WhatsApp buttons for the chat window: one per number that is switched on. */
+export const whatsappButtons = (c: ChatSettings) => waLinks(c.whatsappText || undefined);

@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bot, Loader2, MessageCircle, RotateCcw, Send, X } from 'lucide-react';
-import { telegramLink, useChat, whatsappLink } from '@/lib/chat-settings';
+import { telegramLink, useChat, whatsappButtons } from '@/lib/chat-settings';
 import { askAi, loadHistory, saveHistory, useAiInfo, type AiMessage } from '@/lib/ai-chat';
 import { safeLink } from '@/lib/utils';
 import tgLogo from '@/assets/tg-logo.png';
@@ -53,7 +53,8 @@ const ChatWidget = () => {
     finally { setBusy(false); }
   };
   const tg = chat.telegram ? telegramLink(chat) : '';
-  const wa = chat.whatsapp ? whatsappLink(chat) : '';
+  const was = chat.whatsapp ? whatsappButtons(chat) : [];
+  const wa = was.length > 0;
 
   useEffect(() => {
     if (!open) return;
@@ -111,14 +112,14 @@ const ChatWidget = () => {
             )}
             {contacts && <div className={aiOn ? 'flex gap-2 border-t border-border p-3' : 'space-y-3 p-4'}>
               {!aiOn && <p className="rounded-xl rounded-tl-sm bg-muted px-3 py-2 text-sm text-foreground">{chat.greeting}</p>}
-              {wa && aiOn && <a href={wa} target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold hover:border-emerald-500/60"><MessageCircle className="h-3.5 w-3.5 text-[#25D366]" /> WhatsApp a human</a>}
+              {aiOn && was.map((w, i) => <a key={w.id} href={w.href} target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold hover:border-emerald-500/60"><MessageCircle className="h-3.5 w-3.5 text-[#25D366]" /> {was.length > 1 ? `WhatsApp ${i + 1}` : 'WhatsApp a human'}</a>)}
               {tg && aiOn && <a href={tg} target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold hover:border-sky-500/60"><Send className="h-3.5 w-3.5 text-[#229ED9]" /> Telegram</a>}
-              {wa && !aiOn && (
-                <a href={wa} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 transition-colors hover:border-emerald-500/60 hover:bg-emerald-500/5">
+              {!aiOn && was.map((w, i) => (
+                <a key={w.id} href={w.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 transition-colors hover:border-emerald-500/60 hover:bg-emerald-500/5">
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-[#25D366] text-white"><MessageCircle className="h-4 w-4" /></span>
-                  <span><span className="block text-sm font-semibold">Chat on WhatsApp</span><span className="block text-xs text-muted-foreground">Talk to our team</span></span>
+                  <span><span className="block text-sm font-semibold">Chat on WhatsApp{was.length > 1 ? ` ${i + 1}` : ''}</span><span className="block text-xs text-muted-foreground">Talk to our team</span></span>
                 </a>
-              )}
+              ))}
               {tg && !aiOn && (
                 <a href={tg} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 transition-colors hover:border-sky-500/60 hover:bg-sky-500/5">
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-[#229ED9] text-white"><Send className="h-4 w-4" /></span>
