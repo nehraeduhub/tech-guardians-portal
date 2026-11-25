@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound.tsx";
 import ThreatIntel from "./pages/ThreatIntel.tsx";
 import CyberNewsPortal from "./pages/CyberNewsPortal.tsx";
 import Login from "./pages/Login.tsx";
+import StudentApp from './pages/StudentApp';
 import Manage from "./pages/Manage.tsx";
 import SecurityAssessment from "./pages/SecurityAssessment.tsx";
 import TGBlogs from "./pages/TGBlogs.tsx";
@@ -70,6 +71,7 @@ const App = () => (
           <Route path="/threat-intel" element={<Gate path="/threat-intel"><ThreatIntel /></Gate>} />
           <Route path="/cyber-news" element={<Gate path="/cyber-news"><CyberNewsPortal /></Gate>} />
           <Route path="/login" element={<Login />} />
+          <Route path="/app" element={<StudentApp />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/write" element={<BlogStudio />} />
           <Route path="/account" element={<StaticPage href="/account.html" />} />
