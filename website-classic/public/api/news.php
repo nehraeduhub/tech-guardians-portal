@@ -30,6 +30,9 @@ $SOURCES = [
         ['https://www.welivesecurity.com/en/rss/feed/', 'WeLiveSecurity (ESET)', null, 6],
         ['https://feeds.feedburner.com/eset/blog', 'ESET Blog', null, 4],
         ['https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml', 'NCSC UK', null, 6],
+        ['https://news.google.com/rss/search?q=%22AI+security%22+OR+%22AI+cyber+attack%22+OR+%22prompt+injection%22+OR+%22AI+agents%22+security+when:3d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 10],
+        ['https://news.google.com/rss/search?q=%22quantum+computing%22+security+OR+%22post-quantum%22+OR+%22quantum+cryptography%22+when:7d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 10],
+        ['https://news.google.com/rss/search?q=OpenAI+OR+Anthropic+OR+Gemini+OR+%22AI+model%22+release+safety+when:3d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 8],
     ],
     'india' => [
         ['https://news.google.com/rss/search?q=india+cyber+crime+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Cyber Crime', 12],
@@ -101,7 +104,7 @@ foreach ((array)($cfg['custom'] ?? []) as $c) {
     $SOURCES[$f][] = [$url, $name, $f === 'india' ? ($cat ?: 'Cyber Crime') : null, 10];
 }
 $SOURCES[$feed] = array_values(array_filter($SOURCES[$feed], fn($s) => !isset($disabled[$feed . '|' . $s[0]])));
-$cfgHash = substr(md5('img2|' . json_encode($cfg)), 0, 10); // bump the prefix when parsing changes
+$cfgHash = substr(md5('topic3|' . json_encode($cfg)), 0, 10); // bump the prefix when parsing changes
 
 $cacheFile = "news-$feed.json";
 $cached = tg_read_json($cacheFile, null);
@@ -143,6 +146,17 @@ function tg_item_image(string $block): string
     return preg_match('#^https?://[^\s"<>]+$#i', $found) ? $found : '';
 }
 
+/** Sources that only publish security news; their stories are kept without a topic check. */
+const TG_NEWS_SECURITY_SOURCES = ['Hacker News', 'BleepingComputer', 'KrebsOnSecurity', 'Dark Reading', 'SecurityWeek', 'SANS ISC', 'Schneier', 'CISA',
+    'CERT-In', 'NVD', 'The Record', 'Infosecurity Magazine', 'CyberScoop', 'Help Net Security', 'Security Affairs', 'HackRead', 'Graham Cluley',
+    'Malwarebytes Labs', 'WeLiveSecurity (ESET)', 'ESET Blog', 'NCSC UK', 'The420.in', 'The Cyber Express', 'Inc42'];
+
+/** Is this story about cyber security, fraud, cyber crime, AI (attacks or updates) or quantum security? */
+function tg_on_topic(string $text): bool
+{
+    return (bool)preg_match('/\b(cyber|infosec|hack(?:ers?|ed|ing|s)?\b|phish|ransom|breach|malware|spyware|stalkerware|trojan|botnet|ddos|exploit|zero[- ]day|vulnerab|cve-\d|patch(?:es|ed)? (?:a |the )?(?:flaw|bug|vuln)|security (?:flaw|hole|bug|update|patch|alert|advisory|incident)|data (?:leak|theft|breach)|leak(?:ed)? (?:data|database)|identity theft|credential|password|encrypt|cryptograph|crypto ?(?:scam|fraud|theft)|fraud|scam|swindl|extortion|sextort|blackmail|digital arrest|deepfake|sim[- ]swap|cert-in|darknet|dark web|spoof|vishing|smishing|social engineering|cybercrime|artificial intelligence|machine learning|chatbot|chatgpt|openai|anthropic|deepseek|generative ai|genai|prompt injection|jailbreak|quantum|qubit|post-quantum)|\b(?:ai|a\.i\.|otp|upi|i4c|1930|llms?|pqc|dox(?:x?ing)?|gemini ai|ai agents?)\b/i', $text);
+}
+
 function tg_parse_rss(string $xml, string $source, ?string $category, int $limit): array
 {
     preg_match_all('/<item\b[\s\S]*?<\/item>/i', $xml, $a);
@@ -160,9 +174,11 @@ function tg_parse_rss(string $xml, string $source, ?string $category, int $limit
         $desc = tg_match('/<description>([\s\S]*?)<\/description>/i', $block)
             ?: tg_match('/<summary[^>]*>([\s\S]*?)<\/summary>/i', $block)
             ?: tg_match('/<content[^>]*>([\s\S]*?)<\/content>/i', $block);
-        // General news feeds: keep only cyber-crime and security stories.
-        if (in_array($category, ['India', 'Technology'], true)
-            && !preg_match('/cyber|fraud|scam|hack|phish|ransom|breach|malware|otp|upi|digital arrest|deepfake|sextort|data leak|cert-in|spyware|darknet|dark web/i', $title . ' ' . $desc_hint = tg_decode(tg_match('/<description>([\s\S]*?)<\/description>/i', $block)))) continue;
+        // Only cyber security, fraud, crime, AI attacks/updates and quantum security. General news feeds,
+        // Google News searches and any feed you add yourself must match the topic words.
+        if (!in_array($source, TG_NEWS_SECURITY_SOURCES, true) || in_array($category, ['India', 'Technology', 'Policy & Privacy', 'Enterprise Cyber', 'CISO / Security'], true)) {
+            if (!tg_on_topic($title . ' ' . tg_decode(tg_match('/<description>([\s\S]*?)<\/description>/i', $block)) . ' ' . tg_decode(tg_match('/<summary[^>]*>([\s\S]*?)<\/summary>/i', $block)))) continue;
+        }
         // Google News: show the real publisher instead of "Google News".
         $publisher = tg_decode(tg_match('/<source[^>]*>([\s\S]*?)<\/source>/i', $block));
         if ($publisher !== '' && strpos($source, 'Google News') === 0) {
