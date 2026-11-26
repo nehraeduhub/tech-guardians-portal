@@ -30,9 +30,25 @@ $SOURCES = [
         ['https://www.welivesecurity.com/en/rss/feed/', 'WeLiveSecurity (ESET)', null, 6],
         ['https://feeds.feedburner.com/eset/blog', 'ESET Blog', null, 4],
         ['https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml', 'NCSC UK', null, 6],
-        ['https://news.google.com/rss/search?q=%22AI+security%22+OR+%22AI+cyber+attack%22+OR+%22prompt+injection%22+OR+%22AI+agents%22+security+when:3d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 10],
-        ['https://news.google.com/rss/search?q=%22quantum+computing%22+security+OR+%22post-quantum%22+OR+%22quantum+cryptography%22+when:7d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 10],
-        ['https://news.google.com/rss/search?q=OpenAI+OR+Anthropic+OR+Gemini+OR+%22AI+model%22+release+safety+when:3d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 8],
+        ['https://news.google.com/rss/search?q=%22AI+security%22+OR+%22AI+cyber+attack%22+OR+%22prompt+injection%22+OR+%22AI+jailbreak%22+OR+%22AI+malware%22+OR+%22AI+deepfake+fraud%22+OR+%22LLM+vulnerability%22+when:3d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 12],
+        ['https://news.google.com/rss/search?q=%22quantum%22+%22encryption%22+OR+%22post-quantum+cryptography%22+OR+%22quantum+safe%22+OR+%22harvest+now+decrypt+later%22+when:14d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 10],
+        ['https://news.google.com/rss/search?q=ransomware+OR+%22data+breach%22+OR+%22zero-day%22+OR+%22cyber+attack%22+when:1d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 12],
+        ['https://news.google.com/rss/search?q=cybercrime+OR+%22online+fraud%22+OR+%22scam+arrested%22+when:2d&hl=en-US&gl=US&ceid=US:en', 'Google News', null, 10],
+        ['https://nakedsecurity.sophos.com/feed/', 'Sophos Naked Security', null, 6],
+        ['https://blog.talosintelligence.com/rss/', 'Cisco Talos', null, 6],
+        ['https://unit42.paloaltonetworks.com/feed/', 'Unit 42', null, 6],
+        ['https://www.microsoft.com/en-us/security/blog/feed/', 'Microsoft Security', null, 6],
+        ['https://googleprojectzero.blogspot.com/feeds/posts/default', 'Project Zero', null, 4],
+        ['https://research.checkpoint.com/feed/', 'Check Point Research', null, 6],
+        ['https://securelist.com/feed/', 'Securelist (Kaspersky)', null, 6],
+        ['https://feeds.trendmicro.com/Anti-MalwareBlog', 'Trend Micro', null, 6],
+        ['https://www.theregister.com/security/headlines.atom', 'The Register', null, 8],
+        ['https://www.csoonline.com/feed/', 'CSO Online', null, 8],
+        ['https://www.scmagazine.com/feed', 'SC Media', null, 8],
+        ['https://arstechnica.com/security/feed/', 'Ars Technica Security', null, 6],
+        ['https://www.wired.com/feed/category/security/latest/rss', 'WIRED Security', null, 6],
+        ['https://thequantuminsider.com/feed/', 'The Quantum Insider', null, 10],
+        ['https://www.bleepingcomputer.com/feed/tag/artificial-intelligence/', 'BleepingComputer AI', null, 6],
     ],
     'india' => [
         ['https://news.google.com/rss/search?q=india+cyber+crime+when:2d&hl=en-IN&gl=IN&ceid=IN:en', 'Google News India', 'Cyber Crime', 12],
@@ -104,7 +120,7 @@ foreach ((array)($cfg['custom'] ?? []) as $c) {
     $SOURCES[$f][] = [$url, $name, $f === 'india' ? ($cat ?: 'Cyber Crime') : null, 10];
 }
 $SOURCES[$feed] = array_values(array_filter($SOURCES[$feed], fn($s) => !isset($disabled[$feed . '|' . $s[0]])));
-$cfgHash = substr(md5('topic3|' . json_encode($cfg)), 0, 10); // bump the prefix when parsing changes
+$cfgHash = substr(md5('topic4|' . json_encode($cfg)), 0, 10); // bump the prefix when parsing changes
 
 $cacheFile = "news-$feed.json";
 $cached = tg_read_json($cacheFile, null);
@@ -149,12 +165,24 @@ function tg_item_image(string $block): string
 /** Sources that only publish security news; their stories are kept without a topic check. */
 const TG_NEWS_SECURITY_SOURCES = ['Hacker News', 'BleepingComputer', 'KrebsOnSecurity', 'Dark Reading', 'SecurityWeek', 'SANS ISC', 'Schneier', 'CISA',
     'CERT-In', 'NVD', 'The Record', 'Infosecurity Magazine', 'CyberScoop', 'Help Net Security', 'Security Affairs', 'HackRead', 'Graham Cluley',
-    'Malwarebytes Labs', 'WeLiveSecurity (ESET)', 'ESET Blog', 'NCSC UK', 'The420.in', 'The Cyber Express', 'Inc42'];
+    'Malwarebytes Labs', 'WeLiveSecurity (ESET)', 'ESET Blog', 'NCSC UK', 'The420.in', 'The Cyber Express', 'Inc42', 'Sophos Naked Security', 'Cisco Talos',
+    'Unit 42', 'Microsoft Security', 'Project Zero', 'Check Point Research', 'Securelist (Kaspersky)', 'Trend Micro', 'The Register', 'CSO Online', 'SC Media',
+    'Ars Technica Security', 'WIRED Security', 'BleepingComputer AI'];
 
-/** Is this story about cyber security, fraud, cyber crime, AI (attacks or updates) or quantum security? */
+/** Is this story about cyber security, fraud, cyber crime, AI SECURITY (attacks, abuse, defence) or quantum SECURITY?
+ *  General AI / business / product news does not pass: AI and quantum words only count together with a security word. */
 function tg_on_topic(string $text): bool
 {
-    return (bool)preg_match('/\b(cyber|infosec|hack(?:ers?|ed|ing|s)?\b|phish|ransom|breach|malware|spyware|stalkerware|trojan|botnet|ddos|exploit|zero[- ]day|vulnerab|cve-\d|patch(?:es|ed)? (?:a |the )?(?:flaw|bug|vuln)|security (?:flaw|hole|bug|update|patch|alert|advisory|incident)|data (?:leak|theft|breach)|leak(?:ed)? (?:data|database)|identity theft|credential|password|encrypt|cryptograph|crypto ?(?:scam|fraud|theft)|fraud|scam|swindl|extortion|sextort|blackmail|digital arrest|deepfake|sim[- ]swap|cert-in|darknet|dark web|spoof|vishing|smishing|social engineering|cybercrime|artificial intelligence|machine learning|chatbot|chatgpt|openai|anthropic|deepseek|generative ai|genai|prompt injection|jailbreak|quantum|qubit|post-quantum)|\b(?:ai|a\.i\.|otp|upi|i4c|1930|llms?|pqc|dox(?:x?ing)?|gemini ai|ai agents?)\b/i', $text);
+    // 1. Cyber security, fraud and crime on their own.
+    if (preg_match('/\b(cyber|infosec|hack(?:ers?|ed|ing|s)?\b|phish|ransom|breach|malware|spyware|stalkerware|trojan|botnet|ddos|exploit|zero[- ]day|vulnerab|cve-\d|security (?:flaw|hole|bug|update|patch|alert|advisory|incident|researcher)|data (?:leak|theft)|leak(?:ed)? (?:data|database)|identity theft|credential|password|encrypt|cryptograph|crypto ?(?:scam|fraud|theft|hack)|fraud|scam|swindl|extortion|sextort|blackmail|digital arrest|deepfake|sim[- ]swap|cert-in|darknet|dark web|spoof|vishing|smishing|social engineering|cybercrime|cyber crime)/i', $text)
+        || preg_match('/\b(?:otp|upi|i4c|1930|dox(?:x?ing)?)\b/i', $text)) return true;
+    $sec = '(?:attack|attacker|threat|vulnerab|secur|safety|jailbreak|prompt injection|poison|adversarial|guardrail|abuse|misuse|exploit|malicious|malware|fraud|scam|deepfake|phish|privacy|breach|leak|risk|defen[cs]e|detect|harden|backdoor|supply chain|rogue|hijack|steal|manipulat|red team|bypass|impersonat|surveillance)';
+    // 2. AI only when the story is about attacks, abuse or security of AI (or AI used for attacks / defence).
+    $ai = '(?:\bai\b|\ba\.i\.|artificial intelligence|machine learning|\bllms?\b|chatbot|chatgpt|openai|anthropic|deepseek|generative ai|genai|ai agents?|copilot|gemini)';
+    if (preg_match('/' . $ai . '/i', $text) && preg_match('/' . $sec . '/i', $text)) return true;
+    // 3. Quantum only when it is about encryption / security.
+    if (preg_match('/quantum|qubit|\bpqc\b/i', $text) && preg_match('/(?:secur|encrypt|cryptograph|cipher|rsa|key distribution|qkd|decrypt|nist|safe|break|crack|threat|attack|protect|resistan)/i', $text)) return true;
+    return false;
 }
 
 function tg_parse_rss(string $xml, string $source, ?string $category, int $limit): array
@@ -267,7 +295,7 @@ for ($i = 0; $i < $max; $i++) {
 }
 usort($merged, fn($a, $b) => (strtotime($b['date'] ?? '') ?: 0) <=> (strtotime($a['date'] ?? '') ?: 0));
 
-$items = $merged ? array_slice($merged, 0, $feed === 'india' ? 160 : 90) : $FALLBACK[$feed];
+$items = $merged ? array_slice($merged, 0, $feed === 'india' ? 160 : 120) : $FALLBACK[$feed];
 $fetchedAt = gmdate('c');
 if ($merged) tg_update_json($cacheFile, fn() => ['saved' => time(), 'cfg' => $cfgHash, 'fetched_at' => $fetchedAt, 'items' => $items], null);
 

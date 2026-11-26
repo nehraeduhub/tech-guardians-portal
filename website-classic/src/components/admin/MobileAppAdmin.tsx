@@ -35,6 +35,15 @@ const MobileAppAdmin = ({ onPublish }: { onPublish: Publish }) => {
         <p className="mt-2 text-sm text-muted-foreground">The website is already an installable app. Students open <b>{host}/app</b>, tap <b>Install</b> and it opens full-screen like a normal app (no browser bars), with the student login, daily tip, courses, PDFs, events, news and tools.</p>
         <ul className="mt-3 list-disc pl-5 text-sm text-muted-foreground"><li>Android Chrome: the Install banner appears on /app.</li><li>iPhone Safari: Share → Add to Home Screen.</li><li>Need a real APK / Play Store app? Fill the box below, then follow the steps.</li></ul>
       </div>
+      <div className="rounded-2xl border border-primary/40 bg-primary/5 p-5 grid gap-3">
+        <h3 className="font-bold text-foreground">Generate the APK (admin)</h3>
+        <p className="text-sm text-muted-foreground">One click opens the free PWABuilder tool with your app already filled in. Press <b>Package for stores → Android</b>, use the Package ID below, and download the zip with the APK, AAB and signing fingerprint.</p>
+        <div className="flex flex-wrap gap-2">
+          <a className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground" href={`https://www.pwabuilder.com/reportcard?site=${encodeURIComponent(`https://${host}/app`)}`} target="_blank" rel="noopener noreferrer"><Download className="h-4 w-4" /> Generate APK (PWABuilder)</a>
+          <a className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold" href="/app" target="_blank" rel="noopener noreferrer"><Smartphone className="h-4 w-4" /> Open the app page</a>
+        </div>
+        <p className="text-xs text-muted-foreground">The APK is built by PWABuilder (Microsoft), not on this server, so your hosting stays safe. The site must be live on https for it to work.</p>
+      </div>
       <div className="rounded-2xl border border-border p-5 grid gap-3">
         <h3 className="font-bold text-foreground">Android app package (APK / Play Store)</h3>
         <div><span className={label}>App name</span><input className={input} value={cfg.appName} onChange={(e) => setCfg({ ...cfg, appName: e.target.value })} /></div>
