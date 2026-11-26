@@ -1,0 +1,58 @@
+# Tech Guardians News - web server rules (Apache / LiteSpeed on Hostinger)
+Options -Indexes -MultiViews
+ServerSignature Off
+AddType application/manifest+json .webmanifest
+
+RewriteEngine On
+RewriteBase /
+
+# Always HTTPS
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# This site only reads: other HTTP methods are refused.
+RewriteCond %{REQUEST_METHOD} !^(GET|HEAD|OPTIONS)$ [NC]
+RewriteRule ^ - [F,L]
+
+RewriteRule ^(robots\.txt|\.well-known/security\.txt)$ - [L]
+# Hidden files, data, internals, source and backup files are never served.
+RewriteRule (^|/)\.(?!well-known/) - [F,L]
+RewriteRule ^api/(data)(/|$) - [F,L]
+RewriteRule ^api/(config|lib)\.php$ - [F,L,NC]
+RewriteRule \.(bak|backup|old|orig|sql|log|jsonl|sh|ini|env|map|md|lock|txt)$ - [F,L,NC]
+
+# Attack strings in the address
+RewriteCond %{QUERY_STRING} (<|%3C)\s*(script|iframe|object|svg|img) [NC,OR]
+RewriteCond %{QUERY_STRING} (\.\./|%2e%2e) [NC,OR]
+RewriteCond %{QUERY_STRING} union([\s+]|%20)+select [NC,OR]
+RewriteCond %{QUERY_STRING} (etc/passwd|/proc/self|php://|data://|expect://) [NC,OR]
+RewriteCond %{QUERY_STRING} (\$\{|%24%7b)jndi [NC]
+RewriteRule ^ - [F,L]
+# Scanner tools and attack targets
+RewriteCond %{HTTP_USER_AGENT} (sqlmap|nikto|nessus|acunetix|netsparker|wpscan|masscan|dirbuster|gobuster|ffuf|wfuzz|hydra|nuclei|zgrab) [NC]
+RewriteRule ^ - [F,L]
+RewriteRule ^(wp-admin|wp-login|wp-content|xmlrpc|phpmyadmin|cgi-bin|vendor|\.env|\.git)([/.]|$) - [F,L,NC]
+
+ErrorDocument 404 /index.html
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
+  Header always unset X-Powered-By
+  <FilesMatch "\.(js|css|png|jpe?g|webp|svg|woff2?)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "^(index\.html|sw\.js|manifest\.webmanifest|offline\.html)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.php$">
+    Header set Cache-Control "no-store"
+  </FilesMatch>
+</IfModule>

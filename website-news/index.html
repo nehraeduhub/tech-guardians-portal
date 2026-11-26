@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<script src="/js/theme.js"></script>
+<title>Tech Guardians News – Cyber Security, Fraud, Crime, AI &amp; Quantum Security</title>
+<meta name="description" content="Live cyber security news: cyber crime, online fraud, AI attacks and AI security, quantum security, vulnerabilities and advisories from trusted sources. By Tech Guardians."/>
+<meta name="theme-color" content="#050a14"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"/>
+<meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="TG News"/>
+<meta property="og:type" content="website"/><meta property="og:title" content="Tech Guardians News"/>
+<meta property="og:description" content="Cyber security, fraud, crime, AI security and quantum security news, updated every few minutes."/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
+<link rel="stylesheet" href="/css/news.css"/>
+</head>
+<body>
+<a class="skip" href="#feed">Skip to news</a>
+<div class="alert">🚨 Lost money to online fraud? Call <b>1930</b> now or report at <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer">cybercrime.gov.in</a> — the first hour matters.</div>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="/"><img src="/favicon.png" alt=""/><span>Tech Guardians<small>News</small></span></a>
+  <nav class="nav" aria-label="Main">
+    <a class="hide-sm" id="l-main" href="#" target="_blank" rel="noopener">Main website</a>
+    <a class="hide-sm" id="l-wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <button type="button" id="theme" aria-label="Switch light or dark theme">◐</button>
+    <a class="pri" id="l-train" href="#" target="_blank" rel="noopener">Learn cyber security</a>
+  </nav>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <h1>Cyber security news, <span>without the noise</span></h1>
+  <p>Only cyber security, fraud and cyber crime, AI attacks and AI security, and quantum security. Collected live from trusted sources worldwide and India.</p>
+  <div class="stats" id="stats" aria-live="polite"></div>
+  <div class="tip" id="tip" aria-label="Cyber tip of the day"><small>💡 Cyber tip of the day</small><p id="tip-en"></p><p id="tip-hi"></p></div>
+</div></section>
+
+<div class="controls"><div class="wrap">
+  <div class="tabs" role="tablist" aria-label="News desks" id="tabs"></div>
+  <div class="row">
+    <input id="q" type="search" placeholder="Search news (UPI fraud, ransomware, prompt injection, quantum…)" aria-label="Search news" autocomplete="off"/>
+    <select id="src" aria-label="Filter by source"><option value="">All sources</option></select>
+    <select id="sort" aria-label="Sort"><option value="new">Newest first</option><option value="src">By source</option></select>
+  </div>
+</div></div>
+
+<main class="wrap" id="feed" tabindex="-1" aria-live="polite">
+  <div id="lead" class="lead"></div>
+  <div id="list" class="grid"></div>
+  <button type="button" id="more" class="more" hidden>Load more</button>
+</main>
+
+<footer><div class="wrap">
+  <div><b>Tech Guardians News</b><br/>Headlines link to the original publishers. We do not copy articles.<br/>Verify before you act; never share OTP, PIN or passwords.</div>
+  <div><b>Report cyber crime</b><br/>Helpline <b>1930</b><br/><a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer">cybercrime.gov.in</a></div>
+  <div><b>More</b><br/><a id="f-main" href="#" target="_blank" rel="noopener">Tech Guardians website</a><br/><a id="f-pdf" href="#" target="_blank" rel="noopener">Courses &amp; PDF handbooks</a></div>
+</div></footer>
+
+<div id="install" role="region" aria-label="Install app"><span id="install-text" style="flex:1">Install Tech Guardians News as an app.</span><button class="go" id="install-go" type="button">Install</button><button class="x" id="install-x" type="button" aria-label="Dismiss">✕</button></div>
+<script src="/js/config.js"></script>
+<script src="/js/tips.js"></script>
+<script src="/js/news.js"></script>
+</body>
+</html>
